@@ -33,7 +33,7 @@ export default function Page() {
             >
               <use href="/sprite.svg#mm" />
             </svg>
-            Vercel
+            Music Magpie
           </Badge>
         </span>
       </p>
