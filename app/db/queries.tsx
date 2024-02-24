@@ -21,7 +21,7 @@ let yt = youtube({
 });
 
 export async function getBlogViews() {
-  if (!process.env.POSTGRES_URL) {
+  if (!process.env.DATABASE_URL) {
     return [];
   }
 
@@ -37,7 +37,7 @@ export async function getBlogViews() {
 export async function getViewsCount(): Promise<
   { slug: string; count: number }[]
 > {
-  if (!process.env.POSTGRES_URL) {
+  if (!process.env.DATABASE_URL) {
     return [];
   }
 
@@ -81,7 +81,7 @@ export const getVercelYouTubeSubs = cache(
 );
 
 export async function getGuestbookEntries() {
-  if (!process.env.POSTGRES_URL) {
+  if (!process.env.DATABASE_URL) {
     return [];
   }
 
