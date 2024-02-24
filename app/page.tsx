@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 import Image from 'next/image';
-import mm from 'public/images/home/MMfavicon.ico';
 import ViewCounter from 'app/blog/view-counter';
 import { PreloadResources } from 'app/preload';
 
@@ -19,23 +18,67 @@ function Badge(props) {
 export default function Page() {
   return (
     <section>
-      <h1 className="font-medium text-2xl mb-8 tracking-tighter">Hi, I'm Sam 👋</h1>
+      <h1 className="font-medium text-2xl mb-8 tracking-tighter">hello, I'm Sam 👋</h1>
       <p className="prose prose-neutral dark:prose-invert">
-        {`I'm a full stack developer, and full time tinkerer. I am currently a technical lead at `}
+        {`I'm a full stack developer, and full time tinkerer. I currently work at `}
         <span className="not-prose">
           <Badge href="https://www.musicmagpie.co.uk">
-            <svg
-              width="13"
-              height="11"
-              role="img"
-              aria-label="MusicMagpie logo"
-              className="inline-flex mr-1"
-            >
-              <use href="/sprite.svg#mm" />
-            </svg>
-            Music Magpie
+            <img
+              alt="Music Magpie logomark"
+              src="/public/images/home/MMfavicon.jpg"
+              className="!mr-1"
+              width="14"
+              height="14"
+            />
+            musicmagpie
           </Badge>
         </span>
+        {`, where I lead a team of talented developers who build amazing web applications with `}
+        <span className="not-prose">
+          <Badge href="https://react.dev">
+            <svg
+              width="14"
+              height="14"
+              role="img"
+              aria-label="React logo"
+              className="!mr-1"
+            >
+              <use href="/sprite.svg#react" />
+            </svg>
+            React
+          </Badge>
+        </span>
+        {`, `}
+        <span className="not-prose">
+          <Badge href="https://dotnet.microsoft.com">
+            <svg
+              width="14"
+              height="14"
+              role="img"
+              aria-label=".Net logo"
+              className="!mr-1"
+            >
+              <use href="/dotnet-logo.jpg" />
+            </svg>
+            .NET
+          </Badge>
+        </span>
+        {`, and `}
+        <span className="not-prose">
+          <Badge href="https://azure.microsoft.com">
+            <svg
+              width="14"
+              height="14"
+              role="img"
+              aria-label="Azure logo"
+              className="!mr-1"
+            >
+              <use href="/azure-logo.ico" />
+            </svg>
+            Azure
+          </Badge>
+        </span>
+        .
       </p>
     </section>
   );
