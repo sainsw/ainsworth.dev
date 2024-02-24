@@ -50,8 +50,8 @@ export async function saveGuestbookEntry(formData: FormData) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'guestbook@leerob.io',
-      to: 'me@leerob.io',
+      from: 'guestbook@ainsworth.dev',
+      to: 's@ainsworth.dev',
       subject: 'New Guestbook Entry',
       html: `<p>Email: ${email}</p><p>Message: ${body}</p>`,
     }),
@@ -61,11 +61,37 @@ export async function saveGuestbookEntry(formData: FormData) {
   console.log('Email sent', response);
 }
 
+export async function sendEmail(formData: FormData) {
+  
+  let entry = formData.get('message')?.toString() || '';
+  let email = formData.get('email')?.toString() || '';
+  let body = entry.slice(0, 500);
+  let em = email.slice(0, 100);
+ 
+  let data = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_SECRET}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: 'contact@ainsworth.dev',
+      to: 's@ainsworth.dev',
+      subject: 'New Message',
+      html: `<p>Email: ${em}</p><p>Message: ${body}</p>`,
+    }),
+  });
+
+  let response = await data.json();
+  console.log('Email sent', response);
+  return response;
+}
+
 export async function deleteGuestbookEntries(selectedEntries: string[]) {
   let session = await getSession();
   let email = session.user?.email as string;
 
-  if (email !== 'me@leerob.io') {
+  if (email !== 's.ainsworth@me.com') {
     throw new Error('Unauthorized');
   }
 
