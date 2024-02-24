@@ -51,31 +51,38 @@ export default function Page() {
         {`, `}
         <span className="not-prose">
           <Badge href="https://dotnet.microsoft.com">
-          <img
-            alt="dot net logomark"
-            src="/dotnet-logo.jpg"
-            className="!mr-1"
-            width="14"
-            height="14"
-          />
+            <img
+              alt="dot net logomark"
+              src="/dotnet-logo.jpg"
+              className="!mr-1"
+              width="14"
+              height="14"
+            />
             .NET
           </Badge>
         </span>
         {`, and `}
         <span className="not-prose">
           <Badge href="https://azure.microsoft.com">
-          <img
-            alt="Azure logomark"
-            src="/azure-logo.ico"
-            className="!mr-1"
-            width="14"
-            height="14"
-          />
+            <img
+              alt="Azure logomark"
+              src="/azure-logo.ico"
+              className="!mr-1"
+              width="14"
+              height="14"
+            />
             Azure
           </Badge>
         </span>
         .
       </p>
+      <div className="prose prose-neutral dark:prose-invert">
+        <p>
+          I’ve just started this blog, where I plan to share my insights and learnings on software development, C♯ and .NET, JavaScript and TypeScript, React and Next.js, and more.
+          I like to keep things simple and practical.
+          You’ll find content that reflects my current interests and challenges, as well as how I’m evolving and improving as a developer and technical lead.
+        </p>
+      </div>
     </section>
   );
 }
