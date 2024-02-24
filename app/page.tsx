@@ -25,7 +25,7 @@ export default function Page() {
           <Badge href="https://www.musicmagpie.co.uk">
             <img
               alt="Music Magpie logomark"
-              src="/public/images/home/MMfavicon.jpg"
+              src="/MMfavicon.ico"
               className="!mr-1"
               width="14"
               height="14"
@@ -51,30 +51,26 @@ export default function Page() {
         {`, `}
         <span className="not-prose">
           <Badge href="https://dotnet.microsoft.com">
-            <svg
-              width="14"
-              height="14"
-              role="img"
-              aria-label=".Net logo"
-              className="!mr-1"
-            >
-              <use href="/dotnet-logo.jpg" />
-            </svg>
+          <img
+            alt="dot net logomark"
+            src="/dotnet-logo.jpg"
+            className="!mr-1"
+            width="14"
+            height="14"
+          />
             .NET
           </Badge>
         </span>
         {`, and `}
         <span className="not-prose">
           <Badge href="https://azure.microsoft.com">
-            <svg
-              width="14"
-              height="14"
-              role="img"
-              aria-label="Azure logo"
-              className="!mr-1"
-            >
-              <use href="/azure-logo.ico" />
-            </svg>
+          <img
+            alt="Azure logomark"
+            src="/azure-logo.ico"
+            className="!mr-1"
+            width="14"
+            height="14"
+          />
             Azure
           </Badge>
         </span>
