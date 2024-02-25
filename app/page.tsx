@@ -38,8 +38,8 @@ export default function Page() {
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">hello, I'm Sam 👋</h1>
       <div className="prose prose-neutral dark:prose-invert">
         <p>
-        I like to keep things simple and practical.
-      </p>
+          I like to keep things simple and practical.
+        </p>
       </div>
       <p className="prose prose-neutral dark:prose-invert">
         {`I'm a full stack developer, and full time tinkerer. I currently work at `}
@@ -127,6 +127,15 @@ export default function Page() {
           </a>
         </li>
       </ul>
+      <div className="container px-4 mx-auto">
+        <div className="pt-24 pb-11 mx-auto max-w-4xl">
+          <a className="block md:mx-auto mb-5 max-w-max" href="https://www.linkedin.com/in/samainsworth/">
+            <div>
+              <img className="bg-left-bottom h-20 w-20 rounded-full ring-2 ring-black dark:ring-white" src="images/home/avatar.jpg" alt="" />
+            </div>
+          </a>
+        </div>
+      </div>
     </section>
   );
 }
