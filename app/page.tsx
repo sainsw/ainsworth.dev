@@ -116,7 +116,6 @@ export default function Page() {
           <a
             className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-all"
             rel="noopener noreferrer"
-            target="_blank"
             href="/contact"
           >
             <ArrowIcon />
