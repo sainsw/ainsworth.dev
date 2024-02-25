@@ -36,6 +36,11 @@ export default function Page() {
   return (
     <section>
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">hello, I'm Sam 👋</h1>
+      <div className="prose prose-neutral dark:prose-invert">
+        <p>
+        I like to keep things simple and practical.
+      </p>
+      </div>
       <p className="prose prose-neutral dark:prose-invert">
         {`I'm a full stack developer, and full time tinkerer. I currently work at `}
         <span className="not-prose">
@@ -95,9 +100,8 @@ export default function Page() {
       </p>
       <div className="prose prose-neutral dark:prose-invert">
         <p>
-          I’ve just started this blog, where I plan to share my insights and learnings on software development, C♯ and .NET, JavaScript and TypeScript, React and Next.js, and more.
-          I like to keep things simple and practical.
-          You’ll find content that reflects my current interests and challenges, as well as how I’m evolving and improving as a developer and technical lead.
+          This is my new blog, where I'll share my thoughts and experiences on software development, C♯ and .NET, JavaScript and TypeScript, React and Next.js, and more.
+          You’ll find content that reflects my current interests and challenges, as well as how I’m learning and improving as a developer and technical lead.
         </p>
       </div>
       <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-neutral-600 dark:text-neutral-300">
