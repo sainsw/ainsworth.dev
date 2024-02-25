@@ -65,7 +65,7 @@ export async function sendEmail(formData: FormData) {
   
   let entry = formData.get('message')?.toString() || '';
   let email = formData.get('email')?.toString() || '';
-  let body = entry.slice(0, 500);
+  let body = entry.slice(0, 4000);
   let em = email.slice(0, 100);
  
   let data = await fetch('https://api.resend.com/emails', {
@@ -84,6 +84,11 @@ export async function sendEmail(formData: FormData) {
 
   let response = await data.json();
   console.log('Email sent', response);
+
+  if(response.statusCode > 0){
+    throw new Error(response.message)
+  }
+
   return response;
 }
 

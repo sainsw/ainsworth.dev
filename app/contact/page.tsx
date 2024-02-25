@@ -7,6 +7,7 @@ import { useFormStatus } from 'react-dom';
 export default function Page() {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
+    const [success, setSuccess] = useState<string | null>(null)
 
     const formRef = useRef<HTMLFormElement>(null);
 
@@ -20,12 +21,9 @@ export default function Page() {
                     try {
                         let response = await sendEmail(formData);
                         formRef.current?.reset();
-                        if (!response.ok) {
-                            throw new Error('Failed to submit the data. Please try again.')
-                        }
+                        setSuccess("you sent me a message. nicely done!")
                     } catch (error) {
-                        // Capture the error message to display to the user
-                        setError(error.message)
+                        setError(error.message.toLowerCase() + ". how embarrassing.")
                         console.error(error)
                     }
                 }}
@@ -46,7 +44,8 @@ export default function Page() {
                 />
                 <SubmitButton />
             </form>
-            {error && <div style={{ color: 'red' }}>{error}</div>}
+            {error && <p className='py-2' style={{ color: '#e02518' }}>{error}</p>}
+            {success && <p className='py-2'>{success}</p>}
         </div>
     );
 }
