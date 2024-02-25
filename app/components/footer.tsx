@@ -5,10 +5,7 @@ const getCopyrightString = async () => {
     if (year > 2024) {
         string = `2024 - ${string}`;
     }
-    return `Copyright © ${string}
-        
-
-        Sam Ainsworth. All Rights Reserved.`;
+    return `© Sam Ainsworth ${string}. All Rights Reserved.`;
 };
 
 export async function Footer() {
