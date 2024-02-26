@@ -131,9 +131,9 @@ export default function Page() {
       </ul>
       <div className="container px-4 mx-auto">
         <div className="pt-24 pb-11 mx-auto max-w-4xl">
-          <a className="block md:mx-auto mb-5 max-w-max" href="https://www.linkedin.com/in/samainsworth/">
+          <a className="block md:mx-auto mb-5 max-w-max" aria-label="find me on linkedin" href="https://www.linkedin.com/in/samainsworth/">
             <div>
-              <img className="bg-left-bottom h-20 w-20 rounded-full ring-2 ring-black dark:ring-white" src="images/home/avatar.jpg" alt="" />
+              <amp-img className="bg-left-bottom h-20 w-20 rounded-full ring-2 ring-black dark:ring-white" src="images/home/avatar.jpg" alt="my face" />
             </div>
           </a>
         </div>
