@@ -42,7 +42,9 @@ export default function Page() {
         </p>
       </div>
       <p className="prose prose-neutral dark:prose-invert">
-        {`I'm a full stack developer, and full time tinkerer. I currently work at `}
+        {`I'm a full stack developer, and full time tinkerer. I currently `}
+        <Link href="/work">work</Link>
+        {` at `}
         <span className="not-prose">
           <Badge href="https://www.musicmagpie.co.uk">
             <img
@@ -100,7 +102,7 @@ export default function Page() {
       </p>
       <div className="prose prose-neutral dark:prose-invert">
         <p>
-          This is my new blog, where I'll share my thoughts and experiences on software development, C♯ and .NET, JavaScript and TypeScript, React and Next.js, and more.
+          This is my new <Link href="/blog">blog</Link>, where I'll share my thoughts and experiences on software development, C♯ and .NET, JavaScript and TypeScript, React and Next.js, and more.
           You’ll find content that reflects my current interests and challenges, as well as how I’m learning and improving as a developer and technical lead.
         </p>
       </div>
