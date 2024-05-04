@@ -50,7 +50,7 @@ export async function saveGuestbookEntry(formData: FormData) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'guestbook@ainsworth.dev',
+      from: 'guestbook@contact.ainsworth.dev',
       to: 's@ainsworth.dev',
       subject: 'New Guestbook Entry',
       html: `<p>Email: ${email}</p><p>Message: ${body}</p>`,
@@ -75,7 +75,7 @@ export async function sendEmail(formData: FormData) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'contact@ainsworth.dev',
+      from: 'form@contact.ainsworth.dev',
       to: 's@ainsworth.dev',
       subject: 'New Message',
       html: `<p>Email: ${em}</p><p>Message: ${body}</p>`,
