@@ -28,13 +28,13 @@ const work = [
     name: 'musicMagpie',
     dates: '2020 - Present',
     position: 'Senior Software Engineer',
-    description: 'During my time here, I evolved from a mid-level software engineer to a senior developer, contributing to the rebuilding of our website and then leading a team of front and back-end developers. To start I leveraged Azure, Terraform, ASP.NET, and more, and I helped orchestrate the integration of IdentityServer4 - driving measurable improvements in load times and customer conversion.\ As a senior developer, I fostered a collaborative environment, guiding a team of five through a Scrum methodology while continuously researching and implementing cutting-edge technologies to optimize workflows and elevate performance. With myself, the team has worked to overhaul customer facing applications in React and Typescript, whilst also moving to .Net Core RESTful APIs and NoSQL data warehousing.\ My role expanded not only technical expertise but also essential soft skills in leadership, communication, and problem-solving, contributing to the company\'s overall success and customer satisfaction.'
+    description: '<p>During my time here, I evolved from a mid-level software engineer to a senior developer, contributing to the rebuilding of our website and then leading a team of front and back-end developers. To start I leveraged Azure, Terraform, ASP.NET, and more, and I helped orchestrate the integration of IdentityServer4 - driving measurable improvements in load times and customer conversion.</p> <p>As a senior developer, I fostered a collaborative environment, guiding a team of five through a Scrum methodology while continuously researching and implementing cutting-edge technologies to optimize workflows and elevate performance. With myself, the team has worked to overhaul customer facing applications in React and Typescript, whilst also moving to .Net Core RESTful APIs and NoSQL data warehousing.</p> <p>My role expanded not only technical expertise but also essential soft skills in leadership, communication, and problem-solving, contributing to the company\'s overall success and customer satisfaction.</p>'
   },
   {
     name: 'Bott & Company Solicitors',
     dates: '2016 - 2020',
     position: 'C# Software Developer',
-    description: 'A consumer-focused firm of solicitors with a specialisation in leveraging technology for efficiency. This role involved replacing system components with best practices and MVC3 under C# - designing and maintaining ASP.Net Web Apps and APIs with MSSQL back-end, implementing SSRS reports and TSQL Stored Procedures, as well as maintaining and expanding legal-specific case management systems.\ With my suggestion the business adopted industry-standard tools like Git and Jira. I also led exploratory research projects into Azure, and contributed to maintaining data warehouse security to ISO-27001 standard.'
+    description: '<p>A consumer-focused firm of solicitors with a specialisation in leveraging technology for efficiency. This role involved replacing system components with best practices and MVC3 under C# - designing and maintaining ASP.Net Web Apps and APIs with MSSQL back-end, implementing SSRS reports and TSQL Stored Procedures, as well as maintaining and expanding legal-specific case management systems.</p> <p>With my suggestion the business adopted industry-standard tools like Git and Jira. I also led exploratory research projects into Azure, and contributed to maintaining data warehouse security to ISO-27001 standard.</p>'
   },
   {
     name: 'WHSmith',
@@ -59,9 +59,11 @@ function ExperienceCard({ name, dates, post, description }) {
           <p className="prose-sm text-neutral-900 dark:text-neutral-100">
             {dates}
           </p>
-          <p className="prose-sm mt-2 text-neutral-900 dark:text-neutral-100">
-            {description}
-          </p>
+          if(description !=== null){
+            <p className="prose-sm mt-2 text-neutral-900 dark:text-neutral-100">
+              {description}
+            </p>
+          }
         </div>
       </div>
     </div>
