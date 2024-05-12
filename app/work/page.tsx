@@ -56,25 +56,27 @@ function ExperienceCard({ name, dates, post, description }) {
           <p className="prose-medium text-neutral-900 dark:text-neutral-100">
             {name}
           </p>
-          <Paragraph str={post} />
+          <Paragraph key={null} str={post} />
           <p className="prose-sm text-neutral-900 dark:text-neutral-100">
             {dates}
           </p>
-          {work.map((description) => (
-            <Paragraph
-            str = {description}
-            />
-          ))}
+          {description && (
+            <ul>
+              {description.map((desc, index) => (
+                <Paragraph key={index} str={desc} />
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function Paragraph({ str }) {
+function Paragraph({ key, str }) {
   return (
-    <p className="prose-sm mt-2 text-neutral-900 dark:text-neutral-100">
-        {str}
+    <p key={key} className="prose-sm mt-2 text-neutral-900 dark:text-neutral-100">
+      {str}
     </p>
   );
 }
