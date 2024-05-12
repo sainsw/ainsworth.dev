@@ -1,5 +1,7 @@
 import { workerData } from "worker_threads";
 
+const parser = new DOMParser();
+
 const education = [
   {
     name: 'University of Liverpool, UK',
@@ -53,7 +55,11 @@ function ExperienceCard({ name, dates, post, description }) {
       blurb = blurb + Paragraph(element)
     });
   }
-  
+
+
+  // convert html string into DOM
+  const blurbOutput = parser.parseFromString(blurb, "text/html");
+
   return (
     <div className="group py-2">
       <div
@@ -67,7 +73,7 @@ function ExperienceCard({ name, dates, post, description }) {
           <p className="prose-sm text-neutral-900 dark:text-neutral-100">
             {dates}
           </p>
-          {blurb}
+          {blurbOutput}
         </div>
       </div>
     </div>
