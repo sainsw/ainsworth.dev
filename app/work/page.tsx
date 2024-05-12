@@ -47,11 +47,13 @@ const work = [
 ]
 
 function ExperienceCard({ name, dates, post, description }) {
-  var blurb = ''
-  description.forEach(element => {
-    blurb = blurb + Paragraph(element)
-  });
-
+  var blurb = '';
+    if(description != null){
+    description.forEach(element => {
+      blurb = blurb + Paragraph(element)
+    });
+  }
+  
   return (
     <div className="group py-2">
       <div
