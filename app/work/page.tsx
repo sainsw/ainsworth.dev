@@ -4,7 +4,7 @@ const education = [
   {
     name: 'University of Liverpool, UK',
     dates: '2013 - 2016',
-    qual: 'Computer Science BSc',
+    qual: 'Computer Science BSc - 2:1',
     image:
       'https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
   },
@@ -28,7 +28,7 @@ const work = [
     name: 'musicMagpie',
     dates: '2020 - Present',
     position: 'Senior Software Engineer',
-    description: 'During my time here, I evolved from a mid-level software engineer to a senior developer, contributing to the rebuilding of our website and then leading a team of front and back-end developers. To start I leveraged Azure, Terraform, ASP.NET, and more, and I helped orchestrate the integration of IdentityServer4 - driving measurable improvements in load times and customer conversion. \nAs a senior software engineer, I fostered a collaborative environment, guiding a team of five through a Scrum methodology while continuously researching and implementing cutting-edge technologies to optimize workflows and elevate performance. With myself, the team has worked to overhaul customer facing applications in React and Typescript, whilst also moving to .Net Core RESTful APIs and NoSQL data warehousing. \nMy role honed not only technical expertise but also essential soft skills in leadership, communication, and problem-solving, contributing to the company\'s overall success and customer satisfaction.'
+    description: 'During my time here, I evolved from a mid-level software engineer to a senior developer, contributing to the rebuilding of our website and then leading a team of front and back-end developers. To start I leveraged Azure, Terraform, ASP.NET, and more, and I helped orchestrate the integration of IdentityServer4 - driving measurable improvements in load times and customer conversion. \nAs a senior software engineer, I fostered a collaborative environment, guiding a team of five through a Scrum methodology while continuously researching and implementing cutting-edge technologies to optimize workflows and elevate performance. With myself, the team has worked to overhaul customer facing applications in React and Typescript, whilst also moving to .Net Core RESTful APIs and NoSQL data warehousing. \nMy role expanded not only technical expertise but also essential soft skills in leadership, communication, and problem-solving, contributing to the company\'s overall success and customer satisfaction.'
   },
   {
     name: 'Bott & Company Solicitors',
