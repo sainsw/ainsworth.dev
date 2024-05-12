@@ -34,7 +34,7 @@ const work = [
     name: 'Bott & Company Solicitors',
     dates: '2016 - 2020',
     position: 'C# Software Developer',
-    description: 'A consumer-focused firm of solicitors with a specialisation in leveraging technology for efficiency. This role involved replacing system components with best practices and MVC3 under C#, designing and maintaining ASP.Net Web Apps and APIs with MSSQL back-end, implementing SSRS reports and TSQL Stored Procedures, as well as maintaining and expanding legal-specific case management systems. \nUnder my suggestion the business adopted industry-standard tools like Git and Jira. I also led exploratory research projects into Azure, and contributed to maintaining data warehouse security to ISO-27001 standard.'
+    description: 'A consumer-focused firm of solicitors with a specialisation in leveraging technology for efficiency. This role involved replacing system components with best practices and MVC3 under C# - designing and maintaining ASP.Net Web Apps and APIs with MSSQL back-end, implementing SSRS reports and TSQL Stored Procedures, as well as maintaining and expanding legal-specific case management systems. \nUnder my suggestion the business adopted industry-standard tools like Git and Jira. I also led exploratory research projects into Azure, and contributed to maintaining data warehouse security to ISO-27001 standard.'
   },
   {
     name: 'WHSmith',
