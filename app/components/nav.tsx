@@ -5,7 +5,7 @@ const navItems = {
     name: 'home',
   },
   '/work': {
-    name: 'cv',
+    name: 'work',
   },
   '/blog': {
     name: 'blog',

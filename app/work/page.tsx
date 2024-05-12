@@ -27,12 +27,14 @@ const work = [
   {
     name: 'musicMagpie',
     dates: '2020 - Present',
-    position: 'Senior Software Engineer'
+    position: 'Senior Software Engineer',
+    description: 'During my time here, I evolved from a mid-level software engineer to a senior developer, contributing to the rebuilding of our website and then leading a team of front and back-end developers. To start I leveraged Azure, Terraform, ASP.NET, and more, and I helped orchestrate the integration of IdentityServer4, driving measurable improvements in load times and customer conversion. As a senior software engineer, I fostered a collaborative environment, guiding a team of five through a Scrum methodology while continuously researching and implementing cutting-edge technologies to optimize workflows and elevate performance. The team has worked to overhaul customer facing applications in React and Typescript, whilst also moving to .Net Core RESTful APIs and NoSQL data warehousing. My role honed not only technical expertise but also essential soft skills in leadership, communication, and problem-solving, contributing to the company\'s overall success and customer satisfaction.'
   },
   {
     name: 'Bott & Company Solicitors',
     dates: '2016 - 2020',
-    position: 'C# Software Developer'
+    position: 'C# Software Developer',
+    description: 'A consumer-focused firm of solicitors with a specialization in leveraging technology for efficiency. My work involved replacing system components with best practices and MVC3 under C#, designing and maintaining ASP.Net Web Apps and APIs with MSSQL back-end, implementing SSRS reports and TSQL Stored Procedures, as well as maintaining and expanding legal-specific case management systems. I advocated for the adoption of industry-standard tools like Git and Jira, led exploratory research projects into Azure, and contributed to maintaining data warehouse security to ISO-27001 standard.'
   },
   {
     name: 'WHSmith',
@@ -41,7 +43,7 @@ const work = [
   }
 ]
 
-function ExperienceCard({ name, dates, post }) {
+function ExperienceCard({ name, dates, post, description }) {
   return (
     <div className="group py-2">
       <div
@@ -56,6 +58,9 @@ function ExperienceCard({ name, dates, post }) {
           </p>
           <p className="prose-sm text-neutral-900 dark:text-neutral-100">
             {dates}
+          </p>
+          <p className="prose-sm text-neutral-900 dark:text-neutral-100">
+            {description}
           </p>
         </div>
       </div>
@@ -74,6 +79,7 @@ export default function Page() {
           name={job.name}
           dates={job.dates}
           post={job.position}
+          description={job.description}
           />
         ))}
       </ul>
@@ -86,6 +92,7 @@ export default function Page() {
         name={school.name}
         dates={school.dates}
         post={school.qual}
+        description={null}
       />
       ))}
     </ul>
