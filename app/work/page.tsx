@@ -59,6 +59,7 @@ function ExperienceCard({ name, dates, post, description }) {
           <p className="prose-sm text-neutral-900 dark:text-neutral-100">
             {dates}
           </p>
+          <br />
           <p className="prose-sm text-neutral-900 dark:text-neutral-100">
             {description}
           </p>
