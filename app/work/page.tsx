@@ -126,33 +126,29 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
           </p>
         </div>
         <div className="flex flex-col">
-        {url ? (
-            <a href={url} target="_blank" rel="noopener noreferrer" className="flex flex-col">
-              {isLoading ? (
-                <div className="h-12 w-12 bg-neutral-200 dark:bg-neutral-800 animate-pulse self-end"></div>
-              ) : (
-                <img
-                  ref={imageRef}
-                  src={currentImage}
-                  alt={`${name} logo`}
-                  className="h-12 w-12 object-contain self-end"
-                  onLoad={handleImageLoad}
-                />
-              )}
-            </a>
+          {isLoading ? (
+            <div className="h-12 w-12 bg-neutral-200 dark:bg-neutral-800 animate-pulse self-end"></div>
           ) : (
-            <React.Fragment>
-              {isLoading ? (
-                <div className="h-12 w-12 bg-neutral-200 dark:bg-neutral-800 animate-pulse self-end"></div>
-              ) : (
-                <img
-                  ref={imageRef}
-                  src={currentImage}
-                  alt={`${name} logo`}
-                  className="h-12 w-12 object-contain self-end"
-                  onLoad={handleImageLoad}
-                />
-              )}
+              <React.Fragment>
+                {url ? (
+                  <a href={url} target="_blank" rel="noopener noreferrer" className="h-12 w-12 self-end">
+                    <img
+                      ref={imageRef}
+                      src={currentImage}
+                      alt={`${name} logo`}
+                      className="h-12 w-12 object-contain self-end"
+                      onLoad={handleImageLoad}
+                    />
+                  </a>
+                ) : (
+                  <img
+                    ref={imageRef}
+                    src={currentImage}
+                    alt={`${name} logo`}
+                    className="h-12 w-12 object-contain self-end"
+                    onLoad={handleImageLoad}
+                  />
+                )}
             </React.Fragment>
           )}
         </div>
