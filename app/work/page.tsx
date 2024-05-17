@@ -61,21 +61,39 @@ const work = [
   }
 ]
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function ExperienceCard({ name, dates, post, description, imageLight, imageDark, url }) {
-  const [currentImage, setCurrentImage] = useState(imageLight);
+  const [currentImage, setCurrentImage] = useState('');
+  const imageRef = useRef(null); // Declare imageRef here
 
   useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+          setCurrentImage(mediaQuery.matches ? imageDark : imageLight);
+          observer.unobserve(entry.target);
+        }
+      });
+    });
+  
+    if (imageRef.current) {
+      observer.observe(imageRef.current);
+    }
+  
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = () => {
       setCurrentImage(mediaQuery.matches ? imageDark : imageLight);
     };
-
+  
     handleChange(); // Set initial image based on current preference
     mediaQuery.addEventListener('change', handleChange);
-
+  
     return () => {
+      if (imageRef.current) {
+        observer.unobserve(imageRef.current);
+      }
       mediaQuery.removeEventListener('change', handleChange);
     };
   }, [imageLight, imageDark]);
