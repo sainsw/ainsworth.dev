@@ -113,7 +113,6 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
     };
 
   return (
-    <li className="group py-2">
       <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4">
         <div className="flex flex-col">
           <p className="prose-medium text-neutral-900 dark:text-neutral-100">
@@ -159,15 +158,12 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
         </div>
         {description && (
           <div className="col-span-2">
-            <ul className="mt-2">
               {description.map((desc, index) => (
                 <Paragraph key={index} str={desc} />
               ))}
-            </ul>
           </div>
         )}
       </div>
-    </li>
   );
 }
 
@@ -187,6 +183,7 @@ export default function Page() {
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">work 👨‍💻</h1>
         <ul>
           {work.map((job, index) => (
+            <li key={index} className="group py-2">
             <ExperienceCard
               key={index}
               name={job.name}
@@ -197,6 +194,7 @@ export default function Page() {
               imageDark={job.imageDark}
               url={job.url}
             />
+            </li>
           ))}
         </ul>
       </div>
@@ -204,6 +202,7 @@ export default function Page() {
         <h1 className="font-medium text-2xl mb-8 mt-12 tracking-tighter">education 👨‍🎓</h1>
         <ul>
           {education.map((school, index) => (
+            <li key={index} className="group py-2">
             <ExperienceCard
               key={index}
               name={school.name}
@@ -214,6 +213,7 @@ export default function Page() {
               imageDark={school.imageDark}
               url={school.url}
             />
+            </li>
           ))}
         </ul>
       </div>
