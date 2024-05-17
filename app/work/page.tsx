@@ -1,25 +1,31 @@
-import { workerData } from "worker_threads";
+"use client";
 
 const education = [
   {
+    index: 1,
     name: 'University of Liverpool, UK',
     dates: '2013 - 2016',
     qual: 'Computer Science BSc - 2:1',
-    image:
-      'https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    imageLight: "/images/logos/uol_colour.svg",
+    imageDark: "/images/logos/uol_white.svg",
+    url: "https://www.liverpool.ac.uk/"
   },
   {
+    index: 2,
     name: 'Ashton Sixth Form College, UK',
     dates: '2011 - 2013',
     qual: 'Computing, Physics, Maths A-Levels',
-    image:
-      'https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    imageLight: "/images/logos/asfc_black.png",
+    imageDark: "/images/logos/asfc_white.png",
+    url: "https://www.asfc.ac.uk/"
   },
   {
+    index: 3,
     name: 'West Hill High School, UK',
     dates: '2006 - 2011',
-    image:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    imageLight: "/images/logos/wh.png",
+    imageDark: "/images/logos/wh.png",
+    url: "https://www.westhillschool.co.uk/"
   },
 ]
 
@@ -29,29 +35,54 @@ const work = [
     dates: '2020 - Present',
     position: 'Senior Software Engineer',
     description: ['During my time here, I evolved from a mid-level software engineer to a senior developer, contributing to the rebuilding of our website and then leading a team of front and back-end developers. To start I leveraged Azure, Terraform, ASP.NET, and more, and I helped orchestrate the integration of IdentityServer4 - driving measurable improvements in load times and customer conversion.',
-                  'As a senior developer, I fostered a collaborative environment, guiding a team of five through a Scrum methodology while continuously researching and implementing cutting-edge technologies to optimize workflows and elevate performance. With myself, the team has worked to overhaul customer facing applications in React and Typescript, whilst also moving to .Net Core RESTful APIs and NoSQL data warehousing.',
-                  'My role expanded not only technical expertise but also essential soft skills in leadership, communication, and problem-solving, contributing to the company\'s overall success and customer satisfaction.']
+                  'As a senior developer, I fostered a collaborative environment, guiding a team of five through a Scrum methodology while continuously researching and implementing cutting-edge technologies to optimize workflows and elevate performance. With myself, the team has worked to overhaul multi-national customer facing applications in React and Typescript, whilst also moving to .Net Core RESTful APIs and NoSQL data warehousing.',
+                  'My role expanded not only technical expertise but also essential soft skills in leadership, communication, and problem-solving, contributing to the company\'s overall success and customer satisfaction.'],
+    imageLight: "/images/logos/mm_colour.svg",
+    imageDark: "/images/logos/mm_white.svg",
+    url: "https://www.musicmagpie.co.uk/"
   },
   {
     name: 'Bott & Company Solicitors',
     dates: '2016 - 2020',
     position: 'C# Software Developer',
     description: ['A consumer-focused firm of solicitors with a specialisation in leveraging technology for efficiency. This role involved replacing system components with best practices and MVC3 under C# - designing and maintaining ASP.Net Web Apps and APIs with MSSQL back-end, implementing SSRS reports and TSQL Stored Procedures, as well as maintaining and expanding legal-specific case management systems.',
-                  'With my suggestion the business adopted industry-standard tools like Git and Jira. I also led exploratory research projects into Azure, and contributed to maintaining data warehouse security to ISO-27001 standard.']
+                  'With my suggestion the business adopted industry-standard tools like Git and Jira. I also led exploratory research projects into Azure, and contributed to maintaining data warehouse security to ISO-27001 standard.'],
+    imageLight: "/images/logos/bott_blue.svg",
+    imageDark: "/images/logos/bott_white.svg",
+    url: "https://www.bottonline.co.uk/"
   },
   {
     name: 'WHSmith',
     dates: '2012 - 2016',
-    position: 'Sales Assistant'
+    position: 'Sales Assistant',
+    imageLight: "/images/logos/whs.png",
+    imageDark: "/images/logos/whs.png",
+    url: "https://www.whsmith.co.uk/"
   }
 ]
 
-function ExperienceCard({ name, dates, post, description }) {
+import { useEffect, useState } from 'react';
+
+function ExperienceCard({ name, dates, post, description, imageLight, imageDark, url }) {
+  const [currentImage, setCurrentImage] = useState(imageLight);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = () => {
+      setCurrentImage(mediaQuery.matches ? imageDark : imageLight);
+    };
+
+    handleChange(); // Set initial image based on current preference
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, [imageLight, imageDark]);
+
   return (
-    <div className="group py-2">
-      <div
-        className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded flex items-center justify-between px-3 py-4 w-full"
-      >
+    <li className="group py-2">
+      <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4">
         <div className="flex flex-col">
           <p className="prose-medium text-neutral-900 dark:text-neutral-100">
             {name}
@@ -62,18 +93,38 @@ function ExperienceCard({ name, dates, post, description }) {
           <p className="prose-sm text-neutral-900 dark:text-neutral-100">
             {dates}
           </p>
-          {description && (
-            <ul>
+        </div>
+        <div className="flex flex-col">
+          {url ? (
+            <a href={url} target="_blank" rel="noopener noreferrer" className="flex flex-col">
+              <img
+                src={currentImage}
+                alt={`${name} logo`}
+                className="h-12 w-12 object-contain self-end"
+              />
+            </a>
+          ) : (
+            <img
+              src={currentImage}
+              alt={`${name} logo`}
+              className="h-12 w-12 object-contain self-end"
+            />
+          )}
+        </div>
+        {description && (
+          <div className="col-span-2">
+            <ul className="mt-2">
               {description.map((desc, index) => (
                 <Paragraph key={index} str={desc} />
               ))}
             </ul>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-    </div>
+    </li>
   );
 }
+
 
 function Paragraph({ key, str }) {
   return (
@@ -87,31 +138,40 @@ export default function Page() {
   return (
     <section>
       <div>
-      <h1 className="font-medium text-2xl mb-8 tracking-tighter">work 👨‍💻</h1>
-      <ul>
-        {work.map((job) => (
-          <ExperienceCard
-          name={job.name}
-          dates={job.dates}
-          post={job.position}
-          description={job.description}
-          />
-        ))}
-      </ul>
+        <h1 className="font-medium text-2xl mb-8 tracking-tighter">work 👨‍💻</h1>
+        <ul>
+          {work.map((job, index) => (
+            <ExperienceCard
+              key={index}
+              name={job.name}
+              dates={job.dates}
+              post={job.position}
+              description={job.description}
+              imageLight={job.imageLight}
+              imageDark={job.imageDark}
+              url={job.url}
+            />
+          ))}
+        </ul>
       </div>
       <div>
-      <h1 className="font-medium text-2xl mb-8 mt-12 tracking-tighter">education 👨‍🎓</h1>
-      <ul>
-      {education.map((school) => (
-        <ExperienceCard
-        name={school.name}
-        dates={school.dates}
-        post={school.qual}
-        description={null}
-      />
-      ))}
-    </ul>
+        <h1 className="font-medium text-2xl mb-8 mt-12 tracking-tighter">education 👨‍🎓</h1>
+        <ul>
+          {education.map((school, index) => (
+            <ExperienceCard
+              key={index}
+              name={school.name}
+              dates={school.dates}
+              post={school.qual}
+              description={null}
+              imageLight={school.imageLight}
+              imageDark={school.imageDark}
+              url={school.url}
+            />
+          ))}
+        </ul>
       </div>
     </section>
   );
 }
+
