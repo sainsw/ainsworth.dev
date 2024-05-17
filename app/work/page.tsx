@@ -61,10 +61,12 @@ const work = [
   }
 ]
 
+import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 function ExperienceCard({ name, dates, post, description, imageLight, imageDark, url }) {
   const [currentImage, setCurrentImage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const imageRef = useRef(null); // Declare imageRef here
 
   useEffect(() => {
@@ -98,6 +100,18 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
     };
   }, [imageLight, imageDark]);
 
+  useEffect(() => {
+      const timeoutId = setTimeout(() => {
+        setIsLoading(false);
+      }, 0); // 5 seconds timeout
+
+      return () => clearTimeout(timeoutId);
+    }, []);
+
+    const handleImageLoad = () => {
+      setIsLoading(false);
+    };
+
   return (
     <li className="group py-2">
       <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4">
@@ -113,20 +127,34 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
           </p>
         </div>
         <div className="flex flex-col">
-          {url ? (
+        {url ? (
             <a href={url} target="_blank" rel="noopener noreferrer" className="flex flex-col">
-              <img
-                src={currentImage}
-                alt={`${name} logo`}
-                className="h-12 w-12 object-contain self-end"
-              />
+              {isLoading ? (
+                <div className="h-12 w-12 bg-neutral-200 dark:bg-neutral-800 animate-pulse self-end"></div>
+              ) : (
+                <img
+                  ref={imageRef}
+                  src={currentImage}
+                  alt={`${name} logo`}
+                  className="h-12 w-12 object-contain self-end"
+                  onLoad={handleImageLoad}
+                />
+              )}
             </a>
           ) : (
-            <img
-              src={currentImage}
-              alt={`${name} logo`}
-              className="h-12 w-12 object-contain self-end"
-            />
+            <React.Fragment>
+              {isLoading ? (
+                <div className="h-12 w-12 bg-neutral-200 dark:bg-neutral-800 animate-pulse self-end"></div>
+              ) : (
+                <img
+                  ref={imageRef}
+                  src={currentImage}
+                  alt={`${name} logo`}
+                  className="h-12 w-12 object-contain self-end"
+                  onLoad={handleImageLoad}
+                />
+              )}
+            </React.Fragment>
           )}
         </div>
         {description && (
