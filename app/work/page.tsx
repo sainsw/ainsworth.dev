@@ -1,4 +1,6 @@
 "use client";
+import Link from 'next/link';
+
 
 const education = [
   {
@@ -216,9 +218,13 @@ export default function Page() {
         </ul>
       </div>
       <div>
-      <p className="prose-sm mt-2 text-neutral-900 dark:text-neutral-100">
-        <a href="/files/cv.pdf">PDF version.</a>
-      </p>
+        <Link
+          key="/files/cv.pdf"
+          href="/files/cv.pdf"
+          className="transition-all hover:text-neutral-800 dark:hover:text-neutral-200 flex align-middle relative py-1 px-2"
+        >
+          Download PDF version
+        </Link>
       </div>
     </section>
   );
