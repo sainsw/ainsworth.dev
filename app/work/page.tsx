@@ -6,6 +6,8 @@ const education = [
     name: 'University of Liverpool, UK',
     dates: '2013 - 2016',
     qual: 'Computer Science BSc - 2:1',
+    description: ['For my undergraduate dissertation, ’Accelerometer Games for the iOS Platform’, I created a physics–based game for iPhone and iPad. This was a great opportunity to learn Swift and SpriteKit, along with the App Store submission process. ',
+      'The project was well–received, with the University choosing to use my game as a learning tool and as an example of an exceptional final project during open days.'],
     imageLight: "/images/logos/uol_colour.svg",
     imageDark: "/images/logos/uol_white.svg",
     url: "https://www.liverpool.ac.uk/"
@@ -34,9 +36,9 @@ const work = [
     name: 'musicMagpie',
     dates: '2020 - Present',
     position: 'Senior Software Engineer',
-    description: ['During my time here, I evolved from a mid-level software engineer to a senior developer, contributing to the rebuilding of our website and then leading a team of front and back-end developers. To start I leveraged Azure, Terraform, ASP.NET, and more, and I helped orchestrate the integration of IdentityServer4 - driving measurable improvements in load times and customer conversion.',
-                  'As a senior developer, I fostered a collaborative environment, guiding a team of five through a Scrum methodology while continuously researching and implementing cutting-edge technologies to optimize workflows and elevate performance. With myself, the team has worked to overhaul multi-national customer facing applications in React and Typescript, whilst also moving to .Net Core RESTful APIs and NoSQL data warehousing.',
-                  'My role expanded not only technical expertise but also essential soft skills in leadership, communication, and problem-solving, contributing to the company\'s overall success and customer satisfaction.'],
+    description: ['In my current role, I have evolved from a mid-level software engineer to a senior developer. I went from helping to rebuild and improve the company\'s website, to leading a team of front and back-end developers. I leveraged Azure, Terraform, ASP.NET, and more, and helped to orchestrate the integration of IdentityServer4, driving measurable improvements in load times and customer conversion.',
+                  'As a senior developer, I guided a team of five through Scrum methodology while continuously researching and implementing cutting-edge technologies to optimise workflows and elevate performance. I worked hard to foster a collaborative environment in which everyone could demonstrate their strengths. Through this, my team successfully overhauled multi-national customer facing applications in React and Typescript, and moved to .Net Core RESTful APIs, Service Bus architecture and NoSQL data warehousing.',
+                  'This role expanded not only my technical expertise but also essential leadership, communication, and problem-solving skills, driving the company\'s overall success and customer satisfaction.'],
     imageLight: "/images/logos/mm_colour.svg",
     imageDark: "/images/logos/mm_white.svg",
     url: "https://www.musicmagpie.co.uk/"
@@ -45,8 +47,8 @@ const work = [
     name: 'Bott & Company Solicitors',
     dates: '2016 - 2020',
     position: 'C# Software Developer',
-    description: ['A consumer-focused firm of solicitors with a specialisation in leveraging technology for efficiency. This role involved replacing system components with best practices and MVC3 under C# - designing and maintaining ASP.Net Web Apps and APIs with MSSQL back-end, implementing SSRS reports and TSQL Stored Procedures, as well as maintaining and expanding legal-specific case management systems.',
-                  'With my suggestion the business adopted industry-standard tools like Git and Jira. I also led exploratory research projects into Azure, and contributed to maintaining data warehouse security to ISO-27001 standard.'],
+    description: ['At this consumer-focused firm of solicitors, efficient, user-friendly software played a crucial role in day-to-day operations. My role was to replace system components with best practices and MVC3 under C#, to design and maintain ASP.Net Web Apps and APIs with MSSQL back-end, to implement SSRS reports and TSQL Stored Procedures, and to oversee and expand legal-specific case management systems.',
+                  'Through my guidance and expertise, the business adopted industry-standard tools including Git and Jira. I also led exploratory research projects into Azure, and contributed to upgrading data warehouse security to the ISO-27001 standard.'],
     imageLight: "/images/logos/bott_blue.svg",
     imageDark: "/images/logos/bott_white.svg",
     url: "https://www.bottonline.co.uk/"
@@ -204,7 +206,7 @@ export default function Page() {
               name={school.name}
               dates={school.dates}
               post={school.qual}
-              description={null}
+              description={school.description}
               imageLight={school.imageLight}
               imageDark={school.imageDark}
               url={school.url}
@@ -212,6 +214,11 @@ export default function Page() {
             </li>
           ))}
         </ul>
+      </div>
+      <div>
+      <p className="prose-sm mt-2 text-neutral-900 dark:text-neutral-100">
+        <a href="/files/cv.pdf">PDF version.</a>
+      </p>
       </div>
     </section>
   );
