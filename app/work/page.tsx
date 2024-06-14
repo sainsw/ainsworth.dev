@@ -217,15 +217,19 @@ export default function Page() {
           ))}
         </ul>
       </div>
-      <div>
-        <Link
-          key="/files/cv.pdf"
-          href="/files/cv.pdf"
-          className="transition-all hover:text-neutral-800 dark:hover:text-neutral-200 flex align-middle relative py-1 px-2 mt-8"
-        >
-          Open PDF version
-        </Link>
-      </div>
+      <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-neutral-600 dark:text-neutral-300">
+        <li>
+          <a
+            className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-all"
+            rel="noopener noreferrer"
+            target="_blank"
+            href="/files/cv.pdf"
+          >
+            <ArrowIcon />
+            <p className="h-7 ml-2">Open PDF Version</p>
+          </a>
+        </li>
+      </ul>
     </section>
   );
 }
