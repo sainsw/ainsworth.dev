@@ -1,5 +1,6 @@
 "use client";
 import Link from 'next/link';
+import { ArrowIcon } from '../page';
 
 
 const education = [
