@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ViewCounter from 'app/blog/view-counter';
 import { PreloadResources } from 'app/preload';
+import { ArrowIcon } from './components/arrow-icon';
 
 function Badge(props) {
   return (
