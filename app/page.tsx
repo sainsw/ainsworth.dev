@@ -15,7 +15,7 @@ function Badge(props) {
   );
 }
 
-function ArrowIcon() {
+export function ArrowIcon() {
   return (
     <svg
       width="12"
