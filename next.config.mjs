@@ -5,10 +5,6 @@ export const sql = postgres(process.env.DATABASE_URL, {
 });
 
 const nextConfig = {
-  experimental: {
-    ppr: true,
-    useLightningcss: true,
-  },
   async redirects() {
     if (!process.env.DATABASE_URL) {
       return [];

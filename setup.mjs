@@ -35,15 +35,22 @@ const workPage = `export default function Page() {
 `;
 
 const deleteFolderRecursive = async (path) => {
-  const stat = await fs.stat(path);
-  if (stat.isDirectory()) {
-    const files = await fs.readdir(path);
-    await Promise.all(
-      files.map((file) => deleteFolderRecursive(`${path}/${file}`))
-    );
-    await fs.rmdir(path);
-  } else {
-    await fs.unlink(path);
+  try {
+    const stat = await fs.stat(path);
+    if (stat.isDirectory()) {
+      const files = await fs.readdir(path);
+      await Promise.all(
+        files.map((file) => deleteFolderRecursive(`${path}/${file}`))
+      );
+      await fs.rmdir(path);
+    } else {
+      await fs.unlink(path);
+    }
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+    // If file/directory doesn't exist, ignore the error
   }
 };
 
