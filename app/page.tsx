@@ -28,22 +28,26 @@ export default function Page() {
         </p>
       </div>
       <p className="prose prose-neutral dark:prose-invert">
-        {`I'm a full stack developer, and full time tinkerer. I currently `}
+        {`I'm a Senior Full Stack Engineer with 8+ years of experience in full-stack development and cloud solutions. I currently `}
         <Link href="/work">work</Link>
         {` at `}
         <span className="not-prose">
-          <Badge href="https://www.musicmagpie.co.uk">
-            <img
-              alt="Music Magpie logomark"
-              src="/MMfavicon.ico"
-              className="!mr-1"
+          <Badge href="https://www.ibm.com">
+            <svg
               width="14"
               height="14"
-            />
-            musicmagpie
+              role="img"
+              aria-label="IBM logo"
+              className="!mr-1"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M0 9.036h4.15v1.428H0v-1.428zm0 2.857h4.15v1.429H0v-1.43zm5.679-2.857h2.143v1.428H5.679v-1.428zm0 2.857h2.143v1.429H5.679v-1.43zm3.571-2.857h2.143v1.428H9.25v-1.428zm0 2.857h2.143v1.429H9.25v-1.43zm3.572-2.857h4.142v1.428h-4.142v-1.428zm0 2.857h4.142v1.429h-4.142v-1.43zm5.678-2.857H24v1.428h-1.5v-1.428zm0 2.857H24v1.429h-1.5v-1.43z"/>
+            </svg>
+            IBM
           </Badge>
         </span>
-        {`, where I lead a team of talented developers who build amazing web applications with `}
+        {` in Manchester, where I focus on enterprise software development and cloud architecture with `}
         <span className="not-prose">
           <Badge href="https://react.dev">
             <svg
@@ -88,8 +92,9 @@ export default function Page() {
       </p>
       <div className="prose prose-neutral dark:prose-invert">
         <p>
-          This is my new <Link href="/blog">blog</Link>, where I'll share my thoughts and experiences on software development, C♯ and .NET, JavaScript and TypeScript, React and Next.js, and more.
-          You’ll find content that reflects my current interests and challenges, as well as how I’m learning and improving as a developer and technical lead.
+          I'm passionate about enterprise design thinking and building scalable, reliable software solutions. 
+          On my <Link href="/blog">blog</Link>, I share insights about software development, cloud technologies, .NET, Azure, and the latest in enterprise software architecture.
+          You'll find content that reflects my experience in leading development teams and implementing modern software practices.
         </p>
       </div>
       <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-neutral-600 dark:text-neutral-300">
