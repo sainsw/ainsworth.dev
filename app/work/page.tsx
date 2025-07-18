@@ -82,6 +82,7 @@ import { useEffect, useRef, useState } from 'react';
 
 function ExperienceCard({ name, dates, post, description, imageLight, imageDark, url }) {
   const [currentImage, setCurrentImage] = useState('');
+  const [currentImageWebP, setCurrentImageWebP] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const imageRef = useRef(null); // Declare imageRef here
 
@@ -90,7 +91,10 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-          setCurrentImage(mediaQuery.matches ? imageDark : imageLight);
+          const selectedImage = mediaQuery.matches ? imageDark : imageLight;
+          setCurrentImage(selectedImage);
+          // Set WebP version (replace .png or .svg with .webp)
+          setCurrentImageWebP(selectedImage.replace(/\.(png|svg)$/, '.webp'));
           observer.unobserve(entry.target);
         }
       });
@@ -102,7 +106,9 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
   
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = () => {
-      setCurrentImage(mediaQuery.matches ? imageDark : imageLight);
+      const selectedImage = mediaQuery.matches ? imageDark : imageLight;
+      setCurrentImage(selectedImage);
+      setCurrentImageWebP(selectedImage.replace(/\.(png|svg)$/, '.webp'));
     };
   
     handleChange(); // Set initial image based on current preference
@@ -154,24 +160,34 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
                 {currentImage ? (
                   url ? (
                     <a href={url} target="_blank" rel="noopener noreferrer" className="h-12 w-12 self-end">
+                      <picture>
+                        <source srcSet={currentImageWebP} type="image/webp" />
+                        <img
+                          ref={imageRef}
+                          src={currentImage}
+                          alt={`${name} logo`}
+                          className="h-12 w-12 object-contain self-end"
+                          width={48}
+                          height={48}
+                          onLoad={handleImageLoad}
+                          onError={handleImageError}
+                        />
+                      </picture>
+                    </a>
+                  ) : (
+                    <picture>
+                      <source srcSet={currentImageWebP} type="image/webp" />
                       <img
                         ref={imageRef}
                         src={currentImage}
                         alt={`${name} logo`}
                         className="h-12 w-12 object-contain self-end"
+                        width={48}
+                        height={48}
                         onLoad={handleImageLoad}
                         onError={handleImageError}
                       />
-                    </a>
-                  ) : (
-                    <img
-                      ref={imageRef}
-                      src={currentImage}
-                      alt={`${name} logo`}
-                      className="h-12 w-12 object-contain self-end"
-                      onLoad={handleImageLoad}
-                      onError={handleImageError}
-                    />
+                    </picture>
                   )
                 ) : (
                   // Fallback when image fails to load - show company initials
