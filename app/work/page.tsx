@@ -116,6 +116,11 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
     };
   }, [imageLight, imageDark]);
 
+  const handleImageError = () => {
+    // Fallback to a simple colored div with company initials when image fails to load
+    setCurrentImage('');
+  };
+
   useEffect(() => {
       const timeoutId = setTimeout(() => {
         setIsLoading(false);
@@ -146,24 +151,35 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
             <div className="h-12 w-12 bg-neutral-200 dark:bg-neutral-800 animate-pulse self-end"></div>
           ) : (
               <React.Fragment>
-                {url ? (
-                  <a href={url} target="_blank" rel="noopener noreferrer" className="h-12 w-12 self-end">
+                {currentImage ? (
+                  url ? (
+                    <a href={url} target="_blank" rel="noopener noreferrer" className="h-12 w-12 self-end">
+                      <img
+                        ref={imageRef}
+                        src={currentImage}
+                        alt={`${name} logo`}
+                        className="h-12 w-12 object-contain self-end"
+                        onLoad={handleImageLoad}
+                        onError={handleImageError}
+                      />
+                    </a>
+                  ) : (
                     <img
                       ref={imageRef}
                       src={currentImage}
                       alt={`${name} logo`}
                       className="h-12 w-12 object-contain self-end"
                       onLoad={handleImageLoad}
+                      onError={handleImageError}
                     />
-                  </a>
+                  )
                 ) : (
-                  <img
-                    ref={imageRef}
-                    src={currentImage}
-                    alt={`${name} logo`}
-                    className="h-12 w-12 object-contain self-end"
-                    onLoad={handleImageLoad}
-                  />
+                  // Fallback when image fails to load - show company initials
+                  <div className="h-12 w-12 bg-neutral-300 dark:bg-neutral-600 rounded-lg flex items-center justify-center self-end">
+                    <span className="text-neutral-700 dark:text-neutral-300 text-xs font-bold">
+                      {name.split(' ').map(word => word[0]).join('').slice(0, 3)}
+                    </span>
+                  </div>
                 )}
             </React.Fragment>
           )}
