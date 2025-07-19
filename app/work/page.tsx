@@ -93,8 +93,12 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
           const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
           const selectedImage = mediaQuery.matches ? imageDark : imageLight;
           setCurrentImage(selectedImage);
-          // Set WebP version (replace .png or .svg with .webp)
-          setCurrentImageWebP(selectedImage.replace(/\.(png|svg)$/, '.webp'));
+          // Set WebP version only for PNG files (SVG files don't have WebP versions)
+          if (selectedImage.endsWith('.png')) {
+            setCurrentImageWebP(selectedImage.replace('.png', '.webp'));
+          } else {
+            setCurrentImageWebP(''); // No WebP version for SVG files
+          }
           observer.unobserve(entry.target);
         }
       });
@@ -108,7 +112,12 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
     const handleChange = () => {
       const selectedImage = mediaQuery.matches ? imageDark : imageLight;
       setCurrentImage(selectedImage);
-      setCurrentImageWebP(selectedImage.replace(/\.(png|svg)$/, '.webp'));
+      // Set WebP version only for PNG files (SVG files don't have WebP versions)
+      if (selectedImage.endsWith('.png')) {
+        setCurrentImageWebP(selectedImage.replace('.png', '.webp'));
+      } else {
+        setCurrentImageWebP(''); // No WebP version for SVG files
+      }
     };
   
     handleChange(); // Set initial image based on current preference
@@ -161,7 +170,7 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
                   url ? (
                     <a href={url} target="_blank" rel="noopener noreferrer" className="h-12 w-12 self-end">
                       <picture>
-                        <source srcSet={currentImageWebP} type="image/webp" />
+                        {currentImageWebP && <source srcSet={currentImageWebP} type="image/webp" />}
                         <img
                           ref={imageRef}
                           src={currentImage}
@@ -176,7 +185,7 @@ function ExperienceCard({ name, dates, post, description, imageLight, imageDark,
                     </a>
                   ) : (
                     <picture>
-                      <source srcSet={currentImageWebP} type="image/webp" />
+                      {currentImageWebP && <source srcSet={currentImageWebP} type="image/webp" />}
                       <img
                         ref={imageRef}
                         src={currentImage}
