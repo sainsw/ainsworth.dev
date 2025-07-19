@@ -272,14 +272,22 @@
       <path d="M78.1,176.9h38.4c18.2,0,29.5-7.6,29.5-20.9c0-12.5-11.3-20.2-29.5-19.9H78.1V176.9z" fill="currentColor"/>
     </symbol>
     
-    <!-- University of Liverpool logo (authentic shield from website) -->
-    <symbol id="uol" viewBox="0 0 100 144.7" fill="currentColor">
-      <!-- Main shield shape -->
-      <path d="M94.4 2.9S76.6 0 48.2 0 1.9 2.9 1.9 2.9c-4.1 18-6.3 111 46.3 141.8C101 113.7 98.4 20 94.4 3Z"/>
-      <!-- Internal shield pattern with masked details -->
-      <path d="M73.8 76.4l-1.5-.8.6 1.6-1.2-.7.3.8c-1.9 1.9-10.5-9.5-23.6 2.7-1.3 1.2-1.4 1.6-3 0-10.5-10.7-22.7-2-22.7-2l-.7-.5.4-1-1 .7.7-1.9-1.7.9.6-1.4-1 .4 7-17.4c9.5-8.4 20.5-.4 20.5-.4s11.8-8.4 20 .3l6.7 17.5-1-.4.7 1.6Z" fill="none" stroke="currentColor" stroke-width="0.5"/>
-      <!-- Decorative elements -->
-      <path d="M19 39.6c-14-7.1 6.5-21.5-6-19.4-.1-.4.2-1.8-.6-1.5.5 1 0 2.7-.4 3.8 1.2.6.1 2-.2 2.8 0 0-.3-.6-.5-.6-.5 1-1.2.6-2 1 .1-.6-.6-1 .1-2-.4 0-.7-.3-.8-.4 1.3-1.1.8-2 2.8-1.1l.5-2.2c-.4-.1-.6-.4-.7-1 0 0-2.6-.7-3.5.8 0 0-2.3-3.8 6.6-3 2.2-2.1 9.1.7 10.3-1.8 0 0-2 3.7-3.7 5-1.7 1.3-5.6 7.9-.9 8.4" fill="none" stroke="currentColor" stroke-width="0.3"/>
+    <!-- University of Liverpool logo (authentic shield with internal details) -->
+    <symbol id="uol" viewBox="0 0 96.3 144.7">
+      <defs>
+        <mask id="uol-cutouts">
+          <!-- White background allows shield to show -->
+          <rect width="96.3" height="144.7" fill="white"/>
+          <!-- Black areas become transparent cutouts -->
+          <path d="M73.8 76.4l-1.5-.8.6 1.6-1.2-.7.3.8c-1.9 1.9-10.5-9.5-23.6 2.7-1.3 1.2-1.4 1.6-3 0-10.5-10.7-22.7-2-22.7-2l-.7-.5.4-1-1 .7.7-1.9-1.7.9.6-1.4-1 .4 7-17.4c9.5-8.4 20.5-.4 20.5-.4s11.8-8.4 20 .3l6.7 17.5-1-.4.7 1.6Z" fill="black"/>
+          <path d="M19 39.6c-14-7.1 6.5-21.5-6-19.4-.1-.4.2-1.8-.6-1.5.5 1 0 2.7-.4 3.8 1.2.6.1 2-.2 2.8 0 0-.3-.6-.5-.6-.5 1-1.2.6-2 1 .1-.6-.6-1 .1-2-.4 0-.7-.3-.8-.4 1.3-1.1.8-2 2.8-1.1l.5-2.2c-.4-.1-.6-.4-.7-1 0 0-2.6-.7-3.5.8 0 0-2.3-3.8 6.6-3 2.2-2.1 9.1.7 10.3-1.8 0 0-2 3.7-3.7 5-1.7 1.3-5.6 7.9-.9 8.4" fill="black"/>
+          <path d="m64 100 16.2 22.2h3.3V94.5h-3.4v21.7l-16-21.7h-3.5v27.8h3.4V100z" fill="black"/>
+        </mask>
+      </defs>
+      <!-- Shield filled with currentColor, with masked cutouts -->
+      <path d="M94.4 2.9S76.6 0 48.2 0 1.9 2.9 1.9 2.9c-4.1 18-6.3 111 46.3 141.8C101 113.7 98.4 20 94.4 3Z" 
+            fill="currentColor" 
+            mask="url(#uol-cutouts)"/>
     </symbol>
     
     <!-- ASFC logo (simplified college symbol) -->
