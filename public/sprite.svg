@@ -277,87 +277,83 @@
       <!-- Shield outline -->
       <path d="M50 5 C25 5 8 12 8 20 C8 35 5 120 50 135 C95 120 92 35 92 20 C92 12 75 5 50 5 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
 
-      <!-- Azure (blue) background - will be filled with currentColor -->
-      <path d="M50 8 C28 8 12 14 12 21 C12 34 10 115 50 128 C90 115 88 34 88 21 C88 14 72 8 50 8 Z" fill="rgba(0,0,139,0.3)"/>
+      <!-- Azure (blue) background -->
+      <path d="M50 8 C28 8 12 14 12 21 C12 34 10 115 50 128 C90 115 88 34 88 21 C88 14 72 8 50 8 Z" fill="#001f5c"/>
 
       <!-- Top liver bird (cormorant) with wings elevated -->
       <g transform="translate(50,25) scale(0.8)">
         <!-- Body -->
-        <ellipse cx="0" cy="0" rx="6" ry="4" fill="currentColor"/>
+        <ellipse cx="0" cy="0" rx="6" ry="4" fill="white"/>
         <!-- Head and neck -->
-        <ellipse cx="-4" cy="-3" rx="3" ry="2.5" fill="currentColor"/>
+        <ellipse cx="-4" cy="-3" rx="3" ry="2.5" fill="white"/>
         <!-- Beak -->
-        <path d="M-7.5,-3 L-9,-2.5 L-7.5,-2 Z" fill="currentColor"/>
+        <path d="M-7.5,-3 L-9,-2.5 L-7.5,-2 Z" fill="#ffa500"/>
         <!-- Seaweed in beak -->
-        <path d="M-9,-2.5 Q-11,-1 -10.5,0 Q-11.5,1 -10,1.5" stroke="green" stroke-width="0.5" fill="none"/>
+        <path d="M-9,-2.5 Q-11,-1 -10.5,0 Q-11.5,1 -10,1.5" stroke="#228b22" stroke-width="0.5" fill="none"/>
         <!-- Left wing elevated -->
-        <path d="M-2,-2 Q-1,-6 2,-5 Q4,-4 3,-1" fill="currentColor"/>
+        <path d="M-2,-2 Q-1,-6 2,-5 Q4,-4 3,-1" fill="white"/>
         <!-- Right wing elevated -->
-        <path d="M2,-2 Q3,-6 6,-5 Q7,-4 6,-1" fill="currentColor"/>
+        <path d="M2,-2 Q3,-6 6,-5 Q7,-4 6,-1" fill="white"/>
         <!-- Legs -->
-        <line x1="-1" y1="3" x2="-1" y2="6" stroke="currentColor" stroke-width="0.8"/>
-        <line x1="1" y1="3" x2="1" y2="6" stroke="currentColor" stroke-width="0.8"/>
+        <line x1="-1" y1="3" x2="-1" y2="6" stroke="#ffa500" stroke-width="0.8"/>
+        <line x1="1" y1="3" x2="1" y2="6" stroke="#ffa500" stroke-width="0.8"/>
+        <!-- Eye -->
+        <circle cx="-5" cy="-3" r="0.3" fill="black"/>
       </g>
 
       <!-- Left liver bird -->
       <g transform="translate(25,35) scale(0.7) rotate(-15)">
-        <ellipse cx="0" cy="0" rx="5" ry="3.5" fill="currentColor"/>
-        <ellipse cx="-3.5" cy="-2.5" rx="2.5" ry="2" fill="currentColor"/>
-        <path d="M-6.5,-2.5 L-8,-2 L-6.5,-1.5 Z" fill="currentColor"/>
-        <path d="M-8,-2 Q-9.5,-0.5 -9,1 Q-10,2 -8.5,2.5" stroke="green" stroke-width="0.4" fill="none"/>
-        <path d="M-1.5,-1.5 Q-0.5,-5 2,-4.5 Q3.5,-3.5 2.5,-0.5" fill="currentColor"/>
-        <path d="M2,-1.5 Q3,-5 5.5,-4.5 Q6.5,-3.5 5.5,-0.5" fill="currentColor"/>
-        <line x1="-0.5" y1="2.5" x2="-0.5" y2="5" stroke="currentColor" stroke-width="0.6"/>
-        <line x1="0.5" y1="2.5" x2="0.5" y2="5" stroke="currentColor" stroke-width="0.6"/>
+        <ellipse cx="0" cy="0" rx="5" ry="3.5" fill="white"/>
+        <ellipse cx="-3.5" cy="-2.5" rx="2.5" ry="2" fill="white"/>
+        <path d="M-6.5,-2.5 L-8,-2 L-6.5,-1.5 Z" fill="#ffa500"/>
+        <path d="M-8,-2 Q-9.5,-0.5 -9,1 Q-10,2 -8.5,2.5" stroke="#228b22" stroke-width="0.4" fill="none"/>
+        <path d="M-1.5,-1.5 Q-0.5,-5 2,-4.5 Q3.5,-3.5 2.5,-0.5" fill="white"/>
+        <path d="M2,-1.5 Q3,-5 5.5,-4.5 Q6.5,-3.5 5.5,-0.5" fill="white"/>
+        <line x1="-0.5" y1="2.5" x2="-0.5" y2="5" stroke="#ffa500" stroke-width="0.6"/>
+        <line x1="0.5" y1="2.5" x2="0.5" y2="5" stroke="#ffa500" stroke-width="0.6"/>
+        <circle cx="-4.5" cy="-2.5" r="0.2" fill="black"/>
       </g>
 
       <!-- Right liver bird -->
       <g transform="translate(75,35) scale(0.7) rotate(15)">
-        <ellipse cx="0" cy="0" rx="5" ry="3.5" fill="currentColor"/>
-        <ellipse cx="3.5" cy="-2.5" rx="2.5" ry="2" fill="currentColor"/>
-        <path d="M6.5,-2.5 L8,-2 L6.5,-1.5 Z" fill="currentColor"/>
-        <path d="M8,-2 Q9.5,-0.5 9,1 Q10,2 8.5,2.5" stroke="green" stroke-width="0.4" fill="none"/>
-        <path d="M1.5,-1.5 Q0.5,-5 -2,-4.5 Q-3.5,-3.5 -2.5,-0.5" fill="currentColor"/>
-        <path d="M-2,-1.5 Q-3,-5 -5.5,-4.5 Q-6.5,-3.5 -5.5,-0.5" fill="currentColor"/>
-        <line x1="0.5" y1="2.5" x2="0.5" y2="5" stroke="currentColor" stroke-width="0.6"/>
-        <line x1="-0.5" y1="2.5" x2="-0.5" y2="5" stroke="currentColor" stroke-width="0.6"/>
+        <ellipse cx="0" cy="0" rx="5" ry="3.5" fill="white"/>
+        <ellipse cx="3.5" cy="-2.5" rx="2.5" ry="2" fill="white"/>
+        <path d="M6.5,-2.5 L8,-2 L6.5,-1.5 Z" fill="#ffa500"/>
+        <path d="M8,-2 Q9.5,-0.5 9,1 Q10,2 8.5,2.5" stroke="#228b22" stroke-width="0.4" fill="none"/>
+        <path d="M1.5,-1.5 Q0.5,-5 -2,-4.5 Q-3.5,-3.5 -2.5,-0.5" fill="white"/>
+        <path d="M-2,-1.5 Q-3,-5 -5.5,-4.5 Q-6.5,-3.5 -5.5,-0.5" fill="white"/>
+        <line x1="0.5" y1="2.5" x2="0.5" y2="5" stroke="#ffa500" stroke-width="0.6"/>
+        <line x1="-0.5" y1="2.5" x2="-0.5" y2="5" stroke="#ffa500" stroke-width="0.6"/>
+        <circle cx="4.5" cy="-2.5" r="0.2" fill="black"/>
       </g>
 
       <!-- Open book in center -->
       <g transform="translate(50,65)">
-        <!-- Book pages (white/light) -->
-        <path d="M-15,-8 Q0,-12 15,-8 L15,8 Q0,12 -15,8 Z" fill="white" stroke="currentColor" stroke-width="0.5"/>
+        <!-- Book pages (white) -->
+        <path d="M-15,-8 Q0,-12 15,-8 L15,8 Q0,12 -15,8 Z" fill="white" stroke="#333" stroke-width="0.5"/>
         <!-- Center binding -->
-        <line x1="0" y1="-8" x2="0" y2="8" stroke="currentColor" stroke-width="1"/>
+        <line x1="0" y1="-8" x2="0" y2="8" stroke="#8b4513" stroke-width="1.5"/>
         <!-- Left page lines -->
-        <line x1="-12" y1="-4" x2="-3" y2="-4" stroke="currentColor" stroke-width="0.3"/>
-        <line x1="-12" y1="-1" x2="-3" y2="-1" stroke="currentColor" stroke-width="0.3"/>
-        <line x1="-12" y1="2" x2="-3" y2="2" stroke="currentColor" stroke-width="0.3"/>
+        <line x1="-12" y1="-4" x2="-3" y2="-4" stroke="#ddd" stroke-width="0.3"/>
+        <line x1="-12" y1="-1" x2="-3" y2="-1" stroke="#ddd" stroke-width="0.3"/>
+        <line x1="-12" y1="2" x2="-3" y2="2" stroke="#ddd" stroke-width="0.3"/>
         <!-- Right page lines for "FIAT LUX" -->
-        <line x1="3" y1="-4" x2="12" y2="-4" stroke="currentColor" stroke-width="0.3"/>
-        <line x1="3" y1="-1" x2="12" y2="-1" stroke="currentColor" stroke-width="0.3"/>
-        <!-- "FIAT LUX" text approximation -->
-        <text x="7.5" y="-2" font-family="serif" font-size="2" fill="currentColor" text-anchor="middle">FIAT</text>
-        <text x="7.5" y="1" font-family="serif" font-size="2" fill="currentColor" text-anchor="middle">LUX</text>
+        <line x1="3" y1="-4" x2="12" y2="-4" stroke="#ddd" stroke-width="0.3"/>
+        <line x1="3" y1="-1" x2="12" y2="-1" stroke="#ddd" stroke-width="0.3"/>
+        <!-- "FIAT LUX" text -->
+        <text x="7.5" y="-2.5" font-family="serif" font-size="1.8" fill="black" text-anchor="middle" font-weight="bold">FIAT</text>
+        <text x="7.5" y="0.5" font-family="serif" font-size="1.8" fill="black" text-anchor="middle" font-weight="bold">LUX</text>
 
         <!-- Seven clasps on the left side -->
         <g transform="translate(-15,0)">
-          <rect x="-1" y="-6" width="2" height="1.5" fill="gold" rx="0.3"/>
-          <rect x="-1" y="-4" width="2" height="1.5" fill="gold" rx="0.3"/>
-          <rect x="-1" y="-2" width="2" height="1.5" fill="gold" rx="0.3"/>
-          <rect x="-1" y="0" width="2" height="1.5" fill="gold" rx="0.3"/>
-          <rect x="-1" y="2" width="2" height="1.5" fill="gold" rx="0.3"/>
-          <rect x="-1" y="4" width="2" height="1.5" fill="gold" rx="0.3"/>
-          <rect x="-1" y="6" width="2" height="1.5" fill="gold" rx="0.3"/>
+          <rect x="-1" y="-6" width="2" height="1.2" fill="#ffd700" stroke="#b8860b" stroke-width="0.1" rx="0.2"/>
+          <rect x="-1" y="-4" width="2" height="1.2" fill="#ffd700" stroke="#b8860b" stroke-width="0.1" rx="0.2"/>
+          <rect x="-1" y="-2" width="2" height="1.2" fill="#ffd700" stroke="#b8860b" stroke-width="0.1" rx="0.2"/>
+          <rect x="-1" y="0" width="2" height="1.2" fill="#ffd700" stroke="#b8860b" stroke-width="0.1" rx="0.2"/>
+          <rect x="-1" y="2" width="2" height="1.2" fill="#ffd700" stroke="#b8860b" stroke-width="0.1" rx="0.2"/>
+          <rect x="-1" y="4" width="2" height="1.2" fill="#ffd700" stroke="#b8860b" stroke-width="0.1" rx="0.2"/>
+          <rect x="-1" y="6" width="2" height="1.2" fill="#ffd700" stroke="#b8860b" stroke-width="0.1" rx="0.2"/>
         </g>
-      </g>
-
-      <!-- Decorative elements around the shield interior -->
-      <g opacity="0.3">
-        <path d="M20,90 Q30,85 40,90" stroke="currentColor" stroke-width="0.5" fill="none"/>
-        <path d="M60,90 Q70,85 80,90" stroke="currentColor" stroke-width="0.5" fill="none"/>
-        <circle cx="25" cy="100" r="1" fill="currentColor"/>
-        <circle cx="75" cy="100" r="1" fill="currentColor"/>
       </g>
     </symbol>
 
