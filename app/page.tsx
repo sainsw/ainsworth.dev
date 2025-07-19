@@ -6,6 +6,7 @@ import ViewCounter from 'app/blog/view-counter';
 import { PreloadResources } from 'app/preload';
 import { ArrowIcon } from './components/arrow-icon';
 import { PrideAvatar } from './components/pride-avatar';
+import { Icon } from './components/icon';
 
 function Badge(props) {
   return (
@@ -51,41 +52,21 @@ export default function Page() {
         {` in Manchester, where I focus on enterprise software development and cloud architecture with `}
         <span className="not-prose">
           <Badge href="https://react.dev">
-            <svg
-              width="14"
-              height="14"
-              role="img"
-              aria-label="React logo"
-              className="!mr-1"
-            >
-              <use href="/sprite.svg#react" />
-            </svg>
+            <Icon id="react" size={14} className="!mr-1" />
             React
           </Badge>
         </span>
         {`, `}
         <span className="not-prose">
           <Badge href="https://dotnet.microsoft.com">
-            <img
-              alt="dot net logomark"
-              src="/dotnet-logo.jpg"
-              className="!mr-1"
-              width="14"
-              height="14"
-            />
+            <Icon id="dotnet" size={14} className="!mr-1" />
             .NET
           </Badge>
         </span>
         {`, and `}
         <span className="not-prose">
           <Badge href="https://azure.microsoft.com">
-            <img
-              alt="Azure logomark"
-              src="/azure-logo.ico"
-              className="!mr-1"
-              width="14"
-              height="14"
-            />
+            <Icon id="azure" size={14} className="!mr-1" />
             Azure
           </Badge>
         </span>
