@@ -10,7 +10,7 @@ const education = [
     name: 'University of Liverpool, UK',
     dates: '2013 - 2016',
     qual: 'Computer Science BSc - 2:1',
-    description: ['For my undergraduate dissertation, 'Accelerometer Games for the iOS Platform', I created a physics–based game for iPhone and iPad. This was a great opportunity to learn Swift and SpriteKit, along with the App Store submission process. ',
+    description: ['For my undergraduate dissertation, \'Accelerometer Games for the iOS Platform\', I created a physics–based game for iPhone and iPad. This was a great opportunity to learn Swift and SpriteKit, along with the App Store submission process. ',
       'The project was well–received, with the University choosing to use my game as a learning tool and as an example of an exceptional final project during open days.'],
     iconId: "uol",
     url: "https://www.liverpool.ac.uk/"
