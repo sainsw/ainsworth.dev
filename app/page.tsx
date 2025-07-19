@@ -6,7 +6,7 @@ import ViewCounter from 'app/blog/view-counter';
 import { PreloadResources } from 'app/preload';
 import { ArrowIcon } from './components/arrow-icon';
 import { PrideAvatar } from './components/pride-avatar';
-import { Icon } from './components/icon';
+import { Icon } from '../components/icon';
 
 function Badge(props) {
   return (

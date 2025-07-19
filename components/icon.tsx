@@ -15,3 +15,5 @@ export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
     </svg>
   );
 }
+
+export default Icon;

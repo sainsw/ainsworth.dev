@@ -1,7 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { ArrowIcon } from '../components/arrow-icon';
-import { Icon } from '../components/icon';
+import { Icon } from '../../components/icon';
 
 
 const education = [
