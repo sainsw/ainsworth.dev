@@ -5,6 +5,7 @@ import Image from 'next/image';
 import ViewCounter from 'app/blog/view-counter';
 import { PreloadResources } from 'app/preload';
 import { ArrowIcon } from './components/arrow-icon';
+import { PrideAvatar } from './components/pride-avatar';
 
 function Badge(props) {
   return (
@@ -123,11 +124,11 @@ export default function Page() {
       <div className="container px-4 mx-auto">
         <div className="pt-24 pb-11 mx-auto max-w-4xl">
           <a className="block md:mx-auto mb-5 max-w-max" aria-label="find me on linkedin" href="https://www.linkedin.com/in/samainsworth/">
-            <div>
+            <PrideAvatar>
               <picture>
                 <source srcSet="/images/home/avatar.webp" type="image/webp" />
                 <img 
-                  className="bg-left-bottom h-20 w-20 rounded-full ring-2 ring-black dark:ring-white" 
+                  className="bg-left-bottom h-20 w-20 rounded-full" 
                   src="/images/home/avatar.jpg" 
                   alt="my face"
                   width={80}
@@ -135,7 +136,7 @@ export default function Page() {
                   loading="eager"
                 />
               </picture>
-            </div>
+            </PrideAvatar>
           </a>
         </div>
       </div>

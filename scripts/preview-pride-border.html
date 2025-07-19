@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pride Border Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #f9fafb; padding: 2rem; }
+        .dark { background: #1f2937; }
+    </style>
+</head>
+<body>
+    <div class="max-w-4xl mx-auto space-y-8">
+        <h1 class="text-3xl font-bold text-center">Pride Avatar Border Preview</h1>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Normal Border -->
+            <div class="text-center">
+                <h2 class="text-xl font-semibold mb-4">Normal Time</h2>
+                <div class="flex justify-center">
+                    <div class="ring-2 ring-black rounded-full">
+                        <img src="https://via.placeholder.com/80x80/4F46E5/FFFFFF?text=SAM" 
+                             class="h-20 w-20 rounded-full" 
+                             alt="avatar" />
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pride Border -->
+            <div class="text-center">
+                <h2 class="text-xl font-semibold mb-4">Pride Time 🏳️‍🌈</h2>
+                <div class="flex justify-center">
+                    <!-- Traditional Pride rainbow concentric rings using box-shadow -->
+                    <div class="rounded-full" style="
+                        box-shadow: 
+                            0 0 0 3px rgb(239 68 68),   /* red-500 - outermost */
+                            0 0 0 6px rgb(249 115 22),  /* orange-500 */
+                            0 0 0 9px rgb(250 204 21),  /* yellow-400 */
+                            0 0 0 12px rgb(34 197 94),  /* green-500 */
+                            0 0 0 15px rgb(59 130 246), /* blue-500 */
+                            0 0 0 18px rgb(147 51 234); /* purple-500 - innermost */
+                    ">
+                        <img src="https://via.placeholder.com/80x80/4F46E5/FFFFFF?text=SAM" 
+                             class="h-20 w-20 rounded-full" 
+                             alt="avatar" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center space-y-2">
+            <p class="text-gray-600">🏳️‍🌈 Traditional Pride rainbow colors from outside to inside:</p>
+            <p class="text-sm">Red → Orange → Yellow → Green → Blue → Purple</p>
+            <p class="text-xs text-gray-500">Each ring is 3px thick for bold visibility and smooth appearance</p>
+            <p class="text-sm font-semibold">Active during: June (Pride Month) & August 18-25, 2025 (Manchester Pride)</p>
+        </div>
+        
+        <!-- Dark mode toggle -->
+        <div class="text-center">
+            <button onclick="toggleDark()" class="px-4 py-2 bg-gray-800 text-white rounded">
+                Toggle Dark Mode
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function toggleDark() {
+            document.body.classList.toggle('dark');
+        }
+    </script>
+</body>
+</html>
