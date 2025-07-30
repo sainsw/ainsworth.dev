@@ -6,6 +6,9 @@ interface IconProps extends React.SVGProps<SVGSVGElement> {
 // Logos that should use PNG/WebP files instead of sprite
 const PNG_LOGOS = new Set(['westhill', 'whsmith', 'asfc']);
 
+// Logos that should use SVG files with theme support instead of sprite
+const SVG_THEME_LOGOS = new Set(['uol']);
+
 import { SPRITE_VERSION } from '../lib/version';
 
 export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
@@ -16,6 +19,26 @@ export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
         <source srcSet={`/images/logos/${getLogoFilename(id)}.webp`} type="image/webp" />
         <img 
           src={`/images/logos/${getLogoFilename(id)}.png`}
+          alt={id}
+          width={size}
+          height={size}
+          className={className}
+          style={{ objectFit: 'contain' }}
+        />
+      </picture>
+    );
+  }
+
+  // Use SVG files with theme support for certain logos
+  if (SVG_THEME_LOGOS.has(id)) {
+    return (
+      <picture>
+        <source 
+          srcSet={`/images/logos/${id}_white.svg`} 
+          media="(prefers-color-scheme: dark)" 
+        />
+        <img 
+          src={`/images/logos/${id}_colour.svg`}
           alt={id}
           width={size}
           height={size}
