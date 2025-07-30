@@ -14,6 +14,36 @@ import { SPRITE_VERSION } from '../lib/version';
 export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
   // Use PNG/WebP fallback for certain logos
   if (PNG_LOGOS.has(id)) {
+    // Special handling for ASFC logo with theme support
+    if (id === 'asfc') {
+      return (
+        <picture>
+          <source 
+            srcSet="/images/logos/asfc_white.webp" 
+            media="(prefers-color-scheme: dark)" 
+            type="image/webp" 
+          />
+          <source 
+            srcSet="/images/logos/asfc_black.webp" 
+            media="(prefers-color-scheme: light)" 
+            type="image/webp" 
+          />
+          <source 
+            srcSet="/images/logos/asfc_white.png" 
+            media="(prefers-color-scheme: dark)" 
+          />
+          <img 
+            src="/images/logos/asfc_black.png"
+            alt={id}
+            width={size}
+            height={size}
+            className={className}
+            style={{ objectFit: 'contain' }}
+          />
+        </picture>
+      );
+    }
+
     return (
       <picture>
         <source srcSet={`/images/logos/${getLogoFilename(id)}.webp`} type="image/webp" />
