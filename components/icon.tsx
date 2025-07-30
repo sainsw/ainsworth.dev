@@ -9,6 +9,9 @@ const PNG_LOGOS = new Set(['westhill', 'whsmith', 'asfc']);
 // Logos that should use SVG files with theme support instead of sprite
 const SVG_THEME_LOGOS = new Set(['uol']);
 
+// Logos that should use image files with brand colors instead of sprite
+const BRAND_COLOR_LOGOS = new Set(['dotnet', 'azure']);
+
 import { SPRITE_VERSION } from '../lib/version';
 
 export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
@@ -69,6 +72,24 @@ export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
         />
         <img 
           src={`/images/logos/${id}_colour.svg`}
+          alt={id}
+          width={size}
+          height={size}
+          className={className}
+          style={{ objectFit: 'contain' }}
+        />
+      </picture>
+    );
+  }
+
+  // Use brand color images for certain logos (instead of currentColor sprites)
+  if (BRAND_COLOR_LOGOS.has(id)) {
+    const fileExtension = id === 'azure' ? 'ico' : 'jpg';
+    return (
+      <picture>
+        <source srcSet={`/images/logos/${id}.webp`} type="image/webp" />
+        <img 
+          src={`/images/logos/${id}.${fileExtension}`}
           alt={id}
           width={size}
           height={size}
