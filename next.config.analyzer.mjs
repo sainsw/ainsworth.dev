@@ -1,7 +1,12 @@
 import postgres from 'postgres';
+import bundleAnalyzer from '@next/bundle-analyzer';
 
 export const sql = postgres(process.env.DATABASE_URL, {
   ssl: 'allow',
+});
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
 });
 
 const nextConfig = {
@@ -90,4 +95,4 @@ const securityHeaders = [
   },
 ];
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

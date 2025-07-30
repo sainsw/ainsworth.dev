@@ -7,6 +7,7 @@
     "dev": "npm run generate-version && next dev --turbo",
     "build": "npm run setup && npm run generate-version && next build",
     "build-only": "npm run generate-version && next build",
+    "analyze": "ANALYZE=true npm run build-only",
     "start": "next start",
     "setup": "node ./setup.mjs",
     "generate-version": "node ./scripts/generate-version.js"
@@ -37,6 +38,7 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.4.5",
     "sharp": "^0.34.3"
   }
 }

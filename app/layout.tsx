@@ -61,6 +61,12 @@ export default function RootLayout({
     >
       <head>
         <SandpackCSS />
+        <link rel="dns-prefetch" href="//cdn.vercel-insights.com" />
+        <link rel="preconnect" href="https://vercel.live" />
+        <link rel="dns-prefetch" href="//va.vercel-scripts.com" />
+        <link rel="dns-prefetch" href="//static.cloudflareinsights.com" />
+        <link rel="prefetch" href="/images/home/avatar.webp" />
+        <link rel="prefetch" href="/sprite.svg" />
       </head>
       <body className="antialiased max-w-2xl mb-40 flex flex-col md:flex-row mx-4 mt-8 lg:mx-auto">
         <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
