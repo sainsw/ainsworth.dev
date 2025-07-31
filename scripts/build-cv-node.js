@@ -34,21 +34,23 @@ console.log('🔨 Compiling LaTeX with LaTeX.js...');
 
 async function buildCV() {
 try {
-    // Try different LaTeX.js API approaches
-    let html;
+    // Use the correct LaTeX.js API with HtmlGenerator
+    console.log('🔄 Using HtmlGenerator API...');
     
-    if (typeof LaTeX.parse === 'function') {
-        console.log('🔄 Using LaTeX.parse API...');
-        const doc = LaTeX.parse(texContent, { generator: LaTeX });
-        html = doc.render();
-    } else if (typeof LaTeX === 'function') {
-        console.log('🔄 Using LaTeX as function...');
-        const doc = LaTeX(texContent);
-        html = doc.render();
-    } else {
-        console.log('🔄 Available LaTeX properties:', Object.getOwnPropertyNames(LaTeX));
-        throw new Error('Unknown LaTeX.js API - check available methods');
-    }
+    const generator = new LaTeX.HtmlGenerator({ 
+        hyphenate: false,
+        CustomMacros: function() {
+            // Add basic support for custom commands that might be in developercv.cls
+            // LaTeX.js may not fully support custom document classes, so we'll do basic parsing
+        }
+    });
+    
+    // LaTeX.js may not support custom document classes like developercv
+    // Let's try to parse anyway and see what happens
+    console.log('⚠️ Note: LaTeX.js may not fully support custom document classes');
+    
+    const doc = LaTeX.parse(texContent, { generator: generator });
+    const html = doc.render();
     
     console.log('🟢 LaTeX.js compilation successful - generated HTML');
     
