@@ -7,7 +7,14 @@ echo "Building CV from LaTeX source..."
 if ! command -v pdflatex &> /dev/null; then
     echo "Warning: pdflatex not found. Skipping CV build."
     echo "To build CV locally, install LaTeX: brew install --cask mactex"
-    echo "For now, keeping existing CV file if it exists."
+    
+    # Check if CV already exists (from previous build or fallback)
+    if [ -f "public/files/cv.pdf" ]; then
+        echo "Using existing CV file."
+    else
+        echo "No existing CV found. LaTeX is required for initial build."
+        exit 1
+    fi
     exit 0
 fi
 

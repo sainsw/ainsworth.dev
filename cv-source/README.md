@@ -23,10 +23,17 @@ npm run build-cv
 
 The CV is automatically built during:
 - **Local builds**: `npm run build` (if LaTeX is available)
-- **GitHub Actions**: Every push to main branch
-- **Vercel deployment**: During the build process
+- **GitHub Actions**: Every push to main branch creates a new release
+- **Vercel deployment**: Downloads latest CV from GitHub releases as fallback
 
 The generated PDF is placed at `public/files/cv.pdf` and served at `/files/cv.pdf`.
+
+### Fallback System
+
+- **No static PDF** is stored in the repo
+- **GitHub releases** store the latest built CV as `cv-latest` 
+- **Build process** downloads previous CV as fallback if LaTeX fails
+- **90-day artifacts** provide additional backup in GitHub Actions
 
 ## Editing
 

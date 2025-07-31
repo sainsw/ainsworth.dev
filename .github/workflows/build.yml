@@ -20,6 +20,14 @@ jobs:
         node-version: '22'
         cache: 'npm'
     
+    - name: Download previous CV from releases (fallback)
+      run: |
+        mkdir -p public/files/
+        # Try to download the latest CV from GitHub releases
+        curl -L -o public/files/cv.pdf \
+          "https://github.com/${{ github.repository }}/releases/latest/download/cv.pdf" \
+          || echo "No previous CV release found, will generate new one"
+    
     - name: Install LaTeX
       run: |
         sudo apt-get update
@@ -31,12 +39,32 @@ jobs:
     - name: Build CV from LaTeX
       run: npm run build-cv
     
+    - name: Verify CV exists
+      run: |
+        if [ ! -f "public/files/cv.pdf" ]; then
+          echo "Error: CV PDF not generated and no fallback available"
+          exit 1
+        fi
+        echo "CV PDF verified: $(ls -la public/files/cv.pdf)"
+    
     - name: Build Next.js application
       run: npm run build-only
     
-    - name: Upload CV artifact
+    - name: Upload CV artifact for future builds
       uses: actions/upload-artifact@v4
       with:
         name: cv-pdf
         path: public/files/cv.pdf
-        retention-days: 30
+        retention-days: 90
+      
+    - name: Create/Update CV Release
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: cv-latest
+        name: "Latest CV"
+        body: "Auto-generated CV from LaTeX source"
+        files: public/files/cv.pdf
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
