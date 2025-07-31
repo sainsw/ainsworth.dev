@@ -3,11 +3,11 @@ set -e
 
 echo "🚀 Starting Vercel build with LaTeX CV generation..."
 
-# Install node-latex package for LaTeX compilation
-echo "📦 Installing node-latex..."
-npm install --no-save node-latex
+# Install LaTeX.js and Puppeteer for HTML to PDF conversion
+echo "📦 Installing LaTeX.js and Puppeteer..."
+npm install --no-save latex.js puppeteer
 
-echo "✅ node-latex installation complete"
+echo "✅ LaTeX tools installation complete"
 
 # Run standard build process (which includes CV build)
 echo "🔨 Running application build..."

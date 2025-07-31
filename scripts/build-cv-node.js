@@ -2,9 +2,18 @@
 
 const fs = require('fs');
 const path = require('path');
-const latex = require('node-latex');
 
-console.log('📄 Building CV from LaTeX source using node-latex...');
+console.log('📄 Building CV from LaTeX source using LaTeX.js...');
+
+// Check if latex.js is available
+let LaTeX;
+try {
+    LaTeX = require('latex.js');
+    console.log('🟢 LaTeX.js loaded successfully');
+} catch (err) {
+    console.error('❌ LaTeX.js not available:', err.message);
+    process.exit(1);
+}
 
 // Ensure output directory exists
 const outputDir = path.join(__dirname, '..', 'public', 'files');
@@ -16,37 +25,82 @@ if (!fs.existsSync(outputDir)) {
 const texFilePath = path.join(__dirname, '..', 'cv-source', 'main.tex');
 const texContent = fs.readFileSync(texFilePath, 'utf8');
 
-// Configure LaTeX options
-const options = {
-    inputs: path.join(__dirname, '..', 'cv-source'), // Include path for custom class files
-    cmd: 'pdflatex', // Use pdflatex engine
-    passes: 2, // Run twice for proper cross-references
-    errorLogs: path.join(__dirname, '..', 'latex-error.log')
-};
+// Also read the class file
+const clsFilePath = path.join(__dirname, '..', 'cv-source', 'developercv.cls');
+const clsContent = fs.readFileSync(clsFilePath, 'utf8');
 
-console.log('🔨 Compiling LaTeX to PDF...');
+console.log('🔨 Compiling LaTeX with LaTeX.js...');
 
-// Compile LaTeX to PDF
-const pdf = latex(texContent, options);
-const outputPath = path.join(outputDir, 'cv.pdf');
-const output = fs.createWriteStream(outputPath);
-
-pdf.pipe(output);
-
-pdf.on('error', (err) => {
-    console.error('❌ LaTeX compilation failed:', err);
-    process.exit(1);
-});
-
-pdf.on('finish', () => {
+async function buildCV() {
+try {
+    // Create LaTeX generator with custom class file
+    const generator = LaTeX.generator({
+        hyphenate: false,
+        documentClass: 'developercv'
+    });
+    
+    // Register the custom class file
+    generator.loadClass('developercv', clsContent);
+    
+    // Parse and generate document
+    const doc = generator.parse(texContent);
+    const html = doc.render();
+    
+    console.log('🟢 LaTeX.js compilation successful - generated HTML');
+    
+    // Now convert HTML to PDF using Puppeteer
+    console.log('🔄 Converting HTML to PDF...');
+    
+    const puppeteer = require('puppeteer');
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Vercel compatibility
+    });
+    
+    const page = await browser.newPage();
+    
+    // Create full HTML document with CSS styling
+    const fullHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body { font-family: 'Times New Roman', serif; margin: 0; padding: 20px; }
+            .page { max-width: 210mm; margin: 0 auto; }
+        </style>
+    </head>
+    <body>
+        <div class="page">
+            ${html}
+        </div>
+    </body>
+    </html>`;
+    
+    await page.setContent(fullHtml, { waitUntil: 'networkidle0' });
+    
+    const outputPath = path.join(outputDir, 'cv.pdf');
+    await page.pdf({
+        path: outputPath,
+        format: 'A4',
+        margin: {
+            top: '20mm',
+            right: '20mm',
+            bottom: '20mm',
+            left: '20mm'
+        }
+    });
+    
+    await browser.close();
+    
     console.log('✅ CV build complete! Generated public/files/cv.pdf');
-});
-
-output.on('error', (err) => {
-    console.error('❌ Failed to write PDF file:', err);
+    
+} catch (err) {
+    console.error('❌ LaTeX.js compilation failed:', err);
+    console.log('📋 Error details:', err.message);
     process.exit(1);
-});
+}
+}
 
-output.on('close', () => {
-    console.log('📁 PDF file saved successfully');
-});
+// Run the build
+buildCV();

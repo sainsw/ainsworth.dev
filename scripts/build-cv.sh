@@ -3,9 +3,9 @@ set -e
 
 echo "📄 Building CV from LaTeX source..."
 
-# Check if node-latex is available (Vercel environment)
-if npm list node-latex &> /dev/null; then
-    echo "🟢 Using node-latex for compilation..."
+# Check if latex.js and puppeteer are available (Vercel environment)
+if npm list latex.js &> /dev/null && npm list puppeteer &> /dev/null; then
+    echo "🟢 Using LaTeX.js + Puppeteer for compilation..."
     node ./scripts/build-cv-node.js
     exit 0
 fi
