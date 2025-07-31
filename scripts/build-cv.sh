@@ -11,11 +11,28 @@ if ! command -v pdflatex &> /dev/null; then
     # Check if CV already exists (from previous build or fallback)
     if [ -f "public/files/cv.pdf" ]; then
         echo "Using existing CV file."
+        exit 0
+    fi
+    
+    # Try to download fallback from GitHub releases (for Vercel deployments)
+    echo "No existing CV found. Attempting to download from GitHub releases..."
+    mkdir -p public/files
+    
+    if [ -n "$GITHUB_REPOSITORY" ]; then
+        REPO_URL="https://github.com/$GITHUB_REPOSITORY/releases/latest/download/cv.pdf"
     else
-        echo "No existing CV found. LaTeX is required for initial build."
+        # Fallback to hardcoded repo if env var not available
+        REPO_URL="https://github.com/sainsw/ainsworth.dev/releases/latest/download/cv.pdf"
+    fi
+    
+    if curl -L -f -o public/files/cv.pdf "$REPO_URL"; then
+        echo "Successfully downloaded CV from GitHub releases."
+        exit 0
+    else
+        echo "Error: Could not download CV fallback. LaTeX is required for initial build."
+        echo "GitHub release URL attempted: $REPO_URL"
         exit 1
     fi
-    exit 0
 fi
 
 # Create output directory
