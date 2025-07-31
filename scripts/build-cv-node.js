@@ -10,6 +10,7 @@ let LaTeX;
 try {
     LaTeX = require('latex.js');
     console.log('🟢 LaTeX.js loaded successfully');
+    console.log('📋 Available methods:', Object.keys(LaTeX));
 } catch (err) {
     console.error('❌ LaTeX.js not available:', err.message);
     process.exit(1);
@@ -33,18 +34,21 @@ console.log('🔨 Compiling LaTeX with LaTeX.js...');
 
 async function buildCV() {
 try {
-    // Create LaTeX generator with custom class file
-    const generator = LaTeX.generator({
-        hyphenate: false,
-        documentClass: 'developercv'
-    });
+    // Try different LaTeX.js API approaches
+    let html;
     
-    // Register the custom class file
-    generator.loadClass('developercv', clsContent);
-    
-    // Parse and generate document
-    const doc = generator.parse(texContent);
-    const html = doc.render();
+    if (typeof LaTeX.parse === 'function') {
+        console.log('🔄 Using LaTeX.parse API...');
+        const doc = LaTeX.parse(texContent, { generator: LaTeX });
+        html = doc.render();
+    } else if (typeof LaTeX === 'function') {
+        console.log('🔄 Using LaTeX as function...');
+        const doc = LaTeX(texContent);
+        html = doc.render();
+    } else {
+        console.log('🔄 Available LaTeX properties:', Object.getOwnPropertyNames(LaTeX));
+        throw new Error('Unknown LaTeX.js API - check available methods');
+    }
     
     console.log('🟢 LaTeX.js compilation successful - generated HTML');
     
