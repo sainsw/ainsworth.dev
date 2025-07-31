@@ -28,7 +28,11 @@ jobs:
     - name: Check if CV source changed
       id: cv-changes
       run: |
-        if git diff --name-only ${{ github.event.before }}..${{ github.sha }} | grep -E '^cv-source/'; then
+        # Handle first run case where github.event.before might be null
+        if [ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ] || [ -z "${{ github.event.before }}" ]; then
+          echo "cv-changed=true" >> $GITHUB_OUTPUT
+          echo "🆕 First run detected, will build CV"
+        elif git diff --name-only ${{ github.event.before }}..${{ github.sha }} | grep -E '^cv-source/'; then
           echo "cv-changed=true" >> $GITHUB_OUTPUT
           echo "📝 CV source files changed, will rebuild"
         else
@@ -54,6 +58,9 @@ jobs:
           echo "Successfully downloaded fallback CV"
         else
           echo "Error: CV build failed and no fallback available"
+          if [ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ] || [ -z "${{ github.event.before }}" ]; then
+            echo "This appears to be the first run - LaTeX build must succeed for initial deployment"
+          fi
           exit 1
         fi
     
@@ -68,7 +75,9 @@ jobs:
         # Check if this is a newly built CV or fallback
         if [ "${{ steps.build-cv.outcome }}" == "success" ]; then
           echo "✅ Using newly built CV from LaTeX source"
-          if [ "${{ steps.cv-changes.outputs.cv-changed }}" == "true" ]; then
+          if [ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ] || [ -z "${{ github.event.before }}" ]; then
+            echo "🆕 Initial CV build - first deployment"
+          elif [ "${{ steps.cv-changes.outputs.cv-changed }}" == "true" ]; then
             echo "🔄 CV was rebuilt due to source changes"
           else
             echo "🔁 CV was rebuilt (no source changes, but LaTeX available)"
