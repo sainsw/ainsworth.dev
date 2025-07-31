@@ -18,6 +18,9 @@ export default function Page() {
                 className="relative max-w-[500px]"
                 ref={formRef}
                 action={async (formData) => {
+                    setIsLoading(true);
+                    setError(null);
+                    setSuccess(null);
                     try {
                         let response = await sendEmail(formData);
                         formRef.current?.reset();
@@ -25,6 +28,8 @@ export default function Page() {
                     } catch (error) {
                         setError(error.message.toLowerCase() + ". how embarrassing.")
                         console.error(error)
+                    } finally {
+                        setIsLoading(false);
                     }
                 }}
             >
@@ -55,11 +60,11 @@ function SubmitButton() {
 
     return (
         <button
-            className="flex items-center justify-center absolute right-1 bottom-1 px-2 py-1 font-medium h-8 bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded w-16"
+            className="flex items-center justify-center absolute right-1 bottom-1 px-2 py-1 font-medium h-8 bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded w-16 disabled:opacity-50"
             disabled={pending}
             type="submit"
         >
-            Send
+            {pending ? '...' : 'Send'}
         </button>
     );
 }

@@ -92,14 +92,14 @@ export default function Page() {
           </a>
         </li>
         <li>
-          <a
+          <Link
             className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-all"
-            rel="noopener noreferrer"
             href="/contact"
+            prefetch={true}
           >
             <ArrowIcon />
             <p className="h-7 ml-2">get in touch</p>
-          </a>
+          </Link>
         </li>
       </ul>
       <div className="container px-4 mx-auto">

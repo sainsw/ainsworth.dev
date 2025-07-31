@@ -65,6 +65,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://vercel.live" />
         <link rel="dns-prefetch" href="//va.vercel-scripts.com" />
         <link rel="dns-prefetch" href="//static.cloudflareinsights.com" />
+        <link rel="dns-prefetch" href="//api.resend.com" />
         <link rel="prefetch" href="/images/home/avatar.webp" />
         <link rel="prefetch" href="/sprite.svg" />
       </head>
