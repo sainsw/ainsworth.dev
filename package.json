@@ -5,12 +5,13 @@
   },
   "scripts": {
     "dev": "npm run generate-version && next dev --turbo",
-    "build": "npm run setup && npm run generate-version && next build",
-    "build-only": "npm run generate-version && next build",
+    "build": "npm run setup && npm run generate-version && npm run build-cv && next build",
+    "build-only": "npm run generate-version && npm run build-cv && next build",
     "analyze": "ANALYZE=true npm run build-only",
     "start": "next start",
     "setup": "node ./setup.mjs",
-    "generate-version": "node ./scripts/generate-version.js"
+    "generate-version": "node ./scripts/generate-version.js",
+    "build-cv": "./scripts/build-cv.sh"
   },
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.20.0",

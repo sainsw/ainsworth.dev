@@ -38,3 +38,11 @@ next-env.d.ts
 
 # generated files
 /lib/version.js
+
+# LaTeX auxiliary files
+cv-source/*.aux
+cv-source/*.log
+cv-source/*.out
+cv-source/*.fdb_latexmk
+cv-source/*.fls
+cv-source/*.synctex.gz
