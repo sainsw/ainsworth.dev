@@ -20,32 +20,63 @@ jobs:
         node-version: '22'
         cache: 'npm'
     
-    - name: Download previous CV from releases (fallback)
-      run: |
-        mkdir -p public/files/
-        # Try to download the latest CV from GitHub releases
-        curl -L -o public/files/cv.pdf \
-          "https://github.com/${{ github.repository }}/releases/latest/download/cv.pdf" \
-          || echo "No previous CV release found, will generate new one"
-    
     - name: Install LaTeX
       run: |
         sudo apt-get update
         sudo apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra
     
+    - name: Check if CV source changed
+      id: cv-changes
+      run: |
+        if git diff --name-only ${{ github.event.before }}..${{ github.sha }} | grep -E '^cv-source/'; then
+          echo "cv-changed=true" >> $GITHUB_OUTPUT
+          echo "📝 CV source files changed, will rebuild"
+        else
+          echo "cv-changed=false" >> $GITHUB_OUTPUT
+          echo "📄 No CV source changes detected"
+        fi
+    
     - name: Install dependencies
       run: npm ci
     
     - name: Build CV from LaTeX
+      id: build-cv
       run: npm run build-cv
+      continue-on-error: true
+    
+    - name: Download fallback CV if build failed
+      if: steps.build-cv.outcome == 'failure'
+      run: |
+        echo "LaTeX build failed, attempting to download fallback CV..."
+        mkdir -p public/files/
+        if curl -L -o public/files/cv.pdf \
+          "https://github.com/${{ github.repository }}/releases/latest/download/cv.pdf"; then
+          echo "Successfully downloaded fallback CV"
+        else
+          echo "Error: CV build failed and no fallback available"
+          exit 1
+        fi
     
     - name: Verify CV exists
       run: |
         if [ ! -f "public/files/cv.pdf" ]; then
-          echo "Error: CV PDF not generated and no fallback available"
+          echo "Error: No CV PDF found after build process"
           exit 1
         fi
         echo "CV PDF verified: $(ls -la public/files/cv.pdf)"
+        
+        # Check if this is a newly built CV or fallback
+        if [ "${{ steps.build-cv.outcome }}" == "success" ]; then
+          echo "✅ Using newly built CV from LaTeX source"
+          if [ "${{ steps.cv-changes.outputs.cv-changed }}" == "true" ]; then
+            echo "🔄 CV was rebuilt due to source changes"
+          else
+            echo "🔁 CV was rebuilt (no source changes, but LaTeX available)"
+          fi
+        else
+          echo "⚠️ Using fallback CV from previous release"
+          echo "🚨 LaTeX build failed - check the build logs above"
+        fi
     
     - name: Build Next.js application
       run: npm run build-only
@@ -58,13 +89,26 @@ jobs:
         retention-days: 90
       
     - name: Create/Update CV Release
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.build-cv.outcome == 'success'
       uses: softprops/action-gh-release@v1
       with:
         tag_name: cv-latest
         name: "Latest CV"
-        body: "Auto-generated CV from LaTeX source"
+        body: |
+          Auto-generated CV from LaTeX source
+          
+          Generated from commit: ${{ github.sha }}
+          Build time: ${{ github.event.head_commit.timestamp }}
         files: public/files/cv.pdf
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Comment on build result
+      if: github.event_name == 'push'
+      run: |
+        if [ "${{ steps.build-cv.outcome }}" == "success" ]; then
+          echo "🎉 CV successfully built from LaTeX and released!"
+        else
+          echo "⚠️ CV build failed, used fallback version for deployment"
+        fi

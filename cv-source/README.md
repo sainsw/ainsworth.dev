@@ -28,12 +28,19 @@ The CV is automatically built during:
 
 The generated PDF is placed at `public/files/cv.pdf` and served at `/files/cv.pdf`.
 
-### Fallback System
+### Intelligent Build System
 
+**Build Priority:**
+1. **Always attempts LaTeX build first** when source changes detected
+2. **Only uses fallback** if LaTeX build fails  
+3. **Creates new release** only when LaTeX build succeeds
+
+**Fallback System:**
 - **No static PDF** is stored in the repo
-- **GitHub releases** store the latest built CV as `cv-latest` 
-- **Build process** downloads previous CV as fallback if LaTeX fails
+- **GitHub releases** store the latest successful build as `cv-latest` 
+- **Build process** downloads previous CV only if current build fails
 - **90-day artifacts** provide additional backup in GitHub Actions
+- **Smart change detection** shows whether rebuild was due to source changes
 
 ## Editing
 
