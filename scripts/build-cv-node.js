@@ -2,8 +2,15 @@
 
 const fs = require('fs');
 const path = require('path');
+const { JSDOM } = require('jsdom');
 
 console.log('📄 Building CV from LaTeX source using LaTeX.js...');
+
+// Create a DOM environment for LaTeX.js (it expects browser globals)
+const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+global.document = dom.window.document;
+global.window = dom.window;
+global.HTMLElement = dom.window.HTMLElement;
 
 // Check if latex.js is available
 let LaTeX;
