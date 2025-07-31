@@ -31,7 +31,7 @@ export default function Page() {
       </div>
       <p className="prose prose-neutral dark:prose-invert">
         {`I'm a Senior Full Stack Engineer with 8+ years of experience in full-stack development and cloud solutions. I currently `}
-        <Link href="/work">work</Link>
+        <Link href="/work" prefetch={true}>work</Link>
         {` at `}
         <span className="not-prose">
           <Badge href="https://www.ibm.com">
@@ -75,7 +75,7 @@ export default function Page() {
       <div className="prose prose-neutral dark:prose-invert">
         <p>
           I'm passionate about enterprise design thinking and building scalable, reliable software solutions. 
-          On my <Link href="/blog">blog</Link>, I share insights about software development, cloud technologies, .NET, Azure, and the latest in enterprise software architecture.
+          On my <Link href="/blog" prefetch={true}>blog</Link>, I share insights about software development, cloud technologies, .NET, Azure, and the latest in enterprise software architecture.
           You'll find content that reflects my experience in leading development teams and implementing modern software practices.
         </p>
       </div>

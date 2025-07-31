@@ -3,15 +3,19 @@ import Link from 'next/link';
 const navItems = {
   '/': {
     name: 'home',
+    prefetch: false, // already on home
   },
   '/work': {
     name: 'work',
+    prefetch: true, // high priority content
   },
   '/blog': {
     name: 'blog',
+    prefetch: true, // high priority content
   },
   '/guestbook': {
     name: 'guestbook',
+    prefetch: false, // lower priority
   },
 };
 
@@ -24,11 +28,12 @@ export function Navbar() {
           id="nav"
         >
           <div className="flex flex-row space-x-0 pr-10">
-            {Object.entries(navItems).map(([path, { name }]) => {
+            {Object.entries(navItems).map(([path, { name, prefetch }]) => {
               return (
                 <Link
                   key={path}
                   href={path}
+                  prefetch={prefetch}
                   className="transition-all hover:text-neutral-800 dark:hover:text-neutral-200 flex align-middle relative py-1 px-2"
                 >
                   {name}
