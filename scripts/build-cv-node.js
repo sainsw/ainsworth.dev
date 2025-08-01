@@ -40,14 +40,10 @@ texContent = texContent.replace(
     '\\documentclass[10pt]{article}'
 );
 
-// Add basic packages that LaTeX.js might support
+// Add only packages that LaTeX.js definitely supports
 const latexjsHeader = `
-\\usepackage[margin=1in]{geometry}
 \\usepackage{graphicx}
 \\usepackage{xcolor}
-\\usepackage{enumitem}
-\\setlength{\\parindent}{0pt}
-\\setlength{\\parskip}{0.5em}
 `;
 
 // Insert after documentclass
@@ -56,13 +52,21 @@ texContent = texContent.replace(
     `\\documentclass[10pt]{article}${latexjsHeader}`
 );
 
-// Remove or replace custom commands that LaTeX.js might not support
-// This is a basic conversion - LaTeX.js has limited command support
+// Remove or replace commands that LaTeX.js doesn't support
+// LaTeX.js has very limited command support, so we need to be aggressive
 texContent = texContent
     .replace(/\\cvsect\{([^}]+)\}/g, '\\section{$1}') // Convert custom sections
     .replace(/\\begin{minipage}[^{]*{[^}]+}/g, '\\begin{minipage}{0.5\\textwidth}') // Simplify minipage
-    .replace(/\\vspace\{[^}]*\}/g, '') // Remove custom spacing
-    .replace(/\\hspace\{[^}]*\}/g, '') // Remove custom spacing
+    .replace(/\\vspace\{[^}]*\}/g, '') // Remove spacing
+    .replace(/\\hspace\{[^}]*\}/g, '') // Remove spacing  
+    .replace(/\\setlength\{[^}]*\}\{[^}]*\}/g, '') // Remove setlength commands
+    .replace(/\\usepackage\[[^\]]*\]\{[^}]*\}/g, '') // Remove packages with options
+    .replace(/\\usepackage\{geometry\}/g, '') // Remove geometry package
+    .replace(/\\usepackage\{enumitem\}/g, '') // Remove enumitem package
+    .replace(/\\renewcommand[^}]*\}[^}]*\}/g, '') // Remove renewcommand
+    .replace(/\\RequirePackage[^}]*\}/g, '') // Remove RequirePackage
+    .replace(/\\fontsize\{[^}]*\}\{[^}]*\}/g, '') // Remove fontsize
+    .replace(/\\selectfont/g, '') // Remove selectfont
     .replace(/\\\\$/gm, '\\\\') // Clean up line endings
 
 console.log('✅ LaTeX source converted for LaTeX.js compatibility');
