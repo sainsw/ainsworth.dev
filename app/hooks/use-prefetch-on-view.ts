@@ -7,19 +7,10 @@ export function usePrefetchOnView(url: string, options?: IntersectionObserverIni
 
   useEffect(() => {
     const element = containerRef.current;
-    if (!element) {
-      console.log('usePrefetchOnView: No element found for', url);
-      return;
-    }
-
-    console.log('usePrefetchOnView: Setting up observer for', url);
+    if (!element) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        console.log(`usePrefetchOnView: Intersection change for ${url}:`, {
-          isIntersecting: entry.isIntersecting,
-          intersectionRatio: entry.intersectionRatio
-        });
         setIsIntersecting(entry.isIntersecting);
       },
       {
@@ -41,8 +32,6 @@ export function usePrefetchOnView(url: string, options?: IntersectionObserverIni
     if (isIntersecting && !hasPrefetched.current) {
       hasPrefetched.current = true;
       
-      console.log(`usePrefetchOnView: Starting prefetch for ${url}`);
-      
       // Use fetch() for PDFs as browsers may not handle <link rel="prefetch"> for PDFs reliably
       fetch(url, {
         method: 'GET',
@@ -51,15 +40,10 @@ export function usePrefetchOnView(url: string, options?: IntersectionObserverIni
         priority: 'low' // Low priority prefetch
       })
       .then(response => {
-        if (response.ok) {
-          console.log(`✅ PDF prefetch completed: ${url} (${response.status})`);
-          // Response is cached automatically by browser
-        } else {
-          console.warn(`⚠️ PDF prefetch response not OK: ${url} (${response.status})`);
-        }
+        // Response is cached automatically by browser
       })
-      .catch(error => {
-        console.warn(`❌ PDF prefetch failed: ${url}`, error);
+      .catch(() => {
+        // Silently handle prefetch failures
       });
 
       // Also add the link element as fallback for browsers that support it
@@ -67,7 +51,6 @@ export function usePrefetchOnView(url: string, options?: IntersectionObserverIni
       link.rel = 'prefetch';
       link.href = url;
       document.head.appendChild(link);
-      console.log(`usePrefetchOnView: Added both fetch() and <link> prefetch for ${url}`);
     }
   }, [isIntersecting, url]);
 
