@@ -31,11 +31,46 @@ if (!fs.existsSync(outputDir)) {
 
 // Read the LaTeX source file
 const texFilePath = path.join(__dirname, '..', 'cv-source', 'main.tex');
-const texContent = fs.readFileSync(texFilePath, 'utf8');
+let texContent = fs.readFileSync(texFilePath, 'utf8');
 
-// Also read the class file
-const clsFilePath = path.join(__dirname, '..', 'cv-source', 'developercv.cls');
-const clsContent = fs.readFileSync(clsFilePath, 'utf8');
+// Convert custom developercv class to standard article class for LaTeX.js
+console.log('🔄 Converting custom document class to LaTeX.js compatible format...');
+texContent = texContent.replace(
+    /\\documentclass\[.*?\]\{developercv\}/,
+    '\\documentclass[10pt]{article}'
+);
+
+// Add basic packages that LaTeX.js might support
+const latexjsHeader = `
+\\usepackage[margin=1in]{geometry}
+\\usepackage{graphicx}
+\\usepackage{xcolor}
+\\usepackage{enumitem}
+\\setlength{\\parindent}{0pt}
+\\setlength{\\parskip}{0.5em}
+`;
+
+// Insert after documentclass
+texContent = texContent.replace(
+    /\\documentclass\[10pt\]\{article\}/,
+    `\\documentclass[10pt]{article}${latexjsHeader}`
+);
+
+// Remove or replace custom commands that LaTeX.js might not support
+// This is a basic conversion - LaTeX.js has limited command support
+texContent = texContent
+    .replace(/\\cvsect\{([^}]+)\}/g, '\\section{$1}') // Convert custom sections
+    .replace(/\\begin{minipage}[^{]*{[^}]+}/g, '\\begin{minipage}{0.5\\textwidth}') // Simplify minipage
+    .replace(/\\vspace\{[^}]*\}/g, '') // Remove custom spacing
+    .replace(/\\hspace\{[^}]*\}/g, '') // Remove custom spacing
+    .replace(/\\\\$/gm, '\\\\') // Clean up line endings
+
+console.log('✅ LaTeX source converted for LaTeX.js compatibility');
+
+// Save converted LaTeX for debugging
+const debugPath = path.join(outputDir, 'converted.tex');
+fs.writeFileSync(debugPath, texContent);
+console.log('🐛 Converted LaTeX saved to:', debugPath);
 
 console.log('🔨 Compiling LaTeX with LaTeX.js...');
 
