@@ -41,6 +41,18 @@ const nextConfig = {
         ],
       },
       {
+        source: '/files/cv-:version.pdf',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }, // 1 year for versioned files
+        ],
+      },
+      {
+        source: '/files/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=86400, must-revalidate' }, // 24 hours for non-versioned files
+        ],
+      },
+      {
         source: '/(.*)',
         headers: securityHeaders,
       },

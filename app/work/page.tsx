@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import { ArrowIcon } from '../components/arrow-icon';
 import { Icon } from '../../components/icon';
+import { usePrefetchOnView } from '../hooks/use-prefetch-on-view';
+import { CV_VERSION } from '../../lib/version';
 
 
 const education = [
@@ -115,6 +117,9 @@ function Paragraph({ key, str }) {
 }
 
 export default function Page() {
+  const cvUrl = `/files/cv-${CV_VERSION}.pdf`;
+  const cvLinkRef = usePrefetchOnView(cvUrl);
+  
   return (
     <section>
       <div>
@@ -154,12 +159,12 @@ export default function Page() {
         </ul>
       </div>
       <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-neutral-600 dark:text-neutral-300">
-        <li>
+        <li ref={cvLinkRef}>
           <a
             className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-all"
             rel="noopener noreferrer"
             target="_blank"
-            href="/files/cv.pdf"
+            href={cvUrl}
           >
             <ArrowIcon />
             <p className="h-7 ml-2">Open PDF Version</p>

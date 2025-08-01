@@ -2,8 +2,9 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
-// Generate a random 8-character hash for cache busting
-const version = crypto.randomBytes(4).toString('hex');
+// Generate random 8-character hashes for cache busting
+const spriteVersion = crypto.randomBytes(4).toString('hex');
+const cvVersion = crypto.randomBytes(4).toString('hex');
 
 // Ensure lib directory exists
 const libDir = path.join(__dirname, '..', 'lib');
@@ -13,6 +14,9 @@ if (!fs.existsSync(libDir)) {
 
 // Write version file
 const versionFile = path.join(libDir, 'version.js');
-fs.writeFileSync(versionFile, `export const SPRITE_VERSION = '${version}';\n`);
+fs.writeFileSync(versionFile, `export const SPRITE_VERSION = '${spriteVersion}';
+export const CV_VERSION = '${cvVersion}';
+`);
 
-console.log(`Generated sprite version: ${version}`);
+console.log(`Generated sprite version: ${spriteVersion}`);
+console.log(`Generated CV version: ${cvVersion}`);

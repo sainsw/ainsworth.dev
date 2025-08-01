@@ -19,9 +19,24 @@ if command -v pdflatex &> /dev/null; then
     echo "🔨 Running pdflatex (second pass)..."
     pdflatex -interaction=nonstopmode main.tex > /dev/null
     
-    # Move the generated PDF to the public files directory
-    echo "📁 Moving CV to public directory..."
-    mv main.pdf ../public/files/cv.pdf
+    # Read CV version for cache busting
+    if [ -f "../lib/version.js" ]; then
+        CV_VERSION=$(node -e "const {CV_VERSION} = require('../lib/version.js'); console.log(CV_VERSION);")
+        echo "📋 Using CV version: $CV_VERSION"
+        VERSIONED_FILENAME="cv-${CV_VERSION}.pdf"
+    else
+        echo "⚠️ No version file found, using default filename"
+        VERSIONED_FILENAME="cv.pdf"
+    fi
+    
+    # Move the generated PDF to the public files directory with versioned name
+    echo "📁 Moving CV to public directory as $VERSIONED_FILENAME..."
+    mv main.pdf "../public/files/$VERSIONED_FILENAME"
+    
+    # Also create a symlink for backwards compatibility
+    cd ../public/files
+    ln -sf "$VERSIONED_FILENAME" cv.pdf
+    cd ../../cv-source
     
     # Clean up auxiliary files
     echo "🧹 Cleaning up auxiliary files..."
