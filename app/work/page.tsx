@@ -4,76 +4,17 @@ import { ArrowIcon } from '../components/arrow-icon';
 import { Icon } from '../../components/icon';
 import { usePrefetchOnView } from '../hooks/use-prefetch-on-view';
 import { CV_VERSION } from '../../lib/version';
+import { resumeData } from '../../data/resume';
 
-
-const education = [
-  {
-    index: 1,
-    name: 'University of Liverpool, UK',
-    dates: '2013 - 2016',
-    qual: 'Computer Science BSc - 2:1',
-    description: ['For my undergraduate dissertation, \'Accelerometer Games for the iOS Platform\', I created a physics–based game for iPhone and iPad. This was a great opportunity to learn Swift and SpriteKit, along with the App Store submission process. ',
-      'The project was well–received, with the University choosing to use my game as a learning tool and as an example of an exceptional final project during open days.'],
-    iconId: "uol",
-    url: "https://www.liverpool.ac.uk/"
-  },
-  {
-    index: 2,
-    name: 'Ashton Sixth Form College, UK',
-    dates: '2011 - 2013',
-    qual: 'Computing, Physics, Maths A-Levels',
-    iconId: "asfc",
-    url: "https://www.asfc.ac.uk/"
-  },
-  {
-    index: 3,
-    name: 'West Hill High School, UK',
-    dates: '2006 - 2011',
-    iconId: "westhill",
-    url: "https://www.westhillschool.co.uk/"
-  },
-]
-
-const work = [
-  {
-    name: 'IBM',
-    dates: '2025 - Present',
-    position: 'Senior Full Stack Engineer',
-    description: ['In my current role at IBM, I focus on enterprise software development and cloud architecture solutions. I work with cutting-edge technologies to build scalable, reliable software systems that serve enterprise clients globally.',
-                  'My responsibilities include applying enterprise design thinking principles, developing cloud-native applications, and implementing modern software architecture patterns. I leverage Azure cloud services, .NET Core, and various enterprise technologies to deliver robust solutions.',
-                  'I hold multiple certifications including Enterprise Design Thinking Practitioner and Azure Fundamentals, reflecting my commitment to staying current with industry best practices and emerging technologies.'],
-    iconId: "ibm",
-    url: "https://www.ibm.com/"
-  },
-  {
-    name: 'musicMagpie',
-    dates: '2020 - 2025',
-    position: 'Senior Software Engineer',
-    description: ['In this role, I evolved from a mid-level software engineer to a senior developer and team lead. I went from helping to rebuild and improve the company\'s website, to leading a team of front and back-end developers. I leveraged Azure, Terraform, ASP.NET, and more, and helped to orchestrate the integration of IdentityServer4, driving measurable improvements in load times and customer conversion.',
-                  'As a senior developer, I guided a team of five through Scrum methodology while continuously researching and implementing cutting-edge technologies to optimise workflows and elevate performance. I worked hard to foster a collaborative environment in which everyone could demonstrate their strengths. Through this, my team successfully overhauled multi-national customer facing applications in React and Typescript, and moved to .Net Core RESTful APIs, Service Bus architecture and NoSQL data warehousing.',
-                  'This role expanded not only my technical expertise but also essential leadership, communication, and problem-solving skills, driving the company\'s overall success and customer satisfaction.'],
-    iconId: "musicmagpie",
-    url: "https://www.musicmagpie.co.uk/"
-  },
-  {
-    name: 'Bott & Company Solicitors',
-    dates: '2016 - 2020',
-    position: 'C# Software Developer',
-    description: ['At this consumer-focused firm of solicitors, efficient, user-friendly software played a crucial role in day-to-day operations. My role was to replace system components with best practices and MVC3 under C#, to design and maintain ASP.Net Web Apps and APIs with MSSQL back-end, to implement SSRS reports and TSQL Stored Procedures, and to oversee and expand legal-specific case management systems.',
-                  'Through my guidance and expertise, the business adopted industry-standard tools including Git and Jira. I also led exploratory research projects into Azure, and contributed to upgrading data warehouse security to the ISO-27001 standard.'],
-    iconId: "bott",
-    url: "https://www.bottonline.co.uk/"
-  },
-  {
-    name: 'WHSmith',
-    dates: '2012 - 2016',
-    position: 'Sales Assistant',
-    iconId: "whsmith",
-    url: "https://www.whsmith.co.uk/"
-  }
-]
-
-function ExperienceCard({ name, dates, post, description, iconId, url }) {
+function ExperienceCard({ name, dates, post, description, iconId, url, technologies = [] }: {
+  name: string;
+  dates: string; 
+  post: string;
+  description?: string[];
+  iconId: string;
+  url: string;
+  technologies?: string[];
+}) {
   return (
     <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4">
       <div className="flex flex-col">
@@ -101,6 +42,13 @@ function ExperienceCard({ name, dates, post, description, iconId, url }) {
           {description.map((desc, index) => (
             <Paragraph key={index} str={desc} />
           ))}
+          {technologies && technologies.length > 0 && (
+            <div className="mt-3 pt-2 border-t border-neutral-200 dark:border-neutral-700">
+              <p className="prose-sm text-neutral-600 dark:text-neutral-400">
+                {technologies.join(' • ')}
+              </p>  
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -125,16 +73,17 @@ export default function Page() {
       <div>
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">work 👨‍💻</h1>
         <ul>
-          {work.map((job, index) => (
+          {resumeData.experience.map((job, index) => (
             <li key={index} className="group py-2">
             <ExperienceCard
               key={index}
-              name={job.name}
+              name={job.company}
               dates={job.dates}
               post={job.position}
               description={job.description}
               iconId={job.iconId}
               url={job.url}
+              technologies={job.technologies}
             />
             </li>
           ))}
@@ -143,13 +92,13 @@ export default function Page() {
       <div>
         <h1 className="font-medium text-2xl mb-8 mt-12 tracking-tighter">education 👨‍🎓</h1>
         <ul>
-          {education.map((school, index) => (
+          {resumeData.education.map((school, index) => (
             <li key={index} className="group py-2">
             <ExperienceCard
               key={index}
-              name={school.name}
+              name={school.institution}
               dates={school.dates}
-              post={school.qual}
+              post={school.degree}
               description={school.description}
               iconId={school.iconId}
               url={school.url}

@@ -3,6 +3,10 @@ set -e
 
 echo "📄 Building CV from LaTeX source..."
 
+# TODO: Generate LaTeX from structured data (currently has formatting issues)
+# echo "🔄 Generating LaTeX from resume data..."
+# node ./scripts/generate-latex.js
+
 # Check if pdflatex is available (local environment)
 if command -v pdflatex &> /dev/null; then
     echo "🟢 Using system pdflatex for compilation..."
