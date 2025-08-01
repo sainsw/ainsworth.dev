@@ -1,14 +1,12 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Starting Vercel build with LaTeX CV generation..."
+echo "🚀 Starting Vercel build..."
 
-# Install LaTeX.js, JSDOM (for DOM environment), and Puppeteer for HTML to PDF conversion
-echo "📦 Installing LaTeX.js, JSDOM, and Puppeteer..."
-npm install --no-save latex.js jsdom puppeteer
+# Skip LaTeX compilation in Vercel - use committed PDF instead
+echo "📄 LaTeX compilation will be skipped in Vercel"
+echo "💡 CV should be built locally and committed when source changes"
 
-echo "✅ LaTeX tools installation complete"
-
-# Run standard build process (which includes CV build)
+# Run standard build process (will use committed CV if available)
 echo "🔨 Running application build..."
 npm run build-only

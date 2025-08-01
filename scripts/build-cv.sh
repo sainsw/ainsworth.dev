@@ -3,13 +3,6 @@ set -e
 
 echo "📄 Building CV from LaTeX source..."
 
-# Check if latex.js, jsdom, and puppeteer are available (Vercel environment)
-if npm list latex.js &> /dev/null && npm list jsdom &> /dev/null && npm list puppeteer &> /dev/null; then
-    echo "🟢 Using LaTeX.js + JSDOM + Puppeteer for compilation..."
-    node ./scripts/build-cv-node.js
-    exit 0
-fi
-
 # Check if pdflatex is available (local environment)
 if command -v pdflatex &> /dev/null; then
     echo "🟢 Using system pdflatex for compilation..."
@@ -42,5 +35,15 @@ fi
 
 echo "❌ No LaTeX compiler found."
 echo "💡 To build locally, install LaTeX: brew install --cask mactex"
-echo "🔧 For Vercel, node-latex should be installed via vercel-build.sh"
-exit 1
+echo "🔧 For deployment, build locally and commit the PDF"
+
+# Check if a pre-built CV exists (committed to repo)
+if [ -f "public/files/cv.pdf" ]; then
+    echo "✅ Using committed pre-built CV"
+    echo "📄 To update: run 'npm run build-cv' locally and commit the PDF"
+    exit 0
+else
+    echo "❌ No pre-built CV found and no LaTeX compiler available"
+    echo "🚨 Build the CV locally first: npm run build-cv"
+    exit 1
+fi
