@@ -214,9 +214,12 @@ function generateExperienceSection(experience) {
 
   experience.forEach(job => {
     const location = job.location ? `, ${job.location}` : '';
-    const techStack = job.technologies.length > 0 
-      ? `\\\\\\vspace{0.1cm}\\texttt{${job.technologies.join('}\\slashsep\\texttt{')}}`
-      : '';
+    let techStack = '';
+    
+    if (job.technologies.length > 0) {
+      const techItems = job.technologies.map(tech => `\\texttt{${escapeLatex(tech)}}`);
+      techStack = `\\\\\\vspace{0.1cm}${techItems.join('\\slashsep')}`;
+    }
     
     const descriptions = job.description.map(desc => escapeLatex(desc)).join('\\\\\\vspace{0.1cm}');
     
