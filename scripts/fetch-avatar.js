@@ -132,6 +132,12 @@ async function fetchGitHubAvatar() {
       console.log(`📁 WebP: ${path.relative(process.cwd(), WEBP_PATH)} (existing fallback)`);
     }
     
+    // Debug: Check actual file sizes
+    const webpStats = fs.statSync(WEBP_PATH);
+    const jpgStats = fs.statSync(JPG_PATH);
+    console.log(`🔍 WebP size: ${webpStats.size} bytes, modified: ${webpStats.mtime}`);
+    console.log(`🔍 JPG size: ${jpgStats.size} bytes, modified: ${jpgStats.mtime}`);
+    
   } catch (error) {
     console.log('ℹ️  Avatar fetch failed, using existing files');
     console.log(`   Reason: ${error.message}`);
