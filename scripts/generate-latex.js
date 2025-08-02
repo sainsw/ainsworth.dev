@@ -144,9 +144,7 @@ function generateExperienceSection(experience) {
 		{\\raggedright ${descriptions}${techStack}}`;
     
     if (index < experience.length - 1) {
-      // Add extra space after IBM (first entry) for better visual separation
-      const spacing = index === 0 ? '\\vspace{1.0cm}' : '\\vspace{0.6cm}';
-      experienceLatex += `\n\n${spacing}`;
+      experienceLatex += '\n\n\\vspace{0.6cm}';
     }
   });
 
