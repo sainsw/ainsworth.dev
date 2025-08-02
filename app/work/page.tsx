@@ -43,8 +43,8 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
             <Paragraph key={index} str={desc} />
           ))}
           {technologies && technologies.length > 0 && (
-            <div className="mt-3 pt-2 border-t border-neutral-200 dark:border-neutral-700">
-              <p className="prose-sm text-neutral-600 dark:text-neutral-400">
+            <div className="mt-4 pt-2 border-t border-neutral-200 dark:border-neutral-700">
+              <p className="prose-sm text-neutral-600 dark:text-neutral-400 italic">
                 {technologies.join(' • ')}
               </p>  
             </div>
@@ -66,7 +66,7 @@ function Paragraph({ key, str }) {
 
 function SkillCloud({ skills }: { skills: string[] }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 p-2">
       {skills.map((skill, index) => (
         <span
           key={index}
