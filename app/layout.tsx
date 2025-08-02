@@ -72,6 +72,31 @@ export default function RootLayout({
         <link rel="preconnect" href="https://api.resend.com" />
         <link rel="preload" href={`/images/home/avatar-${AVATAR_VERSION}.webp`} as="image" type="image/webp" />
         <link rel="preload" href="/sprite.svg" as="image" type="image/svg+xml" />
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Convert existing CSS links to async loading
+            document.addEventListener('DOMContentLoaded', function() {
+              var stylesheets = document.querySelectorAll('link[rel="stylesheet"]');
+              stylesheets.forEach(function(link) {
+                if (link.href.includes('_next/static/css') || link.href.includes('global')) {
+                  // Use loadCSS technique
+                  var asyncLink = document.createElement('link');
+                  asyncLink.rel = 'preload';
+                  asyncLink.as = 'style';
+                  asyncLink.href = link.href;
+                  asyncLink.onload = function() {
+                    this.onload = null;
+                    this.rel = 'stylesheet';
+                  };
+                  // Insert async link before the original
+                  link.parentNode.insertBefore(asyncLink, link);
+                  // Remove original blocking link
+                  link.remove();
+                }
+              });
+            });
+          `
+        }} />
       </head>
       <body className="antialiased max-w-2xl mb-40 flex flex-col md:flex-row mx-4 mt-8 lg:mx-auto">
         <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
