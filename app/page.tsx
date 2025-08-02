@@ -53,21 +53,21 @@ export default function Page() {
         {` in Manchester, where I focus on enterprise software development and cloud architecture with `}
         <span className="not-prose">
           <Badge href="https://react.dev">
-            <Icon id="react" size={14} className="!mr-1" />
+            <Icon id="react" size={14} className="!mr-1" decorative={true} />
             React
           </Badge>
         </span>
         {`, `}
         <span className="not-prose">
           <Badge href="https://dotnet.microsoft.com">
-            <Icon id="dotnet" size={14} className="!mr-1" />
+            <Icon id="dotnet" size={14} className="!mr-1" decorative={true} />
             .NET
           </Badge>
         </span>
         {`, and `}
         <span className="not-prose">
           <Badge href="https://azure.microsoft.com/en-gb">
-            <Icon id="azure" size={14} className="!mr-1" />
+            <Icon id="azure" size={14} className="!mr-1" decorative={true} />
             Azure
           </Badge>
         </span>

@@ -1,6 +1,7 @@
 interface IconProps extends React.SVGProps<SVGSVGElement> {
   id: string;
   size?: number;
+  decorative?: boolean; // When true, makes icon decorative (empty alt)
 }
 
 // Logos that should use PNG/WebP files instead of sprite
@@ -14,7 +15,8 @@ const BRAND_COLOR_LOGOS = new Set(['dotnet', 'azure']);
 
 import { SPRITE_VERSION } from '../lib/version';
 
-export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
+export function Icon({ id, size = 16, className = '', decorative = false, ...props }: IconProps) {
+  const altText = decorative ? '' : `${id} logo`;
   // Use PNG/WebP fallback for certain logos
   if (PNG_LOGOS.has(id)) {
     // Special handling for ASFC logo with theme support
@@ -37,7 +39,7 @@ export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
           />
           <img 
             src="/images/logos/asfc_black.png"
-            alt={id}
+            alt={altText}
             width={size}
             height={size}
             className={className}
@@ -52,7 +54,7 @@ export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
         <source srcSet={`/images/logos/${getLogoFilename(id)}.webp`} type="image/webp" />
         <img 
           src={`/images/logos/${getLogoFilename(id)}.png`}
-          alt={id}
+          alt={altText}
           width={size}
           height={size}
           className={className}
@@ -72,7 +74,7 @@ export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
         />
         <img 
           src={`/images/logos/${id}_colour.svg`}
-          alt={id}
+          alt={altText}
           width={size}
           height={size}
           className={className}
@@ -90,7 +92,7 @@ export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
         <source srcSet={`/images/logos/${id}.webp`} type="image/webp" />
         <img 
           src={`/images/logos/${id}.${fileExtension}`}
-          alt={id}
+          alt={altText}
           width={size}
           height={size}
           className={className}
@@ -106,6 +108,8 @@ export function Icon({ id, size = 16, className = '', ...props }: IconProps) {
       width={size}
       height={size}
       className={className}
+      aria-label={decorative ? undefined : altText}
+      role={decorative ? "presentation" : "img"}
       {...props}
     >
       <use href={`/sprite.svg?v=${SPRITE_VERSION}#${id}`} />
