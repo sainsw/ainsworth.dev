@@ -64,40 +64,35 @@ function Paragraph({ key, str }) {
   );
 }
 
-function SkillCloud({ skills, title }: { skills: string[], title: string }) {
-  // Generate different sizes for word cloud effect
+function SkillCloud({ skills }: { skills: string[] }) {
+  // Generate different sizes for tag cloud effect
   const getSkillSize = (index: number) => {
-    const sizes = ['text-xs', 'text-sm', 'text-base', 'text-lg'];
+    const sizes = ['text-xs', 'text-sm', 'text-sm', 'text-base']; // Mostly small/medium
     return sizes[index % sizes.length];
   };
   
   const getSkillColor = (index: number) => {
     const colors = [
-      'text-blue-600 dark:text-blue-400',
-      'text-green-600 dark:text-green-400', 
-      'text-purple-600 dark:text-purple-400',
-      'text-orange-600 dark:text-orange-400',
-      'text-red-600 dark:text-red-400',
-      'text-indigo-600 dark:text-indigo-400'
+      'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', 
+      'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+      'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+      'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+      'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'
     ];
     return colors[index % colors.length];
   };
 
   return (
-    <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-4 py-6">
-      <h2 className="font-medium text-lg mb-4 text-neutral-900 dark:text-neutral-100">
-        {title}
-      </h2>
-      <div className="flex flex-wrap gap-2">
-        {skills.map((skill, index) => (
-          <span
-            key={index}
-            className={`font-mono font-medium transition-colors hover:scale-105 transition-transform cursor-default ${getSkillSize(index)} ${getSkillColor(index)}`}
-          >
-            {skill}
-          </span>
-        ))}
-      </div>
+    <div className="flex flex-wrap gap-2">
+      {skills.map((skill, index) => (
+        <span
+          key={index}
+          className={`px-3 py-1 rounded-full font-medium transition-transform hover:scale-105 cursor-default ${getSkillSize(index)} ${getSkillColor(index)}`}
+        >
+          {skill}
+        </span>
+      ))}
     </div>
   );
 }
@@ -114,7 +109,7 @@ export default function Page() {
       {/* Skills Cloud Section */}
       <div className="mb-12">
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">skills & technologies 💻</h1>
-        <SkillCloud skills={allSkills} title="Technical Expertise" />
+        <SkillCloud skills={allSkills} />
       </div>
 
       <div>
@@ -155,12 +150,9 @@ export default function Page() {
         </ul>
       </div>
 
-      {/* Additional Information Section */}
-      <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4">
-          <h2 className="font-medium text-lg mb-3 text-neutral-900 dark:text-neutral-100 tracking-tighter">
-            Non-Technical Skills
-          </h2>
+      <div className="mt-12">
+        <h1 className="font-medium text-2xl mb-8 tracking-tighter">non-technical skills 🤝</h1>
+        <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 mb-8">
           <ul className="space-y-2">
             {resumeData.nonTechnicalSkills.map((skill, index) => (
               <li key={index} className="text-sm text-neutral-600 dark:text-neutral-400">
@@ -169,10 +161,11 @@ export default function Page() {
             ))}
           </ul>
         </div>
+      </div>
+
+      <div>
+        <h1 className="font-medium text-2xl mb-8 tracking-tighter">hobbies 🎨</h1>
         <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4">
-          <h2 className="font-medium text-lg mb-3 text-neutral-900 dark:text-neutral-100 tracking-tighter">
-            Hobbies
-          </h2>
           <div className="space-y-2">
             {resumeData.hobbies.map((hobby, index) => (
               <p key={index} className="text-sm text-neutral-600 dark:text-neutral-400">
