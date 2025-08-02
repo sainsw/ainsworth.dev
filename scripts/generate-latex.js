@@ -212,7 +212,7 @@ function generateExperienceSection(experience) {
 
 \\begin{entrylist}`;
 
-  experience.forEach(job => {
+  experience.forEach((job, index) => {
     const location = job.location ? `, ${job.location}` : '';
     let techStack = '';
     
@@ -230,8 +230,10 @@ function generateExperienceSection(experience) {
 		{${escapeLatex(job.company)}${escapeLatex(location)}}
 		{\\raggedright ${descriptions}${techStack}}`;
     
-    if (job !== experience[experience.length - 1]) {
-      experienceLatex += '\n\n\\vspace{0.6cm}';
+    if (index < experience.length - 1) {
+      // Add extra space after IBM (first entry) for better visual separation
+      const spacing = index === 0 ? '\\vspace{1.0cm}' : '\\vspace{0.6cm}';
+      experienceLatex += `\n\n${spacing}`;
     }
   });
 

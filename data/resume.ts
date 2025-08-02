@@ -138,7 +138,7 @@ export const resumeData: ResumeData = {
     },
     {
       institution: "West Hill High School",
-      degree: "",
+      degree: "11 GCSEs A*-B",
       dates: "2006 - 2011",
       location: "UK", 
       iconId: "westhill",
