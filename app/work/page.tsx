@@ -70,6 +70,34 @@ export default function Page() {
   
   return (
     <section>
+      {/* Summary Section */}
+      <div className="mb-12">
+        <h1 className="font-medium text-2xl mb-8 tracking-tighter">Who Am I? 🤔</h1>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-1">
+            <p className="prose prose-neutral dark:prose-invert">
+              {resumeData.summary}
+            </p>
+          </div>
+          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {resumeData.skillCategories.map((category, index) => (
+              <div key={index} className="space-y-3">
+                <h3 className="font-medium text-lg text-neutral-900 dark:text-neutral-100">
+                  {category.title}
+                </h3>
+                <ul className="space-y-2">
+                  {category.skills.map((skill, skillIndex) => (
+                    <li key={skillIndex} className="text-sm text-neutral-600 dark:text-neutral-400 font-mono">
+                      {skill}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div>
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">work 👨‍💻</h1>
         <ul>
@@ -107,6 +135,31 @@ export default function Page() {
           ))}
         </ul>
       </div>
+
+      {/* Additional Information Section */}
+      <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h2 className="font-medium text-xl mb-4 tracking-tighter">Non-Technical Skills</h2>
+          <ul className="space-y-3">
+            {resumeData.nonTechnicalSkills.map((skill, index) => (
+              <li key={index} className="text-sm text-neutral-600 dark:text-neutral-400">
+                {skill}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-medium text-xl mb-4 tracking-tighter">Hobbies</h2>
+          <div className="space-y-3">
+            {resumeData.hobbies.map((hobby, index) => (
+              <p key={index} className="text-sm text-neutral-600 dark:text-neutral-400">
+                {hobby}
+              </p>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-neutral-600 dark:text-neutral-300">
         <li ref={cvLinkRef}>
           <a
