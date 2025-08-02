@@ -66,7 +66,7 @@ function Paragraph({ key, str }) {
 
 function SkillCloud({ skills }: { skills: string[] }) {
   return (
-    <div className="flex flex-wrap gap-2 p-2">
+    <div className="flex flex-wrap gap-3 p-2">
       {skills.map((skill, index) => (
         <span
           key={index}
