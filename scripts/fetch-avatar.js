@@ -92,6 +92,30 @@ async function getExistingAvatarHash() {
   return 'fallback';
 }
 
+async function createVersionedFromExisting(hash) {
+  // Find the source file to copy from
+  const files = fs.readdirSync(OUTPUT_DIR);
+  const avatarFiles = files.filter(file => 
+    file.startsWith('avatar') && (file.endsWith('.jpg') || file.endsWith('.webp'))
+  );
+  
+  const sourceJpg = avatarFiles.find(f => f.endsWith('.jpg'));
+  const sourceWebp = avatarFiles.find(f => f.endsWith('.webp'));
+  
+  const versionedJpg = path.join(OUTPUT_DIR, `avatar-${hash}.jpg`);
+  const versionedWebp = path.join(OUTPUT_DIR, `avatar-${hash}.webp`);
+  
+  if (sourceJpg && !fs.existsSync(versionedJpg)) {
+    fs.copyFileSync(path.join(OUTPUT_DIR, sourceJpg), versionedJpg);
+    console.log(`📋 Created versioned JPG: avatar-${hash}.jpg`);
+  }
+  
+  if (sourceWebp && !fs.existsSync(versionedWebp)) {
+    fs.copyFileSync(path.join(OUTPUT_DIR, sourceWebp), versionedWebp);
+    console.log(`📋 Created versioned WebP: avatar-${hash}.webp`);
+  }
+}
+
 async function convertWithSharp(inputPath) {
   try {
     const sharp = require('sharp');
@@ -222,12 +246,22 @@ async function fetchGitHubAvatar() {
       fs.unlinkSync(TEMP_PATH);
     }
     
-    // Check for any existing avatar files and update version with their hash
+    // Check for any existing avatar files and ensure versioned files exist
     const existingHash = await getExistingAvatarHash();
     
     if (existingHash !== 'fallback') {
       console.log(`📁 Using existing avatar files in: ${path.relative(process.cwd(), OUTPUT_DIR)}`);
       console.log(`🔑 Existing avatar hash: ${existingHash}`);
+      
+      // Ensure versioned files exist for this hash
+      const versionedWebp = path.join(OUTPUT_DIR, `avatar-${existingHash}.webp`);
+      const versionedJpg = path.join(OUTPUT_DIR, `avatar-${existingHash}.jpg`);
+      
+      if (!fs.existsSync(versionedWebp) || !fs.existsSync(versionedJpg)) {
+        console.log('🔄 Creating versioned files from existing avatars...');
+        await createVersionedFromExisting(existingHash);
+      }
+      
       await updateVersionFile(existingHash);
     } else {
       console.error('💥 No avatar files found! Please ensure avatar files exist in public/images/home/');
