@@ -7,6 +7,7 @@ import { PreloadResources } from 'app/preload';
 import { ArrowIcon } from './components/arrow-icon';
 import { PrideAvatar } from './components/pride-avatar';
 import { Icon } from '../components/icon';
+import { AVATAR_VERSION } from '../lib/version';
 
 function Badge(props) {
   return (
@@ -107,10 +108,10 @@ export default function Page() {
           <a className="block md:mx-auto mb-5 max-w-max" aria-label="find me on linkedin" href="https://www.linkedin.com/in/samainsworth/">
             <PrideAvatar>
               <picture>
-                <source srcSet="/images/home/avatar.webp" type="image/webp" />
+                <source srcSet={`/images/home/avatar-${AVATAR_VERSION}.webp`} type="image/webp" />
                 <img 
                   className="bg-left-bottom h-20 w-20 rounded-full" 
-                  src="/images/home/avatar.jpg" 
+                  src={`/images/home/avatar-${AVATAR_VERSION}.jpg`} 
                   alt="my face"
                   width={80}
                   height={80}

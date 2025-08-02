@@ -41,11 +41,22 @@ if (!fs.existsSync(libDir)) {
   fs.mkdirSync(libDir, { recursive: true });
 }
 
-// Write version file
+// Write version file (preserve existing AVATAR_VERSION if it exists)
 const versionFile = path.join(libDir, 'version.js');
+let avatarVersion = '';
+
+// Check if version file exists and extract AVATAR_VERSION
+if (fs.existsSync(versionFile)) {
+  const existingContent = fs.readFileSync(versionFile, 'utf8');
+  const avatarMatch = existingContent.match(/export const AVATAR_VERSION = '([^']+)';/);
+  if (avatarMatch) {
+    avatarVersion = `export const AVATAR_VERSION = '${avatarMatch[1]}';\n`;
+  }
+}
+
 fs.writeFileSync(versionFile, `export const SPRITE_VERSION = '${spriteVersion}';
 export const CV_VERSION = '${cvVersion}';
-`);
+${avatarVersion}`);
 
 console.log(`Generated sprite version: ${spriteVersion}`);
 console.log(`Generated CV version: ${cvVersion} (based on CV source content)`);
