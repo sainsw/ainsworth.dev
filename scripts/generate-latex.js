@@ -136,17 +136,18 @@ function generateExperienceSection(experience) {
     
     const descriptions = job.description.map(desc => escapeLatex(desc)).join('\\\\\\vspace{0.1cm}');
     
+    // Add extra spacing after IBM entry description to increase gap to next entry
+    const extraSpacing = index === 0 ? '\\\\\\vspace{0.4cm}' : '';
+    
     experienceLatex += `
     \\entry
 		{${escapeLatex(job.dates)}}
 		{${escapeLatex(job.position)}}
 		{${escapeLatex(job.company)}${escapeLatex(location)}}
-		{\\raggedright ${descriptions}${techStack}}`;
+		{\\raggedright ${descriptions}${techStack}${extraSpacing}}`;
     
     if (index < experience.length - 1) {
-      // IBM (first entry) needs extra spacing to match visual spacing of other entries  
-      const spacing = index === 0 ? '\\vspace{1.2cm}' : '\\vspace{0.6cm}';
-      experienceLatex += `\n\n${spacing}`;
+      experienceLatex += '\n\n\\vspace{0.6cm}';
     }
   });
 
