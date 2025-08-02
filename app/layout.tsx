@@ -1,4 +1,3 @@
-import './global.css';
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
@@ -7,6 +6,7 @@ import { Footer } from './components/footer';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SandpackCSS } from './blog/[slug]/sandpack';
+import { CriticalCSS } from './components/critical-css';
 import { AVATAR_VERSION } from '../lib/version';
 
 export const metadata: Metadata = {
@@ -45,6 +45,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://ainsworth.dev',
   },
+  other: {
+    'dns-prefetch': 'https://cdn.vercel-insights.com https://vercel.live https://va.vercel-scripts.com https://static.cloudflareinsights.com https://api.resend.com',
+  },
 };
 
 const cx = (...classes) => classes.filter(Boolean).join(' ');
@@ -64,14 +67,28 @@ export default function RootLayout({
       )}
     >
       <head>
+        <CriticalCSS />
         <SandpackCSS />
-        <link rel="preconnect" href="https://cdn.vercel-insights.com" />
-        <link rel="preconnect" href="https://vercel.live" />
-        <link rel="preconnect" href="https://va.vercel-scripts.com" />
-        <link rel="preconnect" href="https://static.cloudflareinsights.com" />
-        <link rel="preconnect" href="https://api.resend.com" />
         <link rel="preload" href={`/images/home/avatar-${AVATAR_VERSION}.webp`} as="image" type="image/webp" />
         <link rel="preload" href="/sprite.svg" as="image" type="image/svg+xml" />
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Add preconnect hints dynamically
+            ['https://cdn.vercel-insights.com','https://vercel.live','https://va.vercel-scripts.com','https://static.cloudflareinsights.com','https://api.resend.com'].forEach(function(url){
+              var link = document.createElement('link');
+              link.rel = 'preconnect';
+              link.href = url;
+              document.head.appendChild(link);
+            });
+            // Load CSS asynchronously
+            var cssLink = document.createElement('link');
+            cssLink.rel = 'stylesheet';
+            cssLink.href = '/global.css';
+            cssLink.media = 'print';
+            cssLink.onload = function(){this.media='all'};
+            document.head.appendChild(cssLink);
+          `
+        }} />
       </head>
       <body className="antialiased max-w-2xl mb-40 flex flex-col md:flex-row mx-4 mt-8 lg:mx-auto">
         <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
