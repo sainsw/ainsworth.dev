@@ -64,38 +64,57 @@ function Paragraph({ key, str }) {
   );
 }
 
+function SkillCloud({ skills, title }: { skills: string[], title: string }) {
+  // Generate different sizes for word cloud effect
+  const getSkillSize = (index: number) => {
+    const sizes = ['text-xs', 'text-sm', 'text-base', 'text-lg'];
+    return sizes[index % sizes.length];
+  };
+  
+  const getSkillColor = (index: number) => {
+    const colors = [
+      'text-blue-600 dark:text-blue-400',
+      'text-green-600 dark:text-green-400', 
+      'text-purple-600 dark:text-purple-400',
+      'text-orange-600 dark:text-orange-400',
+      'text-red-600 dark:text-red-400',
+      'text-indigo-600 dark:text-indigo-400'
+    ];
+    return colors[index % colors.length];
+  };
+
+  return (
+    <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-4 py-6">
+      <h2 className="font-medium text-lg mb-4 text-neutral-900 dark:text-neutral-100">
+        {title}
+      </h2>
+      <div className="flex flex-wrap gap-2">
+        {skills.map((skill, index) => (
+          <span
+            key={index}
+            className={`font-mono font-medium transition-colors hover:scale-105 transition-transform cursor-default ${getSkillSize(index)} ${getSkillColor(index)}`}
+          >
+            {skill}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Page() {
   const cvUrl = `/files/cv-${CV_VERSION}.pdf`;
   const cvLinkRef = usePrefetchOnView(cvUrl);
   
+  // Combine all skills for word cloud
+  const allSkills = resumeData.skillCategories.flatMap(category => category.skills);
+  
   return (
     <section>
-      {/* Summary Section */}
+      {/* Skills Cloud Section */}
       <div className="mb-12">
-        <h1 className="font-medium text-2xl mb-8 tracking-tighter">Who Am I? 🤔</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1">
-            <p className="prose prose-neutral dark:prose-invert">
-              {resumeData.summary}
-            </p>
-          </div>
-          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {resumeData.skillCategories.map((category, index) => (
-              <div key={index} className="space-y-3">
-                <h3 className="font-medium text-lg text-neutral-900 dark:text-neutral-100">
-                  {category.title}
-                </h3>
-                <ul className="space-y-2">
-                  {category.skills.map((skill, skillIndex) => (
-                    <li key={skillIndex} className="text-sm text-neutral-600 dark:text-neutral-400 font-mono">
-                      {skill}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
+        <h1 className="font-medium text-2xl mb-8 tracking-tighter">skills & technologies 💻</h1>
+        <SkillCloud skills={allSkills} title="Technical Expertise" />
       </div>
 
       <div>
@@ -137,10 +156,12 @@ export default function Page() {
       </div>
 
       {/* Additional Information Section */}
-      <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <h2 className="font-medium text-xl mb-4 tracking-tighter">Non-Technical Skills</h2>
-          <ul className="space-y-3">
+      <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4">
+          <h2 className="font-medium text-lg mb-3 text-neutral-900 dark:text-neutral-100 tracking-tighter">
+            Non-Technical Skills
+          </h2>
+          <ul className="space-y-2">
             {resumeData.nonTechnicalSkills.map((skill, index) => (
               <li key={index} className="text-sm text-neutral-600 dark:text-neutral-400">
                 {skill}
@@ -148,9 +169,11 @@ export default function Page() {
             ))}
           </ul>
         </div>
-        <div>
-          <h2 className="font-medium text-xl mb-4 tracking-tighter">Hobbies</h2>
-          <div className="space-y-3">
+        <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4">
+          <h2 className="font-medium text-lg mb-3 text-neutral-900 dark:text-neutral-100 tracking-tighter">
+            Hobbies
+          </h2>
+          <div className="space-y-2">
             {resumeData.hobbies.map((hobby, index) => (
               <p key={index} className="text-sm text-neutral-600 dark:text-neutral-400">
                 {hobby}
