@@ -65,16 +65,39 @@ function Paragraph({ key, str }) {
 }
 
 function SkillCloud({ skills }: { skills: string[] }) {
+  // Color variations for visual interest
+  const colorVariants = [
+    "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
+    "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800", 
+    "bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800",
+    "bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800",
+    "bg-pink-50 dark:bg-pink-900/20 text-pink-700 dark:text-pink-300 border-pink-200 dark:border-pink-800",
+    "bg-gray-50 dark:bg-gray-900/20 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-800"
+  ];
+
   return (
-    <div className="p-2 leading-8">
-      {skills.map((skill, index) => (
-        <span key={index}>
-          <span className="inline-block border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors">
-            {skill.replace(/ /g, '\u00A0')}
+    <div className="flex flex-wrap gap-3 p-2">
+      {skills.map((skill, index) => {
+        const colorClass = colorVariants[index % colorVariants.length];
+        return (
+          <span
+            key={index}
+            className={`
+              px-3 py-1.5 
+              rounded-full 
+              text-sm 
+              font-medium
+              border
+              transition-all 
+              hover:shadow-sm
+              ${colorClass}
+            `}
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            {skill}
           </span>
-          {index < skills.length - 1 && '\u00A0\u00A0\u00A0'}
-        </span>
-      ))}
+        );
+      })}
     </div>
   );
 }
