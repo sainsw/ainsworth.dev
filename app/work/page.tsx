@@ -65,30 +65,12 @@ function Paragraph({ key, str }) {
 }
 
 function SkillCloud({ skills }: { skills: string[] }) {
-  // Generate different sizes for tag cloud effect
-  const getSkillSize = (index: number) => {
-    const sizes = ['text-xs', 'text-sm', 'text-sm', 'text-base']; // Mostly small/medium
-    return sizes[index % sizes.length];
-  };
-  
-  const getSkillColor = (index: number) => {
-    const colors = [
-      'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', 
-      'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-      'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-      'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-      'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'
-    ];
-    return colors[index % colors.length];
-  };
-
   return (
     <div className="flex flex-wrap gap-2">
       {skills.map((skill, index) => (
         <span
           key={index}
-          className={`px-3 py-1 rounded-full font-medium transition-transform hover:scale-105 cursor-default ${getSkillSize(index)} ${getSkillColor(index)}`}
+          className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
         >
           {skill}
         </span>
@@ -112,7 +94,7 @@ export default function Page() {
         <SkillCloud skills={allSkills} />
       </div>
 
-      <div>
+      <div className="mt-12">
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">work 👨‍💻</h1>
         <ul>
           {resumeData.experience.map((job, index) => (
@@ -163,7 +145,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div>
+      <div className="mt-12">
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">hobbies 🎨</h1>
         <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4">
           <div className="space-y-2">
