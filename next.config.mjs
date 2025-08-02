@@ -6,6 +6,12 @@ export const sql = postgres(process.env.DATABASE_URL, {
 
 const nextConfig = {
   trailingSlash: false, // Enforce no trailing slashes
+  experimental: {
+    optimizeCss: true, // Enable CSS optimization
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
   images: {
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 31536000, // 1 year
@@ -37,6 +43,18 @@ const nextConfig = {
       },
       {
         source: '/sprite.svg',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/fonts/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],

@@ -1,0 +1,8 @@
+# Modern browsers that don't need extensive polyfills
+last 2 Chrome versions
+last 2 Firefox versions
+last 2 Safari versions
+last 2 Edge versions
+> 1%
+not dead
+not IE 11
