@@ -144,7 +144,9 @@ function generateExperienceSection(experience) {
 		{\\raggedright ${descriptions}${techStack}}`;
     
     if (index < experience.length - 1) {
-      experienceLatex += '\n\n\\vspace{0.6cm}';
+      // IBM (first entry) needs extra spacing to match visual spacing of other entries  
+      const spacing = index === 0 ? '\\vspace{0.8cm}' : '\\vspace{0.6cm}';
+      experienceLatex += `\n\n${spacing}`;
     }
   });
 
