@@ -5,6 +5,7 @@ export const sql = postgres(process.env.DATABASE_URL, {
 });
 
 const nextConfig = {
+  trailingSlash: false, // Enforce no trailing slashes
   images: {
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 31536000, // 1 year

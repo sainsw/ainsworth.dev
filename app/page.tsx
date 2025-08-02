@@ -66,7 +66,7 @@ export default function Page() {
         </span>
         {`, and `}
         <span className="not-prose">
-          <Badge href="https://azure.microsoft.com">
+          <Badge href="https://azure.microsoft.com/en-gb">
             <Icon id="azure" size={14} className="!mr-1" />
             Azure
           </Badge>
@@ -86,7 +86,7 @@ export default function Page() {
             className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-all"
             rel="noopener noreferrer"
             target="_blank"
-            href="https://www.linkedin.com/in/samainsworth/"
+            href="https://linkedin.com/in/samainsworth"
           >
             <ArrowIcon />
             <p className="h-7 ml-2">linkedin</p>
@@ -105,7 +105,7 @@ export default function Page() {
       </ul>
       <div className="container px-4 mx-auto">
         <div className="pt-24 pb-11 mx-auto max-w-4xl">
-          <a className="block md:mx-auto mb-5 max-w-max" aria-label="find me on linkedin" href="https://www.linkedin.com/in/samainsworth/">
+          <a className="block md:mx-auto mb-5 max-w-max" aria-label="find me on linkedin" href="https://linkedin.com/in/samainsworth">
             <PrideAvatar>
               <picture>
                 <source srcSet={`/images/home/avatar-${AVATAR_VERSION}.webp`} type="image/webp" />

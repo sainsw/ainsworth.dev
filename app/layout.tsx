@@ -7,17 +7,18 @@ import { Footer } from './components/footer';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SandpackCSS } from './blog/[slug]/sandpack';
+import { AVATAR_VERSION } from '../lib/version';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://ainsworth.dev'),
   title: {
-    default: 'Sam Ainsworth',
+    default: 'Sam Ainsworth - Senior Software Developer & Cloud Engineer',
     template: '%s | Sam Ainsworth',
   },
-  description: 'Software Developer, tinkerer.',
+  description: 'Senior Software Developer with 8+ years experience building scalable web applications, cloud architecture, and team leadership. Expertise in .NET, Azure, React, and modern development practices.',
   openGraph: {
-    title: 'Sam Ainsworth',
-    description: 'Software Developer, tinkerer.',
+    title: 'Sam Ainsworth - Senior Software Developer & Cloud Engineer',
+    description: 'Senior Software Developer with 8+ years experience building scalable web applications, cloud architecture, and team leadership. Expertise in .NET, Azure, React, and modern development practices.',
     url: 'https://ainsworth.dev',
     siteName: 'Sam Ainsworth',
     locale: 'en_GB',
@@ -35,11 +36,14 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: 'Sam Ainsworth',
+    title: 'Sam Ainsworth - Senior Software Developer & Cloud Engineer',
     card: 'summary_large_image',
   },
   verification: {
     google: 'hej0QCp4EiTc0mN34JuMNlseT8_4jOGDLO79NcEAdWw',
+  },
+  alternates: {
+    canonical: 'https://ainsworth.dev',
   },
 };
 
@@ -66,7 +70,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//va.vercel-scripts.com" />
         <link rel="dns-prefetch" href="//static.cloudflareinsights.com" />
         <link rel="dns-prefetch" href="//api.resend.com" />
-        <link rel="prefetch" href="/images/home/avatar.webp" />
+        <link rel="prefetch" href={`/images/home/avatar-${AVATAR_VERSION}.webp`} />
         <link rel="prefetch" href="/sprite.svg" />
       </head>
       <body className="antialiased max-w-2xl mb-40 flex flex-col md:flex-row mx-4 mt-8 lg:mx-auto">
