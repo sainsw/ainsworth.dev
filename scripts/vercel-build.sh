@@ -11,6 +11,14 @@ echo "💡 CV should be built locally and committed when source changes"
 echo "🖼️  Fetching GitHub avatar..."
 npm run fetch-avatar
 
-# Run standard build process (will use committed CV if available)
-echo "🔨 Running application build..."
-npm run build-only
+# Generate version file (must run after avatar fetch)
+echo "🔢 Generating version information..."
+npm run generate-version
+
+# Build CV if possible
+echo "📄 Building CV..."
+npm run build-cv
+
+# Run Next.js build
+echo "🔨 Running Next.js build..."
+next build
