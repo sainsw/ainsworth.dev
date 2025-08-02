@@ -66,11 +66,11 @@ function Paragraph({ key, str }) {
 
 function SkillCloud({ skills }: { skills: string[] }) {
   return (
-    <div className="flex flex-wrap -m-1.5 p-2">
+    <div className="flex flex-wrap gap-3">
       {skills.map((skill, index) => (
         <span
           key={index}
-          className="inline-block border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors m-1.5"
+          className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
         >
           {skill}
         </span>
