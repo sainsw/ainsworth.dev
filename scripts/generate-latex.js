@@ -125,6 +125,14 @@ function generateExperienceSection(experience) {
 
 \\begin{entrylist}`;
 
+  // Add empty first entry to normalize longtable spacing, but with minimal height
+  experienceLatex += `
+    \\entry
+		{}
+		{}
+		{}
+		{\\vspace{-0.5cm}}`;
+
   experience.forEach((job, index) => {
     const location = job.location ? `, ${job.location}` : '';
     let techStack = '';
@@ -136,19 +144,14 @@ function generateExperienceSection(experience) {
     
     const descriptions = job.description.map(desc => escapeLatex(desc)).join('\\\\\\vspace{0.1cm}');
     
-    // Add extra spacing after IBM entry description to increase gap to next entry
-    const extraSpacing = index === 0 ? '\\\\\\vspace{0.4cm}' : '';
-    
     experienceLatex += `
+
+\\vspace{0.6cm}
     \\entry
 		{${escapeLatex(job.dates)}}
 		{${escapeLatex(job.position)}}
 		{${escapeLatex(job.company)}${escapeLatex(location)}}
-		{\\raggedright ${descriptions}${techStack}${extraSpacing}}`;
-    
-    if (index < experience.length - 1) {
-      experienceLatex += '\n\n\\vspace{0.6cm}';
-    }
+		{\\raggedright ${descriptions}${techStack}}`;
   });
 
   experienceLatex += '\n\\end{entrylist}';
@@ -164,12 +167,22 @@ function generateEducationSection(education) {
 
 \\begin{entrylist}`;
 
-  education.forEach(school => {
+  // Add empty first entry to normalize longtable spacing, but with minimal height
+  educationLatex += `
+    \\entry
+		{}
+		{}
+		{}
+		{\\vspace{-0.5cm}}`;
+
+  education.forEach((school, index) => {
     const degree = school.degree || '';
     const descriptions = school.description || [];
     const descText = descriptions.length > 0 ? descriptions.map(desc => escapeLatex(desc)).join(' ') : '';
     
     educationLatex += `
+
+\\vspace{0.6cm}
 	\\entry
 		{${escapeLatex(school.dates)}}
 		{${escapeLatex(degree)}}
