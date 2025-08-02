@@ -37,7 +37,7 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
           <Icon id={iconId} size={48} className="h-12 w-12 self-end" />
         )}
       </div>
-      {description && (
+      {description && description.length > 0 && (
         <div className="col-span-2">
           {description.map((desc, index) => (
             <Paragraph key={index} str={desc} />
