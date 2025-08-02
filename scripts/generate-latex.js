@@ -13,7 +13,8 @@ let resumeDataContent = fs.readFileSync(resumeDataPath, 'utf8');
 const jsContent = resumeDataContent
   .replace(/^export interface[\s\S]*?^}/gm, '') // Remove interface definitions
   .replace(/export const resumeData: ResumeData = /, 'module.exports = ') // Change export syntax
-  .replace(/:\s*\w+(\[\])?/g, '') // Remove type annotations
+  .replace(/:\s*\w+(\[\])?\s*[,;]/g, ',') // Remove type annotations but preserve content like "2:1"
+  .replace(/:\s*\w+(\[\])?\s*}/g, '}') // Remove type annotations at end of objects
   .replace(/as \w+/g, ''); // Remove type assertions
 
 // Write temporary JS file
