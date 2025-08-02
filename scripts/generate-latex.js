@@ -145,7 +145,7 @@ function generateExperienceSection(experience) {
     
     if (index < experience.length - 1) {
       // IBM (first entry) needs extra spacing to match visual spacing of other entries  
-      const spacing = index === 0 ? '\\vspace{0.8cm}' : '\\vspace{0.6cm}';
+      const spacing = index === 0 ? '\\vspace{1.2cm}' : '\\vspace{0.6cm}';
       experienceLatex += `\n\n${spacing}`;
     }
   });
