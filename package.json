@@ -11,7 +11,8 @@
     "start": "next start",
     "setup": "node ./setup.mjs",
     "generate-version": "node ./scripts/generate-version.js",
-    "build-cv": "./scripts/build-cv.sh"
+    "build-cv": "./scripts/build-cv.sh",
+    "update-cv": "node ./scripts/generate-latex.js && npm run generate-version && npm run build-cv && echo '✅ CV updated! Check git status for changes to commit.'"
   },
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.20.0",
