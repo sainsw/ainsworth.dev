@@ -39,9 +39,15 @@ async function generateContentHash(filePath) {
 }
 
 async function updateVersionFile(avatarHash) {
-  const versionFilePath = path.join(__dirname, '..', 'lib', 'version.js');
+  const libDir = path.join(__dirname, '..', 'lib');
+  const versionFilePath = path.join(libDir, 'version.js');
   
   try {
+    // Ensure lib directory exists
+    if (!fs.existsSync(libDir)) {
+      fs.mkdirSync(libDir, { recursive: true });
+    }
+    
     let versionContent = '';
     if (fs.existsSync(versionFilePath)) {
       versionContent = fs.readFileSync(versionFilePath, 'utf8');
@@ -120,10 +126,10 @@ async function convertWithSharp(inputPath) {
   try {
     const sharp = require('sharp');
     
-    // Generate hash based on input content
-    const contentHash = await generateContentHash(inputPath);
-    const WEBP_PATH = path.join(OUTPUT_DIR, `avatar-${contentHash}.webp`);
-    const JPG_PATH = path.join(OUTPUT_DIR, `avatar-${contentHash}.jpg`);
+    // Generate initial hash from input to create temp filenames
+    const tempHash = await generateContentHash(inputPath);
+    const TEMP_WEBP_PATH = path.join(OUTPUT_DIR, `avatar-temp-${tempHash}.webp`);
+    const TEMP_JPG_PATH = path.join(OUTPUT_DIR, `avatar-temp-${tempHash}.jpg`);
     
     // Create optimized WebP (priority format)
     await sharp(inputPath)
@@ -135,7 +141,7 @@ async function convertWithSharp(inputPath) {
         quality: 85,
         effort: 6 // Maximum compression effort
       })
-      .toFile(WEBP_PATH);
+      .toFile(TEMP_WEBP_PATH);
     
     // Create JPG fallback
     await sharp(inputPath)
@@ -147,10 +153,19 @@ async function convertWithSharp(inputPath) {
         quality: 90,
         progressive: true
       })
-      .toFile(JPG_PATH);
+      .toFile(TEMP_JPG_PATH);
+    
+    // Generate final hash from optimized JPG (most stable format)
+    const finalHash = await generateContentHash(TEMP_JPG_PATH);
+    const FINAL_WEBP_PATH = path.join(OUTPUT_DIR, `avatar-${finalHash}.webp`);
+    const FINAL_JPG_PATH = path.join(OUTPUT_DIR, `avatar-${finalHash}.jpg`);
+    
+    // Rename to final filenames
+    fs.renameSync(TEMP_WEBP_PATH, FINAL_WEBP_PATH);
+    fs.renameSync(TEMP_JPG_PATH, FINAL_JPG_PATH);
     
     console.log('✅ WebP and JPG optimization complete');
-    return { success: true, hash: contentHash, webpPath: WEBP_PATH, jpgPath: JPG_PATH };
+    return { success: true, hash: finalHash, webpPath: FINAL_WEBP_PATH, jpgPath: FINAL_JPG_PATH };
     
   } catch (error) {
     console.log(`ℹ️  Sharp not available (${error.message}), using original format`);
