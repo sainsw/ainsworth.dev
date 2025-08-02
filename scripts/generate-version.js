@@ -54,6 +54,28 @@ if (fs.existsSync(versionFile)) {
   }
 }
 
+// If no AVATAR_VERSION found, generate a fallback from existing avatar files or use default
+if (!avatarVersion) {
+  const avatarDir = path.join(__dirname, '..', 'public', 'images', 'home');
+  let fallbackHash = 'fallback';
+  
+  try {
+    if (fs.existsSync(avatarDir)) {
+      const files = fs.readdirSync(avatarDir);
+      const avatarFile = files.find(f => f.startsWith('avatar') && f.endsWith('.jpg'));
+      if (avatarFile) {
+        const content = fs.readFileSync(path.join(avatarDir, avatarFile));
+        fallbackHash = crypto.createHash('sha256').update(content).digest('hex').substring(0, 8);
+        console.log(`Generated fallback AVATAR_VERSION from ${avatarFile}: ${fallbackHash}`);
+      }
+    }
+  } catch (error) {
+    console.warn(`Warning: Could not generate fallback avatar version: ${error.message}`);
+  }
+  
+  avatarVersion = `export const AVATAR_VERSION = '${fallbackHash}';\n`;
+}
+
 fs.writeFileSync(versionFile, `export const SPRITE_VERSION = '${spriteVersion}';
 export const CV_VERSION = '${cvVersion}';
 ${avatarVersion}`);
