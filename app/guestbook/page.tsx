@@ -29,7 +29,7 @@ async function GuestbookForm() {
   return session?.user ? (
     <>
       <Form />
-      <div className="flex items-center mt-4">
+      <div className="flex items-center mt-4 mb-6">
         <span className="text-xs text-neutral-600 dark:text-neutral-400">
           Signed in as: <span className="font-medium text-neutral-900 dark:text-neutral-100">{session.user.name || session.user.email}</span>
         </span>
