@@ -33,7 +33,7 @@ async function GuestbookForm() {
         <span className="text-xs text-neutral-600 dark:text-neutral-400">
           Signed in as: <span className="font-medium text-neutral-900 dark:text-neutral-100">{session.user.name || session.user.email}</span>
         </span>
-        <span className="text-xs text-neutral-400 dark:text-neutral-500 mx-2">•</span>
+        <span className="text-xs text-neutral-400 dark:text-neutral-500 mx-4">•</span>
         <SignOut />
       </div>
     </>
