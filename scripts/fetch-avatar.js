@@ -74,14 +74,19 @@ async function updateVersionFile(avatarHash) {
 }
 
 async function getExistingAvatarHash() {
-  // Check for existing avatar files and return their hash
-  const existingJpg = path.join(OUTPUT_DIR, 'avatar.jpg');
-  const existingWebp = path.join(OUTPUT_DIR, 'avatar.webp');
+  // Check for existing avatar files (both versioned and unversioned) and return their hash
+  const files = fs.readdirSync(OUTPUT_DIR);
+  const avatarFiles = files.filter(file => 
+    file.startsWith('avatar') && (file.endsWith('.jpg') || file.endsWith('.webp'))
+  );
   
-  if (fs.existsSync(existingJpg)) {
-    return await generateContentHash(existingJpg);
-  } else if (fs.existsSync(existingWebp)) {
-    return await generateContentHash(existingWebp);
+  if (avatarFiles.length > 0) {
+    // Sort to get most recent and prefer JPG for consistency
+    const sortedFiles = avatarFiles.sort();
+    const preferredFile = sortedFiles.find(f => f.endsWith('.jpg')) || sortedFiles[0];
+    const filePath = path.join(OUTPUT_DIR, preferredFile);
+    console.log(`🔍 Found existing avatar: ${preferredFile}`);
+    return await generateContentHash(filePath);
   }
   
   return 'fallback';
@@ -217,20 +222,15 @@ async function fetchGitHubAvatar() {
       fs.unlinkSync(TEMP_PATH);
     }
     
-    // Check for existing files and update version with their hash
-    const existingJpg = path.join(OUTPUT_DIR, 'avatar.jpg');
-    const existingWebp = path.join(OUTPUT_DIR, 'avatar.webp');
+    // Check for any existing avatar files and update version with their hash
+    const existingHash = await getExistingAvatarHash();
     
-    if (fs.existsSync(existingWebp) && fs.existsSync(existingJpg)) {
-      console.log(`📁 Using existing WebP: ${path.relative(process.cwd(), existingWebp)}`);
-      console.log(`📁 Using existing JPG: ${path.relative(process.cwd(), existingJpg)}`);
-      
-      // Update version file with hash of existing files
-      const existingHash = await getExistingAvatarHash();
+    if (existingHash !== 'fallback') {
+      console.log(`📁 Using existing avatar files in: ${path.relative(process.cwd(), OUTPUT_DIR)}`);
       console.log(`🔑 Existing avatar hash: ${existingHash}`);
       await updateVersionFile(existingHash);
     } else {
-      console.error('💥 Missing fallback files! Please ensure both avatar.webp and avatar.jpg exist.');
+      console.error('💥 No avatar files found! Please ensure avatar files exist in public/images/home/');
       process.exit(1);
     }
   }
