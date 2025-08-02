@@ -4,7 +4,7 @@ import { ArrowIcon } from '../components/arrow-icon';
 import { Icon } from '../../components/icon';
 import { usePrefetchOnView } from '../hooks/use-prefetch-on-view';
 import { CV_VERSION } from '../../lib/version';
-import { resumeData } from '../../data/resume';
+import resumeData from '../../data/resume.json';
 
 function ExperienceCard({ name, dates, post, description, iconId, url, technologies = [] }: {
   name: string;
@@ -56,9 +56,9 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
 }
 
 
-function Paragraph({ key, str }) {
+function Paragraph({ str }) {
   return (
-    <p key={key} className="prose-sm mt-2 text-neutral-900 dark:text-neutral-100">
+    <p className="prose-sm mt-2 text-neutral-900 dark:text-neutral-100">
       {str}
     </p>
   );

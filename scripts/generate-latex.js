@@ -5,27 +5,9 @@ const path = require('path');
 
 console.log('📄 Generating LaTeX from resume data...');
 
-// For now, let's use a direct require approach by creating a temporary JS file
-const resumeDataPath = path.join(__dirname, '..', 'data', 'resume.ts');
-let resumeDataContent = fs.readFileSync(resumeDataPath, 'utf8');
-
-// Convert TypeScript to JavaScript by removing types and interfaces
-const jsContent = resumeDataContent
-  .replace(/^export interface[\s\S]*?^}/gm, '') // Remove interface definitions
-  .replace(/export const resumeData: ResumeData = /, 'module.exports = ') // Change export syntax
-  .replace(/:\s*\w+(\[\])?\s*[,;]/g, ',') // Remove type annotations but preserve content like "2:1"
-  .replace(/:\s*\w+(\[\])?\s*}/g, '}') // Remove type annotations at end of objects
-  .replace(/as \w+/g, ''); // Remove type assertions
-
-// Write temporary JS file
-const tempJsPath = path.join(__dirname, '..', 'temp-resume.js');
-fs.writeFileSync(tempJsPath, jsContent);
-
-// Require the data
-const resumeData = require(tempJsPath);
-
-// Clean up temp file
-fs.unlinkSync(tempJsPath);
+// Read JSON data directly
+const resumeDataPath = path.join(__dirname, '..', 'data', 'resume.json');
+const resumeData = JSON.parse(fs.readFileSync(resumeDataPath, 'utf8'));
 
 // Helper functions to generate LaTeX
 function escapeLatex(text) {
