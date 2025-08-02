@@ -5,11 +5,12 @@
   },
   "scripts": {
     "dev": "npm run generate-version && next dev --turbo",
-    "build": "npm run setup && npm run generate-version && npm run build-cv && next build",
+    "build": "npm run setup && npm run fetch-avatar && npm run generate-version && npm run build-cv && next build",
     "build-only": "npm run generate-version && npm run build-cv && next build",
     "analyze": "ANALYZE=true npm run build-only",
     "start": "next start",
     "setup": "node ./setup.mjs",
+    "fetch-avatar": "node ./scripts/fetch-avatar.js",
     "generate-version": "node ./scripts/generate-version.js",
     "build-cv": "./scripts/build-cv.sh",
     "update-cv": "node ./scripts/generate-latex.js && npm run generate-version && npm run build-cv && echo '✅ CV updated! Check git status for changes to commit.'"
