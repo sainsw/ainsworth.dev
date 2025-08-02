@@ -43,7 +43,7 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
             <Paragraph key={index} str={desc} />
           ))}
           {technologies && technologies.length > 0 && (
-            <div className="mt-4 pt-2 border-t border-neutral-200 dark:border-neutral-700">
+            <div className="mt-2 pt-2 border-t border-neutral-200 dark:border-neutral-700">
               <p className="prose-sm text-neutral-600 dark:text-neutral-400 italic">
                 {technologies.join(' • ')}
               </p>  
