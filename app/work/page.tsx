@@ -69,10 +69,7 @@ function SkillCloud({ skills }: { skills: string[] }) {
     <div className="p-2">
       {skills.map((skill, index) => (
         <span key={index}>
-          <span 
-            className="inline-block border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors mb-2"
-            style={{ whiteSpace: 'nowrap' }}
-          >
+          <span className="inline-block border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors mb-2">
             {skill}
           </span>
           {index < skills.length - 1 && '\u00A0\u00A0\u00A0'}
