@@ -165,7 +165,7 @@ let components = {
   // LiveCode, // Temporarily disabled to test for React conflicts
 };
 
-export function CustomMDX(props) {
+export async function CustomMDX(props) {
   return (
     <MDXRemote
       {...props}
