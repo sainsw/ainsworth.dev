@@ -83,7 +83,7 @@ export default function Page() {
       <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-neutral-600 dark:text-neutral-300">
         <li>
           <a
-            className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-all"
+            className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-colors"
             rel="noopener noreferrer"
             target="_blank"
             href="https://linkedin.com/in/samainsworth"
@@ -94,7 +94,7 @@ export default function Page() {
         </li>
         <li>
           <Link
-            className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-all"
+            className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-colors"
             href="/contact"
             prefetch={true}
           >
