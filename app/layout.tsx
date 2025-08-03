@@ -1,4 +1,4 @@
-import './global.css';
+// CSS loaded asynchronously via script to prevent render blocking
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
@@ -81,7 +81,39 @@ export default function RootLayout({
         <link rel="preconnect" href="https://static.cloudflareinsights.com" crossOrigin="" />
         <link rel="preconnect" href="https://api.resend.com" crossOrigin="" />
         <SandpackCSS />
-        {CSS_VERSION && <link rel="preload" href={`/_next/static/css/${CSS_VERSION}.css`} as="style" />}
+        {CSS_VERSION && (
+          <>
+            <link rel="preload" href={`/_next/static/css/${CSS_VERSION}.css`} as="style" onLoad={(e) => {
+              const target = e.target as HTMLLinkElement;
+              target.onload = null;
+              target.rel = 'stylesheet';
+            }} />
+            <noscript><link rel="stylesheet" href={`/_next/static/css/${CSS_VERSION}.css`} /></noscript>
+          </>
+        )}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Convert any remaining blocking CSS to async loading
+            (function(){
+              var links = document.querySelectorAll('link[rel="stylesheet"]');
+              links.forEach(function(link) {
+                if (link.href.includes('_next/static/css') && !link.media) {
+                  // Use loadCSS technique for async loading
+                  var newLink = document.createElement('link');
+                  newLink.rel = 'preload';
+                  newLink.as = 'style';
+                  newLink.href = link.href;
+                  newLink.onload = function() {
+                    this.onload = null;
+                    this.rel = 'stylesheet';
+                  };
+                  link.parentNode.insertBefore(newLink, link);
+                  link.remove();
+                }
+              });
+            })();
+          `
+        }} />
         <link rel="preload" href={`/images/home/avatar-${AVATAR_VERSION}.webp`} as="image" type="image/webp" />
         <link rel="preload" href="/sprite.svg" as="image" type="image/svg+xml" />
       </head>
