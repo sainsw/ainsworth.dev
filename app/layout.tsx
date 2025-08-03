@@ -113,15 +113,17 @@ export default function RootLayout({
         <link rel="preload" href={`/images/home/avatar-${AVATAR_VERSION}.webp`} as="image" type="image/webp" />
         <link rel="preload" href="/sprite.svg" as="image" type="image/svg+xml" />
       </head>
-      <body className="antialiased max-w-2xl mb-40 flex flex-col md:flex-row mx-4 mt-8 lg:mx-auto">
-        <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
-          <Navbar />
-          {children}
-          <Footer />
-          <Suspense fallback={null}>
-            <DeferredAnalytics />
-          </Suspense>
-        </main>
+      <body className="antialiased text-black bg-white dark:text-white dark:bg-[#111010]">
+        <div className="max-w-2xl mb-40 flex flex-col md:flex-row mx-4 mt-8 lg:mx-auto">
+          <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
+            <Navbar />
+            {children}
+            <Footer />
+            <Suspense fallback={null}>
+              <DeferredAnalytics />
+            </Suspense>
+          </main>
+        </div>
         <CookieConsent variant="mini" learnMoreHref="/privacy" />
       </body>
     </html>
