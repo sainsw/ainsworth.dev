@@ -7,6 +7,7 @@ import { getBlogPosts } from 'app/db/blog';
 import ViewCounter from '../view-counter';
 import { increment } from 'app/db/actions';
 import { unstable_noStore as noStore } from 'next/cache';
+import { ReactDebug } from 'app/components/react-debug';
 
 export async function generateMetadata({
   params,
@@ -92,6 +93,7 @@ export default function Blog({ params }) {
 
   return (
     <section>
+      <ReactDebug />
       <script
         type="application/ld+json"
         suppressHydrationWarning

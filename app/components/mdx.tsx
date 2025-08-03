@@ -162,7 +162,7 @@ let components = {
   StaticTweet: TweetComponent,
   code: Code,
   Table,
-  LiveCode,
+  // LiveCode, // Temporarily disabled to test for React conflicts
 };
 
 export function CustomMDX(props) {
