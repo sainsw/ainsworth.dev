@@ -6,13 +6,22 @@ import { sql } from './postgres';
 import { revalidatePath, unstable_noStore as noStore } from 'next/cache';
 
 export async function increment(slug: string) {
-  noStore();
-  await sql`
-    INSERT INTO views (slug, count)
-    VALUES (${slug}, 1)
-    ON CONFLICT (slug)
-    DO UPDATE SET count = views.count + 1
-  `;
+  if (!process.env.DATABASE_URL) {
+    return;
+  }
+  
+  try {
+    noStore();
+    await sql`
+      INSERT INTO views (slug, count)
+      VALUES (${slug}, 1)
+      ON CONFLICT (slug)
+      DO UPDATE SET count = views.count + 1
+    `;
+  } catch (error) {
+    console.error('Failed to increment view count:', error);
+    // Don't throw error - just log it so page doesn't crash
+  }
 }
 
 async function getSession(): Promise<Session> {

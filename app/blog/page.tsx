@@ -47,7 +47,12 @@ export default function BlogPage() {
 }
 
 async function Views({ slug }: { slug: string }) {
-  let views = await getViewsCount();
-
-  return <ViewCounter allViews={views} slug={slug} />;
+  try {
+    let views = await getViewsCount();
+    return <ViewCounter allViews={views} slug={slug} />;
+  } catch (error) {
+    console.error('Failed to load view count:', error);
+    // Return empty view counter if database fails
+    return <ViewCounter allViews={[]} slug={slug} />;
+  }
 }
