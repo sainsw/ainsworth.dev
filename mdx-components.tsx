@@ -1,9 +1,9 @@
+import type { MDXComponents } from 'mdx/types';
 import Link from 'next/link';
 import Image from 'next/image';
-import { TweetComponent } from './tweet';
+import { TweetComponent } from './app/components/tweet';
 import { highlight } from 'sugar-high';
 import React from 'react';
-import { useMDXComponents } from '../../mdx-components';
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -146,34 +146,23 @@ function createHeading(level) {
   };
 }
 
-let components = {
-  h1: createHeading(1),
-  h2: createHeading(2),
-  h3: createHeading(3),
-  h4: createHeading(4),
-  h5: createHeading(5),
-  h6: createHeading(6),
-  Image: RoundedImage,
-  a: CustomLink,
-  Callout,
-  ProsCard,
-  ConsCard,
-  StaticTweet: TweetComponent,
-  code: Code,
-  Table,
-  // LiveCode, // Temporarily disabled to test for React conflicts
-};
-
-// Simple wrapper that uses our MDX components
-export function CustomMDX({ children, ...props }: { children?: any; source?: string; [key: string]: any }) {
-  const components = useMDXComponents({});
-  
-  // For now, let's just render the content as HTML
-  // This is a temporary solution while we transition to @next/mdx
-  return (
-    <div 
-      className="mdx-content"
-      dangerouslySetInnerHTML={{ __html: props.source || children || '' }}
-    />
-  );
+export function useMDXComponents(components: MDXComponents): MDXComponents {
+  return {
+    h1: createHeading(1),
+    h2: createHeading(2),
+    h3: createHeading(3),
+    h4: createHeading(4),
+    h5: createHeading(5),
+    h6: createHeading(6),
+    Image: RoundedImage,
+    a: CustomLink,
+    Callout,
+    ProsCard,
+    ConsCard,
+    StaticTweet: TweetComponent,
+    code: Code,
+    Table,
+    // Note: LiveCode/Sandpack removed since it was causing conflicts
+    ...components,
+  };
 }

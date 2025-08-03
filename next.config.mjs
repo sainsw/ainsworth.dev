@@ -1,11 +1,20 @@
 import postgres from 'postgres';
+import createMDX from '@next/mdx';
 
 export const sql = postgres(process.env.DATABASE_URL, {
   ssl: 'allow',
 });
 
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: [],
+    rehypePlugins: [],
+  },
+});
+
 const nextConfig = {
   trailingSlash: false, // Enforce no trailing slashes
+  pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   experimental: {
     optimizeCss: true, // Enable CSS optimization
   },
@@ -134,4 +143,4 @@ const securityHeaders = [
   },
 ];
 
-export default nextConfig;
+export default withMDX(nextConfig);
