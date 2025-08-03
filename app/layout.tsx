@@ -9,6 +9,15 @@ import { DeferredAnalytics } from './components/deferred-analytics';
 import { SandpackCSS } from './blog/[slug]/sandpack';
 import { AVATAR_VERSION } from '../lib/version';
 
+// CSS_VERSION is available after build, fallback to dynamic loading
+let CSS_VERSION = '';
+try {
+  const version = require('../lib/version');
+  CSS_VERSION = version.CSS_VERSION || '';
+} catch (e) {
+  // CSS_VERSION not available yet
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://ainsworth.dev'),
   title: {
@@ -64,12 +73,15 @@ export default function RootLayout({
       )}
     >
       <head>
+        <link rel="dns-prefetch" href="//ainsworth.dev" />
+        <link rel="preconnect" href="https://ainsworth.dev" crossOrigin="" />
+        <link rel="preconnect" href="https://cdn.vercel-insights.com" crossOrigin="" />
+        <link rel="preconnect" href="https://vercel.live" crossOrigin="" />
+        <link rel="preconnect" href="https://va.vercel-scripts.com" crossOrigin="" />
+        <link rel="preconnect" href="https://static.cloudflareinsights.com" crossOrigin="" />
+        <link rel="preconnect" href="https://api.resend.com" crossOrigin="" />
         <SandpackCSS />
-        <link rel="preconnect" href="https://cdn.vercel-insights.com" />
-        <link rel="preconnect" href="https://vercel.live" />
-        <link rel="preconnect" href="https://va.vercel-scripts.com" />
-        <link rel="preconnect" href="https://static.cloudflareinsights.com" />
-        <link rel="preconnect" href="https://api.resend.com" />
+        {CSS_VERSION && <link rel="preload" href={`/_next/static/css/${CSS_VERSION}.css`} as="style" />}
         <link rel="preload" href={`/images/home/avatar-${AVATAR_VERSION}.webp`} as="image" type="image/webp" />
         <link rel="preload" href="/sprite.svg" as="image" type="image/svg+xml" />
       </head>
