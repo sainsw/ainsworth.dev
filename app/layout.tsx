@@ -1,4 +1,4 @@
-// CSS loaded asynchronously via script to prevent render blocking
+import './global.css';
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
@@ -81,34 +81,29 @@ export default function RootLayout({
         <link rel="preconnect" href="https://static.cloudflareinsights.com" crossOrigin="" />
         <link rel="preconnect" href="https://api.resend.com" crossOrigin="" />
         <SandpackCSS />
-        {CSS_VERSION && (
-          <>
-            <link rel="preload" href={`/_next/static/css/${CSS_VERSION}.css`} as="style" onLoad={(e) => {
-              const target = e.target as HTMLLinkElement;
-              target.onload = null;
-              target.rel = 'stylesheet';
-            }} />
-            <noscript><link rel="stylesheet" href={`/_next/static/css/${CSS_VERSION}.css`} /></noscript>
-          </>
-        )}
         <script dangerouslySetInnerHTML={{
           __html: `
-            // Convert any remaining blocking CSS to async loading
+            // Use media loading technique to make CSS non-render-blocking
             (function(){
-              var links = document.querySelectorAll('link[rel="stylesheet"]');
-              links.forEach(function(link) {
-                if (link.href.includes('_next/static/css') && !link.media) {
-                  // Use loadCSS technique for async loading
-                  var newLink = document.createElement('link');
-                  newLink.rel = 'preload';
-                  newLink.as = 'style';
-                  newLink.href = link.href;
-                  newLink.onload = function() {
-                    this.onload = null;
-                    this.rel = 'stylesheet';
+              var cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
+              cssLinks.forEach(function(link) {
+                if (link.href.includes('_next/static/css')) {
+                  // Create async version using media attribute trick
+                  var asyncLink = document.createElement('link');
+                  asyncLink.rel = 'stylesheet';
+                  asyncLink.href = link.href;
+                  asyncLink.media = 'print'; // Non-blocking media
+                  asyncLink.onload = function() {
+                    this.media = 'all'; // Switch to blocking once loaded
                   };
-                  link.parentNode.insertBefore(newLink, link);
-                  link.remove();
+                  // Insert async version
+                  document.head.appendChild(asyncLink);
+                  // Remove original blocking version after a small delay
+                  setTimeout(function() {
+                    if (link.parentNode) {
+                      link.parentNode.removeChild(link);
+                    }
+                  }, 50);
                 }
               });
             })();
