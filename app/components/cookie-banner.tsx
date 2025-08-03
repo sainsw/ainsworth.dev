@@ -76,7 +76,15 @@ export function CookieConsent({
 
   if (variant === 'mini') {
     return (
-      <div className="fixed bottom-4 left-4 z-50 max-w-sm">
+      <div 
+        className="fixed bottom-4 left-4 z-[9999] max-w-sm"
+        style={{ 
+          position: 'fixed',
+          bottom: '1rem',
+          left: '1rem',
+          zIndex: 9999
+        }}
+      >
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg p-4">
           <div className="flex items-start gap-3">
             <div className="flex-1">
