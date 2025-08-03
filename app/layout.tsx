@@ -6,6 +6,7 @@ import { Navbar } from './components/nav';
 import { Footer } from './components/footer';
 import { Suspense } from 'react';
 import { DeferredAnalytics } from './components/deferred-analytics';
+import { CookieConsent } from './components/cookie-banner';
 import { SandpackCSS } from './blog/[slug]/sandpack';
 import { AVATAR_VERSION } from '../lib/version';
 
@@ -121,6 +122,7 @@ export default function RootLayout({
             <DeferredAnalytics />
           </Suspense>
         </main>
+        <CookieConsent variant="mini" learnMoreHref="/privacy" />
       </body>
     </html>
   );
