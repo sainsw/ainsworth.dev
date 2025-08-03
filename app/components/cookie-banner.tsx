@@ -94,7 +94,7 @@ export function CookieConsent({
               <div className="flex gap-2">
                 <button
                   onClick={acceptCookies}
-                  className="px-3 py-1 bg-black dark:bg-white text-white dark:text-black text-sm rounded-md hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors"
+                  className="px-3 py-2 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded text-sm text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                 >
                   Accept
                 </button>
