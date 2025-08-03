@@ -4,6 +4,8 @@ import { TweetComponent } from './tweet';
 import { highlight } from 'sugar-high';
 import React from 'react';
 import { useMDXComponents } from '../../mdx-components';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -164,16 +166,16 @@ let components = {
   // LiveCode, // Temporarily disabled to test for React conflicts
 };
 
-// Simple wrapper that uses our MDX components
+// Proper MDX renderer using react-markdown
 export function CustomMDX({ children, ...props }: { children?: any; source?: string; [key: string]: any }) {
-  const components = useMDXComponents({});
+  const mdxComponents = useMDXComponents(components);
   
-  // For now, let's just render the content as HTML
-  // This is a temporary solution while we transition to @next/mdx
   return (
-    <div 
-      className="mdx-content"
-      dangerouslySetInnerHTML={{ __html: props.source || children || '' }}
-    />
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={mdxComponents}
+    >
+      {props.source || children || ''}
+    </ReactMarkdown>
   );
 }
