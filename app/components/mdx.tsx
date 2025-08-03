@@ -6,6 +6,7 @@ import React from 'react';
 import { useMDXComponents } from '../../mdx-components';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -173,6 +174,7 @@ export function CustomMDX({ children, ...props }: { children?: any; source?: str
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw]}
       components={mdxComponents}
     >
       {props.source || children || ''}

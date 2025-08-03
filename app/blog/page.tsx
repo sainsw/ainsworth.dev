@@ -46,9 +46,15 @@ export default function BlogPage() {
   );
 }
 
-// Simplified non-async Views component for now
-function Views({ slug }: { slug: string }) {
-  // For now, return a simple view counter with no data
-  // TODO: Implement proper async data fetching that works with our setup
-  return <ViewCounter allViews={[]} slug={slug} />;
+// Async component to fetch and display view counts
+async function Views({ slug }: { slug: string }) {
+  try {
+    let views = await getViewsCount();
+    return <ViewCounter allViews={views} slug={slug} />;
+  } catch (error) {
+    console.error('Failed to load view count:', error);
+    // Return empty view counter if database fails
+    return <ViewCounter allViews={[]} slug={slug} />;
+  }
 }
+
