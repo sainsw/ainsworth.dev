@@ -5,7 +5,7 @@
   },
   "scripts": {
     "dev": "npm run generate-version && next dev --turbo",
-    "build": "npm run setup && npm run fetch-avatar && npm run generate-version && npm run build-cv && next build && npm run extract-css-version",
+    "build": "npm run setup && npm run fetch-avatar && npm run generate-version && npm run build-cv && npm run test:run && next build && npm run extract-css-version",
     "build-only": "npm run generate-version && npm run build-cv && next build && npm run extract-css-version",
     "analyze": "ANALYZE=true npm run build-only",
     "start": "next start",
@@ -14,7 +14,10 @@
     "generate-version": "node ./scripts/generate-version.js",
     "extract-css-version": "node ./scripts/extract-css-version.js",
     "build-cv": "./scripts/build-cv.sh",
-    "update-cv": "node ./scripts/generate-latex.js && npm run generate-version && npm run build-cv && echo '✅ CV updated! Check git status for changes to commit.'"
+    "update-cv": "node ./scripts/generate-latex.js && npm run generate-version && npm run build-cv && echo '✅ CV updated! Check git status for changes to commit.'",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.20.0",
@@ -43,9 +46,14 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.4.5",
+    "@testing-library/jest-dom": "^6.6.4",
+    "@testing-library/react": "^16.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "critters": "^0.0.23",
     "cssnano": "^7.1.0",
-    "sharp": "^0.34.3"
+    "jsdom": "^26.1.0",
+    "sharp": "^0.34.3",
+    "vitest": "^3.2.4"
   },
   "overrides": {
     "react": "^18.3.1",

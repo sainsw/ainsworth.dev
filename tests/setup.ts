@@ -1,0 +1,65 @@
+import '@testing-library/jest-dom'
+import React from 'react'
+
+// Mock React cache function
+vi.mock('react', async () => {
+  const actual = await vi.importActual('react')
+  return {
+    ...actual,
+    cache: (fn: any) => fn, // Simple pass-through for cache
+  }
+})
+
+// Mock Next.js router
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    refresh: vi.fn(),
+  }),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => '/',
+  notFound: vi.fn(),
+}))
+
+// Mock Next.js Image component
+vi.mock('next/image', () => ({
+  default: (props: any) => React.createElement('img', props),
+}))
+
+// Mock Next.js Link component  
+vi.mock('next/link', () => ({
+  default: ({ children, ...props }: any) => React.createElement('a', props, children),
+}))
+
+// Mock problematic components
+vi.mock('app/components/tweet', () => ({
+  TweetComponent: () => React.createElement('div', null, 'Tweet Component'),
+}))
+
+vi.mock('app/components/sandpack', () => ({
+  LiveCode: () => React.createElement('div', null, 'Live Code'),
+}))
+
+// Mock database functions
+vi.mock('app/db/queries', () => ({
+  getViewsCount: vi.fn().mockResolvedValue([]),
+}))
+
+vi.mock('app/db/actions', () => ({
+  increment: vi.fn().mockResolvedValue(undefined),
+}))
+
+vi.mock('app/db/blog', () => ({
+  getBlogPosts: vi.fn().mockReturnValue([
+    {
+      slug: 'test-post',
+      metadata: {
+        title: 'Test Post',
+        publishedAt: '2024-01-01',
+        summary: 'A test post',
+      },
+      content: 'Test content',
+    },
+  ]),
+}))
