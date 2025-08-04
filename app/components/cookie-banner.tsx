@@ -21,6 +21,7 @@ export function CookieConsent({
 }: CookieConsentProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [hide, setHide] = useState(false)
+  const [shouldRender, setShouldRender] = useState(false)
 
   const handleAccept = useCallback(() => {
     setIsOpen(false)
@@ -67,7 +68,11 @@ export function CookieConsent({
       
       // Show banner after 2 seconds delay like Vercel
       const timer = setTimeout(() => {
-        setIsOpen(true)
+        setShouldRender(true)
+        // Trigger animation after DOM render
+        requestAnimationFrame(() => {
+          setIsOpen(true)
+        })
       }, 2000)
       
       return () => clearTimeout(timer)
@@ -76,7 +81,7 @@ export function CookieConsent({
     }
   }, [])
 
-  if (!isOpen || hide) {
+  if (!shouldRender || hide) {
     return null
   }
 
