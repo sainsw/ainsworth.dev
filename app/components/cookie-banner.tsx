@@ -21,6 +21,7 @@ export function CookieConsent({
 }: CookieConsentProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [hide, setHide] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
 
   const handleAccept = useCallback(() => {
     setIsOpen(false)
@@ -68,6 +69,10 @@ export function CookieConsent({
       // Show banner after 2 seconds delay like Vercel
       const timer = setTimeout(() => {
         setIsOpen(true)
+        // Trigger slide animation after DOM update
+        requestAnimationFrame(() => {
+          setIsVisible(true)
+        })
       }, 2000)
       
       return () => clearTimeout(timer)
@@ -83,11 +88,15 @@ export function CookieConsent({
   if (variant === 'mini') {
     return (
       <div 
-        className={`fixed z-50 transition-all duration-700 ${
-          isOpen ? 'bottom-0 left-0 right-0 sm:left-4 sm:bottom-4' : 'bottom-[-100px]'
-        } w-full sm:max-w-md`}
+        className={`fixed z-50 transition-all duration-700 ease-out left-4 bottom-4 max-w-sm ${
+          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        }`}
+        style={{
+          transform: isVisible ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'all 0.7s ease-out'
+        }}
       >
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg m-4 p-6">
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg p-6">
           <div className="space-y-4">
             <div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
@@ -109,7 +118,17 @@ export function CookieConsent({
               </button>
               <button
                 onClick={handleAccept}
-                className="px-6 py-2 text-sm font-medium text-white bg-black dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-100 rounded-full transition-colors"
+                className="px-6 py-2 text-sm font-medium text-white rounded-full transition-colors"
+                style={{
+                  backgroundColor: '#000000',
+                  color: '#ffffff'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#1f1f1f'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#000000'
+                }}
               >
                 Consent Settings
               </button>
