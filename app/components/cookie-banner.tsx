@@ -14,7 +14,7 @@ export function CookieConsent({
   variant = 'mini',
   onAcceptCallback,
   onDeclineCallback,
-  description = 'We use cookies to enhance your browsing experience and analyze our traffic.',
+  description = 'We use cookies to ensure you get the best experience on our website. For more information on how we use cookies, please see our cookie policy.',
   learnMoreHref = '/privacy'
 }: CookieConsentProps) {
   const [isOpen, setIsOpen] = useState(false)
@@ -85,7 +85,7 @@ export function CookieConsent({
           zIndex: 9999
         }}
       >
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg p-4">
+        <div className="bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-lg backdrop-blur-sm p-4">
           <div className="flex items-start gap-3">
             <div className="flex-1">
               <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-3">
@@ -94,13 +94,13 @@ export function CookieConsent({
               <div className="flex gap-2">
                 <button
                   onClick={acceptCookies}
-                  className="px-3 py-2 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded text-sm text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                  className="px-4 py-2 bg-neutral-900 dark:bg-neutral-50 text-white dark:text-neutral-900 text-sm rounded-md hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors font-medium"
                 >
                   Accept
                 </button>
                 <button
                   onClick={declineCookies}
-                  className="px-3 py-1 text-sm text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+                  className="px-4 py-2 border border-neutral-200 dark:border-neutral-700 bg-transparent text-sm text-neutral-700 dark:text-neutral-300 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors font-medium"
                 >
                   Decline
                 </button>
@@ -119,9 +119,9 @@ export function CookieConsent({
           {learnMoreHref && (
             <a
               href={learnMoreHref}
-              className="text-xs text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors mt-2 inline-block"
+              className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors mt-2 inline-block underline underline-offset-2"
             >
-              Learn more
+              cookie policy
             </a>
           )}
         </div>
