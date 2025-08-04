@@ -59,11 +59,18 @@ export function CookieConsent({
 
   useEffect(() => {
     try {
-      setIsOpen(true)
       if (document.cookie.includes('cookie-consent=') && !demo) {
         setIsOpen(false)
         setHide(true)
+        return
       }
+      
+      // Show banner after 2 seconds delay like Vercel
+      const timer = setTimeout(() => {
+        setIsOpen(true)
+      }, 2000)
+      
+      return () => clearTimeout(timer)
     } catch (e) {
       console.log('Error checking cookies:', e)
     }
@@ -90,19 +97,19 @@ export function CookieConsent({
             <div className="flex gap-2 pt-2">
               <button
                 onClick={handleDecline}
-                className="flex-1 px-4 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-full transition-colors"
+                className="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 rounded-full transition-colors"
               >
                 Deny
               </button>
               <button
                 onClick={handleAccept}
-                className="flex-1 px-4 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-full transition-colors"
+                className="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 rounded-full transition-colors"
               >
                 Accept all
               </button>
               <button
                 onClick={handleAccept}
-                className="px-6 py-2 text-sm font-medium text-white bg-neutral-900 dark:bg-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100 rounded-full transition-colors"
+                className="px-6 py-2 text-sm font-medium text-white bg-black dark:bg-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-100 rounded-full transition-colors"
               >
                 Consent Settings
               </button>
