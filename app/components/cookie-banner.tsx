@@ -21,7 +21,6 @@ export function CookieConsent({
 }: CookieConsentProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [hide, setHide] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
 
   const handleAccept = useCallback(() => {
     setIsOpen(false)
@@ -69,10 +68,6 @@ export function CookieConsent({
       // Show banner after 2 seconds delay like Vercel
       const timer = setTimeout(() => {
         setIsOpen(true)
-        // Trigger slide animation after DOM update
-        requestAnimationFrame(() => {
-          setIsVisible(true)
-        })
       }, 2000)
       
       return () => clearTimeout(timer)
@@ -89,12 +84,8 @@ export function CookieConsent({
     return (
       <div 
         className={`fixed z-50 transition-all duration-700 ease-out left-4 bottom-4 max-w-sm ${
-          isVisible ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+          isOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}
-        style={{
-          transform: isVisible ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'all 0.7s ease-out'
-        }}
       >
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg p-6">
           <div className="space-y-4">
