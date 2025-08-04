@@ -83,9 +83,15 @@ export function CookieConsent({
   if (variant === 'mini') {
     return (
       <div 
-        className={`fixed z-50 transition-all duration-700 ease-out left-4 bottom-4 max-w-sm ${
+        className={`transition-all duration-700 ease-out max-w-sm ${
           isOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}
+        style={{
+          position: 'fixed',
+          left: '1rem', 
+          bottom: '1rem',
+          zIndex: 9999
+        }}
       >
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg p-6">
           <div className="space-y-4">
