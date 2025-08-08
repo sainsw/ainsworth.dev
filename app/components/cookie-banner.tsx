@@ -124,17 +124,17 @@ export function CookieConsent({
                 Learn more
               </a>
             )}
-            <div className="flex items-center flex-wrap gap-4 pt-3">
+            <div className="flex items-center flex-wrap gap-4 mt-4">
               <button
                 onClick={handleDecline}
-                className="inline-flex items-center justify-center whitespace-nowrap h-8 px-3 text-sm font-medium rounded-full border transition-colors border-neutral-300 text-neutral-900 bg-white hover:bg-neutral-100 hover:border-neutral-300 dark:border-neutral-700 dark:text-neutral-100 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:hover:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
+                className="inline-flex items-center justify-center whitespace-nowrap h-8 px-3 text-sm font-medium rounded-full border transition-colors border-neutral-300 text-neutral-900 bg-white hover:bg-black hover:text-white hover:border-black dark:border-neutral-700 dark:text-neutral-100 dark:bg-neutral-900 dark:hover:bg-white dark:hover:text-black dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
                 aria-label="Decline"
               >
                 Decline
               </button>
               <button
                 onClick={handleAccept}
-                className="inline-flex items-center justify-center whitespace-nowrap h-8 px-3 text-sm font-medium rounded-full border transition-colors border-neutral-300 text-neutral-900 bg-white hover:bg-neutral-100 hover:border-neutral-300 dark:border-neutral-700 dark:text-neutral-100 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:hover:border-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
+                className="inline-flex items-center justify-center whitespace-nowrap h-8 px-3 text-sm font-medium rounded-full border transition-colors border-neutral-300 text-neutral-900 bg-white hover:bg-black hover:text-white hover:border-black dark:border-neutral-700 dark:text-neutral-100 dark:bg-neutral-900 dark:hover:bg:white dark:hover:text-black dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
                 aria-label="Accept"
               >
                 Accept
