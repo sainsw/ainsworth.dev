@@ -115,21 +115,19 @@ export function CookieConsent({
           <div className="space-y-3">
             <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
               {description}
-              {learnMoreHref && (
-                <>
-                  {' '}<a
-                    href={learnMoreHref}
-                    className="underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
-                  >
-                    Learn more
-                  </a>
-                </>
-              )}
             </p>
-            <div className="flex items-center gap-2 pt-1">
+            {learnMoreHref && (
+              <a
+                href={learnMoreHref}
+                className="block text-sm underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80 mt-2"
+              >
+                Learn more
+              </a>
+            )}
+            <div className="flex items-center flex-wrap gap-3 pt-2">
               <button
                 onClick={handleDecline}
-                className="px-4 py-2 text-sm font-medium rounded-full border border-neutral-300 text-neutral-800 bg-white hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 transition-colors"
+                className="px-5 py-2 text-sm font-medium rounded-full border border-neutral-300 text-neutral-900 bg-white hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-100 dark:bg-neutral-900 dark:hover:bg-neutral-800 transition-colors"
                 aria-label="Decline"
               >
                 Decline
