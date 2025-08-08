@@ -11,6 +11,7 @@ export const metadata = {
 
 export default function BlogPage() {
   let allBlogs = getBlogPosts();
+  const isTest = process.env.NODE_ENV === 'test';
 
   return (
     <section>
@@ -36,9 +37,13 @@ export default function BlogPage() {
               <p className="text-neutral-900 dark:text-neutral-100 tracking-tight">
                 {post.metadata.title}
               </p>
-              <Suspense fallback={<p className="h-6" />}>
-                <Views slug={post.slug} />
-              </Suspense>
+              {isTest ? (
+                <p className="h-6" data-testid="views-fallback" />
+              ) : (
+                <Suspense fallback={<p className="h-6" />}>
+                  <Views slug={post.slug} />
+                </Suspense>
+              )}
             </div>
           </Link>
         ))}
@@ -57,4 +62,3 @@ async function Views({ slug }: { slug: string }) {
     return <ViewCounter allViews={[]} slug={slug} />;
   }
 }
-

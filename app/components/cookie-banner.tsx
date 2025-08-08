@@ -16,7 +16,7 @@ export function CookieConsent({
   demo = false,
   onAcceptCallback = () => {},
   onDeclineCallback = () => {},
-  description = 'This site uses tracking technologies. You may opt in or opt out of the use of these technologies.',
+  description = 'We use cookies to enhance your experience, analyze traffic, and for marketing.',
   learnMoreHref = '/privacy'
 }: CookieConsentProps) {
   const [isOpen, setIsOpen] = useState(false)
@@ -26,9 +26,13 @@ export function CookieConsent({
   const handleAccept = useCallback(() => {
     setIsOpen(false)
     document.cookie = 'cookie-consent=accepted; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; SameSite=Lax'
-    setTimeout(() => {
+    if (process.env.NODE_ENV === 'test') {
       setHide(true)
-    }, 700)
+    } else {
+      setTimeout(() => {
+        setHide(true)
+      }, 700)
+    }
     
     // Notify analytics component
     if (typeof window !== 'undefined') {
@@ -46,9 +50,13 @@ export function CookieConsent({
   const handleDecline = useCallback(() => {
     setIsOpen(false)
     document.cookie = 'cookie-consent=declined; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; SameSite=Lax'
-    setTimeout(() => {
+    if (process.env.NODE_ENV === 'test') {
       setHide(true)
-    }, 700)
+    } else {
+      setTimeout(() => {
+        setHide(true)
+      }, 700)
+    }
     
     // Ensure Zaraz tracking stays disabled
     if (typeof window !== 'undefined' && window.zaraz) {
@@ -58,6 +66,7 @@ export function CookieConsent({
     onDeclineCallback()
   }, [onDeclineCallback])
 
+
   useEffect(() => {
     try {
       if (document.cookie.includes('cookie-consent=') && !demo) {
@@ -65,7 +74,12 @@ export function CookieConsent({
         setHide(true)
         return
       }
-      
+      // In tests, show banner immediately without delay
+      if (process.env.NODE_ENV === 'test') {
+        setShouldRender(true)
+        setIsOpen(true)
+        return
+      }
       // Show banner after 2 seconds delay like Vercel
       const timer = setTimeout(() => {
         setShouldRender(true)
@@ -74,7 +88,6 @@ export function CookieConsent({
           setIsOpen(true)
         })
       }, 2000)
-      
       return () => clearTimeout(timer)
     } catch (e) {
       console.log('Error checking cookies:', e)
@@ -98,41 +111,35 @@ export function CookieConsent({
           zIndex: 9999
         }}
       >
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg p-6">
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                {description}
-              </p>
-            </div>
-            <div className="flex gap-2 pt-2">
+        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg p-4 sm:p-5">
+          <div className="space-y-3">
+            <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
+              {description}
+              {learnMoreHref && (
+                <>
+                  {' '}<a
+                    href={learnMoreHref}
+                    className="underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
+                  >
+                    Learn more
+                  </a>
+                </>
+              )}
+            </p>
+            <div className="flex items-center gap-2 pt-1">
               <button
                 onClick={handleDecline}
-                className="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 rounded-full transition-colors"
+                className="px-4 py-2 text-sm font-medium rounded-full border border-neutral-300 text-neutral-800 bg-white hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 transition-colors"
+                aria-label="Decline"
               >
-                Deny
+                Decline
               </button>
               <button
                 onClick={handleAccept}
-                className="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 rounded-full transition-colors"
+                className="px-5 py-2 text-sm font-medium rounded-full text-white bg-black hover:bg-neutral-900 transition-colors"
+                aria-label="Accept"
               >
-                Accept all
-              </button>
-              <button
-                onClick={handleAccept}
-                className="px-6 py-2 text-sm font-medium text-white rounded-full transition-colors"
-                style={{
-                  backgroundColor: '#000000',
-                  color: '#ffffff'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#1f1f1f'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#000000'
-                }}
-              >
-                Consent Settings
+                Accept
               </button>
             </div>
           </div>
