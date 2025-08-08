@@ -127,14 +127,14 @@ export function CookieConsent({
             <div className="flex items-center flex-wrap gap-4 pt-3">
               <button
                 onClick={handleDecline}
-                className="inline-flex items-center whitespace-nowrap px-6 py-2.5 text-sm font-medium rounded-full border border-neutral-300 text-neutral-900 bg-white hover:bg-black hover:text-white hover:border-black dark:border-neutral-700 dark:text-neutral-100 dark:bg-neutral-900 dark:hover:bg-white dark:hover:text-black dark:hover:border-white transition-colors"
+                className="inline-flex items-center whitespace-nowrap px-6 py-3 text-sm font-medium rounded-full border border-neutral-300 text-neutral-900 bg-white hover:bg-black hover:text-white hover:border-black dark:border-neutral-700 dark:text-neutral-100 dark:bg-neutral-900 dark:hover:bg-white dark:hover:text-black dark:hover:border-white transition-colors"
                 aria-label="Decline"
               >
                 Decline
               </button>
               <button
                 onClick={handleAccept}
-                className="inline-flex items-center whitespace-nowrap px-6 py-2.5 text-sm font-medium rounded-full text-white bg-black hover:bg-neutral-900 transition-colors"
+                className="inline-flex items-center whitespace-nowrap px-6 py-3 text-sm font-medium rounded-full border border-neutral-300 text-neutral-900 bg-white hover:bg-black hover:text-white hover:border-black dark:border-neutral-700 dark:text-neutral-100 dark:bg-neutral-900 dark:hover:bg-white dark:hover:text-black dark:hover:border-white transition-colors"
                 aria-label="Accept"
               >
                 Accept
