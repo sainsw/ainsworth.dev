@@ -70,12 +70,10 @@ export default function MermaidClient({
               // Remove viewBox constraint
               svgElement.removeAttribute("viewBox");
 
-              // Set explicit dimensions to prevent clipping and apply scaling
+              // Set explicit dimensions to prevent clipping
               svgElement.style.width = "auto";
               svgElement.style.height = "auto";
               svgElement.style.maxWidth = "none";
-              svgElement.style.transform = "scale(0.85)";
-              svgElement.style.transformOrigin = "center top";
 
               // Fix text elements that might be clipped
               const textElements = svgElement.querySelectorAll(
@@ -103,6 +101,10 @@ export default function MermaidClient({
                     textEl.style.textAnchor = "middle";
                   }
                 });
+
+                // Apply scaling after everything is processed
+                svgElement.style.transform = "scale(0.85)";
+                svgElement.style.transformOrigin = "center top";
               }, 100);
             }
 
