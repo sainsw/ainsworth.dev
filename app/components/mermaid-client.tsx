@@ -36,14 +36,14 @@ export default function MermaidClient({
             useMaxWidth: false,
             htmlLabels: true,
             curve: "basis",
-            padding: 20,
-            nodeSpacing: 50,
-            rankSpacing: 80,
-            diagramPadding: 20,
+            padding: 12,
+            nodeSpacing: 30,
+            rankSpacing: 50,
+            diagramPadding: 12,
           },
           themeVariables: {
             fontFamily: "'Geist Mono', ui-monospace, monospace",
-            fontSize: "13px",
+            fontSize: "11px",
             primaryColor: "#ffffff",
             primaryTextColor: "#000000",
             primaryBorderColor: "#cccccc",
@@ -70,10 +70,12 @@ export default function MermaidClient({
               // Remove viewBox constraint
               svgElement.removeAttribute("viewBox");
 
-              // Set explicit dimensions to prevent clipping
+              // Set explicit dimensions to prevent clipping and apply scaling
               svgElement.style.width = "auto";
               svgElement.style.height = "auto";
               svgElement.style.maxWidth = "none";
+              svgElement.style.transform = "scale(0.85)";
+              svgElement.style.transformOrigin = "center top";
 
               // Fix text elements that might be clipped
               const textElements = svgElement.querySelectorAll(
@@ -156,11 +158,11 @@ export default function MermaidClient({
       )}
       <div
         ref={elementRef}
-        className={`mermaid-diagram overflow-x-auto ${!isLoaded ? "hidden" : ""}`}
+        className={`mermaid-diagram overflow-x-auto flex justify-center ${!isLoaded ? "hidden" : ""}`}
         style={{
           width: "100%",
-          minWidth: "600px",
-          padding: "20px",
+          minWidth: "400px",
+          padding: "12px",
           overflow: "visible",
         }}
       />
