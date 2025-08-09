@@ -9,7 +9,7 @@ interface AvatarDemoProps {
 export function AvatarDemo({ className = "" }: AvatarDemoProps) {
   return (
     <div
-      className={`flex flex-row items-center justify-center my-8 ${className}`}
+      className={`flex flex-row items-center justify-between my-8 px-8 ${className}`}
     >
       {/* Normal Avatar */}
       <div className="flex flex-col items-center space-y-3">
@@ -34,11 +34,6 @@ export function AvatarDemo({ className = "" }: AvatarDemoProps) {
             Most of the year
           </p>
         </div>
-      </div>
-
-      {/* Separator */}
-      <div className="w-32 text-center">
-        <span className="text-gray-400 dark:text-gray-600">vs</span>
       </div>
 
       {/* Pride Avatar */}
