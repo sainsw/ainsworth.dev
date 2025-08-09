@@ -196,11 +196,6 @@ export default function MermaidClient({
             // Fix SVG viewBox to prevent text clipping
             const svgElement = elementRef.current.querySelector("svg");
             if (svgElement) {
-              // Ensure viewBox exists so internal coordinates/centres are accurate
-              if (!svgElement.getAttribute("viewBox")) {
-                const bb = svgElement.getBBox();
-                svgElement.setAttribute("viewBox", `${bb.x} ${bb.y} ${bb.width} ${bb.height}`);
-              }
               // Responsive sizing via viewBox, avoid CSS transforms (Safari text offset)
               svgElement.setAttribute("preserveAspectRatio", "xMidYMin meet");
               svgElement.style.width = "100%";
@@ -224,6 +219,39 @@ export default function MermaidClient({
               // No CSS transform scaling; let viewBox handle responsiveness
               svgElement.style.transform = "none";
               svgElement.style.overflow = "visible";
+
+              // Safari-specific label centre correction without CSS scaling
+              const ua = navigator.userAgent.toLowerCase();
+              const isSafari = ua.includes("safari") &&
+                !ua.includes("chrome") &&
+                !ua.includes("crios") &&
+                !ua.includes("android") &&
+                !ua.includes("edg") &&
+                !ua.includes("opr");
+
+              if (isSafari) {
+                const nodes = svgElement.querySelectorAll<SVGGElement>(".node");
+                nodes.forEach((node) => {
+                  const text = node.querySelector<SVGTextElement>(".label text, text");
+                  const shape = node.querySelector<SVGGraphicsElement>(
+                    "rect, polygon, ellipse, circle, path",
+                  );
+                  if (!text || !shape) return;
+
+                  const b = shape.getBBox();
+                  const cx = b.x + b.width / 2;
+                  const cy = b.y + b.height / 2;
+
+                  text.removeAttribute("transform");
+                  text.removeAttribute("dx");
+                  text.removeAttribute("dy");
+                  text.setAttribute("x", `${cx}`);
+                  text.setAttribute("y", `${cy}`);
+                  text.setAttribute("text-anchor", "middle");
+                  text.setAttribute("dominant-baseline", "middle");
+                  (text.style as any).textAnchor = "middle";
+                });
+              }
             }
 
             setIsLoaded(true);

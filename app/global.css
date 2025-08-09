@@ -213,11 +213,10 @@ table {
 }
 
 .mermaid-diagram svg {
-    max-width: 100% !important;
-    height: auto !important;
-    width: 100% !important;
-    overflow: visible !important;
     display: block;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
 }
 
 /* Fix mermaid node text cutoff */
