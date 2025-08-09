@@ -17,7 +17,7 @@ export function CookieConsent({
   demo = false,
   onAcceptCallback = () => {},
   onDeclineCallback = () => {},
-  description = 'We use cookies to enhance your experience, analyze traffic, and for marketing.',
+  description = 'I use cookies to analyse traffic and provide features',
   learnMoreHref = '/privacy'
 }: CookieConsentProps) {
   const [isOpen, setIsOpen] = useState(false)

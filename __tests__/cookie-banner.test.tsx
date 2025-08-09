@@ -19,7 +19,7 @@ describe('CookieConsent', () => {
   it('renders when no consent cookie exists', () => {
     render(<CookieConsent variant="mini" />)
     
-    expect(screen.getByText(/We use cookies to enhance/)).toBeInTheDocument()
+    expect(screen.getByText(/I use cookies to analyse traffic and provide features/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /accept/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /decline/i })).toBeInTheDocument()
   })
@@ -30,7 +30,7 @@ describe('CookieConsent', () => {
     
     render(<CookieConsent variant="mini" />)
     
-    expect(screen.queryByText(/We use cookies to enhance/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/I use cookies to analyse traffic and provide features/)).not.toBeInTheDocument()
   })
 
   it('sets cookie and hides banner when accept is clicked', () => {
@@ -40,7 +40,7 @@ describe('CookieConsent', () => {
     fireEvent.click(acceptButton)
     
     expect(document.cookie).toContain('cookie-consent=accepted')
-    expect(screen.queryByText(/We use cookies to enhance/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/I use cookies to analyse traffic and provide features/)).not.toBeInTheDocument()
   })
 
   it('sets cookie and hides banner when decline is clicked', () => {
@@ -50,7 +50,7 @@ describe('CookieConsent', () => {
     fireEvent.click(declineButton)
     
     expect(document.cookie).toContain('cookie-consent=declined')
-    expect(screen.queryByText(/We use cookies to enhance/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/I use cookies to analyse traffic and provide features/)).not.toBeInTheDocument()
   })
 
   it('dispatches custom event when accept is clicked', () => {
