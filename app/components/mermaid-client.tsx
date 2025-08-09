@@ -1,13 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 interface MermaidClientProps {
   chart: string;
   className?: string;
 }
 
-export default function MermaidClient({ chart, className = '' }: MermaidClientProps) {
+export default function MermaidClient({
+  chart,
+  className = "",
+}: MermaidClientProps) {
   const elementRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,21 +21,38 @@ export default function MermaidClient({ chart, className = '' }: MermaidClientPr
     async function renderMermaid() {
       try {
         // Dynamically import mermaid to avoid SSR issues
-        const mermaid = (await import('mermaid')).default;
+        const mermaid = (await import("mermaid")).default;
 
         if (!mounted) return;
 
         // Initialize mermaid with configuration
         mermaid.initialize({
           startOnLoad: false,
-          theme: 'neutral',
-          securityLevel: 'loose',
-          fontFamily: 'inherit',
+          theme: "neutral",
+          securityLevel: "loose",
+          fontFamily: "inherit",
+          flowchart: {
+            useMaxWidth: false,
+            htmlLabels: true,
+            curve: "basis",
+            padding: 30,
+            nodeSpacing: 50,
+            rankSpacing: 80,
+            diagramPadding: 20,
+          },
+          themeVariables: {
+            fontFamily: "inherit",
+            fontSize: "14px",
+            primaryColor: "#f9f9f9",
+            primaryTextColor: "#333",
+            primaryBorderColor: "#666",
+            lineColor: "#666",
+          },
         });
 
         if (elementRef.current) {
           // Clear any existing content
-          elementRef.current.innerHTML = '';
+          elementRef.current.innerHTML = "";
 
           // Generate unique ID for this diagram
           const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
@@ -46,9 +66,11 @@ export default function MermaidClient({ chart, className = '' }: MermaidClientPr
           }
         }
       } catch (err) {
-        console.error('Mermaid rendering error:', err);
+        console.error("Mermaid rendering error:", err);
         if (mounted) {
-          setError(err instanceof Error ? err.message : 'Failed to render diagram');
+          setError(
+            err instanceof Error ? err.message : "Failed to render diagram",
+          );
         }
       }
     }
@@ -62,12 +84,16 @@ export default function MermaidClient({ chart, className = '' }: MermaidClientPr
 
   if (error) {
     return (
-      <div className={`p-4 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg ${className}`}>
+      <div
+        className={`p-4 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg ${className}`}
+      >
         <p className="text-red-600 dark:text-red-400 text-sm">
           Failed to render diagram: {error}
         </p>
         <details className="mt-2">
-          <summary className="text-xs text-red-500 cursor-pointer">Show source</summary>
+          <summary className="text-xs text-red-500 cursor-pointer">
+            Show source
+          </summary>
           <pre className="mt-2 text-xs text-red-400 overflow-auto">
             <code>{chart}</code>
           </pre>
@@ -88,11 +114,11 @@ export default function MermaidClient({ chart, className = '' }: MermaidClientPr
       )}
       <div
         ref={elementRef}
-        className={`mermaid-diagram ${!isLoaded ? 'hidden' : ''}`}
+        className={`mermaid-diagram overflow-x-auto ${!isLoaded ? "hidden" : ""}`}
         style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+          width: "100%",
+          minWidth: "700px",
+          padding: "20px",
         }}
       />
     </div>
