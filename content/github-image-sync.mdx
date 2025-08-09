@@ -49,7 +49,7 @@ graph TD
 ```
 
 1. **GitHub API Integration** - Fetches latest avatar URL
-2. **Sharp Image Processing** - Optimizes and converts to WebP/JPG
+2. **Sharp Image Processing** - Optimises and converts to WebP/JPG
 3. **Content-Based Versioning** - Generates cache-busting hashes
 4. **Build Integration** - Runs automatically on deployment
 5. **Fallback System** - Graceful degradation when API fails
@@ -82,7 +82,7 @@ Once downloaded, the image goes through Sharp optimization:
 await sharp(inputPath)
   .resize(200, 200, { 
     fit: 'cover',
-    position: 'center'
+    position: 'centre'
   })
   .webp({ 
     quality: 85,
@@ -94,7 +94,7 @@ await sharp(inputPath)
 await sharp(inputPath)
   .resize(200, 200, { 
     fit: 'cover',
-    position: 'center'
+    position: 'centre'
   })
   .jpeg({ 
     quality: 90,
@@ -103,7 +103,7 @@ await sharp(inputPath)
   .toFile(jpgPath);
 ```
 
-The pipeline produces two optimized formats:
+The pipeline produces two optimised formats:
 - **WebP** for modern browsers (smaller file size)
 - **JPG** for legacy browser support
 
@@ -140,7 +140,7 @@ The pipeline integrates seamlessly with the build process:
 
 During Vercel deployment:
 1. Latest avatar is fetched from GitHub
-2. Images are optimized and versioned
+2. Images are optimised and versioned
 3. Version hash is written to `lib/version.js`
 4. Next.js build references the versioned files
 
@@ -181,8 +181,8 @@ The system includes comprehensive fallback mechanisms:
 
 ```javascript
 try {
-  // Fetch from GitHub and optimize
-  await fetchAndOptimize();
+  // Fetch from GitHub and optimise
+  await fetchAndOptimise();
 } catch (error) {
   console.log('Avatar fetch failed, using existing files');
   
@@ -212,7 +212,7 @@ The pipeline supports additional visual enhancements and can be extended with se
 
 ## 📊 Performance Impact
 
-The optimized pipeline delivers significant improvements:
+The optimised pipeline delivers significant improvements:
 
 - **File size reduction**: ~60% smaller with WebP
 - **Cache efficiency**: Only re-downloads when avatar changes
@@ -258,12 +258,12 @@ console.log(`🔑 Content hash: ${contentHash}`);
 This automated pipeline has eliminated manual avatar updates entirely. The system:
 
 - **Fetches latest avatar** on every deployment
-- **Optimizes images** automatically with WebP/JPG
+- **Optimises images** automatically with WebP/JPG
 - **Handles failures gracefully** with existing files
 - **Adds seasonal flair** with Pride Month borders
 - **Provides excellent performance** with smart caching
 
-The avatar you see on this site was fetched, optimized, and deployed completely automatically. When I update my GitHub profile photo, the next deployment will sync it across the entire site.
+The avatar you see on this site was fetched, optimised, and deployed completely automatically. When I update my GitHub profile photo, the next deployment will sync it across the entire site.
 
 ## 🚀 Future Enhancements
 
