@@ -126,10 +126,10 @@ export function CookieConsent({
               </a>
             )}
             <div className="flex items-center flex-wrap gap-4 mt-4">
-              <Button onClick={handleDecline} aria-label="Decline">
+              <Button variant="outline" size="sm" className="rounded-full h-8 px-3" onClick={handleDecline} aria-label="Decline">
                 Decline
               </Button>
-              <Button onClick={handleAccept} aria-label="Accept">
+              <Button size="sm" className="rounded-full h-8 px-3" onClick={handleAccept} aria-label="Accept">
                 Accept
               </Button>
             </div>
