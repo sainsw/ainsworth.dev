@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface MermaidClientProps {
   chart: string;
@@ -43,6 +43,68 @@ export default function MermaidClient({
       mediaQuery.removeEventListener('change', checkDarkMode);
     };
   }, []);
+
+  // Transform chart for theme-aware custom node fills
+  const themedChart = useMemo(() => {
+    // Only transform known pastel fills used in content
+    // Light mode: ensure readable dark text; Dark mode: use darker fills and light text
+    const mappingsLight: Record<string, { fill: string; color: string; stroke?: string }> = {
+      // sky-50
+      "#e1f5fe": { fill: "#e1f5fe", color: "#111827", stroke: "#93c5fd" },
+      // green-50
+      "#e8f5e8": { fill: "#e8f5e8", color: "#111827", stroke: "#86efac" },
+      // amber-50
+      "#fff3e0": { fill: "#fff3e0", color: "#111827", stroke: "#fcd34d" },
+      // fuchsia-50
+      "#f3e5f5": { fill: "#f3e5f5", color: "#111827", stroke: "#f0abfc" },
+      // hot pink highlight
+      "#ff69b4": { fill: "#ff69b4", color: "#111827", stroke: "#f472b6" },
+    };
+
+    const mappingsDark: Record<string, { fill: string; color: string; stroke?: string }> = {
+      // sky-900
+      "#e1f5fe": { fill: "#0c4a6e", color: "#e5e7eb", stroke: "#38bdf8" },
+      // emerald-900
+      "#e8f5e8": { fill: "#064e3b", color: "#e5e7eb", stroke: "#34d399" },
+      // amber-900
+      "#fff3e0": { fill: "#713f12", color: "#e5e7eb", stroke: "#fbbf24" },
+      // fuchsia-900
+      "#f3e5f5": { fill: "#6d28d9", color: "#f3f4f6", stroke: "#c084fc" },
+      // hot pink highlight → fuchsia-800
+      "#ff69b4": { fill: "#86198f", color: "#f5f3ff", stroke: "#e879f9" },
+    };
+
+    const source = chart;
+    const replacer = (hex: string, map: Record<string, { fill: string; color: string; stroke?: string }>) => {
+      // Replace lines like: style A fill:#e1f5fe
+      const regex = new RegExp(`(style\\s+[^\\n]*?)fill:${hex}`, "gi");
+      return source
+        .replace(regex, (_, pre) => `${pre}fill:${map[hex].fill},color:${map[hex].color}${map[hex].stroke ? `,stroke:${map[hex].stroke}` : ""}`)
+        // Also handle multiline style blocks if any
+        .replace(new RegExp(`(style\\s+[^\\n]*?fill:${hex}[^\\n]*)`, "gi"), (m) => {
+          // If color not already present, append it
+          if (!/color:/i.test(m)) {
+            const { color } = map[hex];
+            return `${m},color:${color}`;
+          }
+          return m;
+        });
+    };
+
+    // Apply mapping
+    const palette = isDark ? mappingsDark : mappingsLight;
+    let out = source;
+    Object.keys(palette).forEach((hex) => {
+      out = out.replace(new RegExp(`fill:${hex}`, "gi"), (m) => {
+        const { fill } = palette[hex];
+        return `fill:${fill}`;
+      });
+      // Ensure text colour for that style line
+      out = out.replace(new RegExp(`(style\\s+[^\\n]*?fill:${palette[hex].fill})(?![^\\n]*color:)`, "gi"), `$1,color:${palette[hex].color}`);
+    });
+
+    return out;
+  }, [chart, isDark]);
 
   useEffect(() => {
     let mounted = true;
@@ -93,7 +155,7 @@ export default function MermaidClient({
             clusterBorder: isDark ? '#374151' : '#d1d5db',
             noteBkgColor: isDark ? '#0f172a' : '#f9fafb',
             noteTextColor: isDark ? '#e5e7eb' : '#111827',
-            edgeLabelBackground: isDark ? '#000000cc' : '#ffffffcc',
+            edgeLabelBackground: 'transparent',
           },
         });
 
@@ -104,8 +166,8 @@ export default function MermaidClient({
           // Generate unique ID for this diagram
           const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
 
-          // Render the diagram
-          const { svg } = await mermaid.render(id, chart);
+          // Render the diagram with theme-aware chart
+          const { svg } = await mermaid.render(id, themedChart);
 
           if (mounted && elementRef.current) {
             elementRef.current.innerHTML = svg;
@@ -170,7 +232,7 @@ export default function MermaidClient({
     return () => {
       mounted = false;
     };
-  }, [chart, isDark]);
+  }, [themedChart, isDark]);
 
   if (error) {
     return (
