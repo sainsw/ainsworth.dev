@@ -9,7 +9,7 @@ interface AvatarDemoProps {
 export function AvatarDemo({ className = "" }: AvatarDemoProps) {
   return (
     <div
-      className={`flex flex-row gap-16 items-center justify-center my-8 ${className}`}
+      className={`flex flex-row gap-32 items-center justify-center my-8 ${className}`}
     >
       {/* Normal Avatar */}
       <div className="flex flex-col items-center space-y-3">
