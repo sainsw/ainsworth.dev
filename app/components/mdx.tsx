@@ -31,7 +31,12 @@ function Table({ data }) {
 }
 
 function CustomLink(props) {
-  let href = props.href;
+  const href = typeof props.href === 'string' ? props.href : '';
+
+  // Fallback: render a normal anchor if href is missing or not a string
+  if (!href) {
+    return <a {...props} />;
+  }
 
   if (href.startsWith('/')) {
     return (
