@@ -56,7 +56,7 @@ export default function MermaidClient({
 
         // Use the isDark state
 
-        // Initialize mermaid with native theme switching
+        // Initialize mermaid with neutral theme and explicit dark mode setting
         mermaid.initialize({
           startOnLoad: false,
           theme: "neutral",
@@ -73,6 +73,7 @@ export default function MermaidClient({
             diagramPadding: 12,
           },
           themeVariables: {
+            darkMode: isDark,
             fontFamily: "'Geist Mono', ui-monospace, monospace",
             fontSize: "13px",
           },
