@@ -70,10 +70,13 @@ export default function MermaidClient({
               // Remove viewBox constraint
               svgElement.removeAttribute("viewBox");
 
-              // Set explicit dimensions to prevent clipping
+              // Set explicit dimensions and positioning
               svgElement.style.width = "auto";
               svgElement.style.height = "auto";
               svgElement.style.maxWidth = "none";
+              svgElement.style.marginLeft = "0";
+              svgElement.style.marginRight = "auto";
+              svgElement.style.display = "block";
 
               // Fix text elements that might be clipped
               const textElements = svgElement.querySelectorAll(
@@ -111,7 +114,7 @@ export default function MermaidClient({
                 
                 const scale = Math.min(1, (containerWidth - 24) / estimatedWidth);
                 svgElement.style.transform = `scale(${scale})`;
-                svgElement.style.transformOrigin = "center top";
+                svgElement.style.transformOrigin = "left top";
                 
                 // Set container height to match scaled SVG height
                 const scaledHeight = svgBBox.height * scale;
