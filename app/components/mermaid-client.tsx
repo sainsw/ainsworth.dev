@@ -218,35 +218,38 @@ export default function MermaidClient({
                 // Correct box-label drift by computing centres from the shape only
                 const nodes = svgElement.querySelectorAll<SVGGElement>(".node");
                 nodes.forEach((node) => {
-                  const text = node.querySelector<SVGTextElement>(".label text, text");
+                  const labelGroup = node.querySelector<SVGGElement>(".label");
                   const shape = node.querySelector<SVGGraphicsElement>("rect, polygon, ellipse, circle, path");
-                  if (!text || !shape) return;
+                  if (!labelGroup || !shape) return;
 
-                  // Compute the visual centre of the shape in screen space, then
-                  // project back into the node's coordinate system to avoid group transforms skewing it
-                  const rect = shape.getBoundingClientRect();
-                  const screenCenterX = rect.left + rect.width / 2;
-                  const screenCenterY = rect.top + rect.height / 2;
-                  const svgRoot = text.ownerSVGElement;
-                  if (!svgRoot) return;
-                  const pt = svgRoot.createSVGPoint();
-                  pt.x = screenCenterX;
-                  pt.y = screenCenterY;
-                  const ctm = svgRoot.getScreenCTM();
-                  if (!ctm) return;
-                  const svgPoint = pt.matrixTransform(ctm.inverse());
+                  const svgRoot = labelGroup.ownerSVGElement;
+                  const ctm = svgRoot?.getScreenCTM();
+                  if (!svgRoot || !ctm) return;
 
-                  // Remove any text transforms that could offset placement
-                  text.removeAttribute("transform");
-                  text.removeAttribute("dx");
-                  text.removeAttribute("dy");
+                  const toSvg = (x: number, y: number) => {
+                    const pt = svgRoot.createSVGPoint();
+                    pt.x = x;
+                    pt.y = y;
+                    return pt.matrixTransform(ctm.inverse());
+                  };
 
-                  text.setAttribute("x", `${svgPoint.x}`);
-                  // Slight upward nudge to compensate for baseline
-                  text.setAttribute("y", `${svgPoint.y - 0.5}`);
-                  text.setAttribute("text-anchor", "middle");
-                  text.setAttribute("dominant-baseline", "middle");
-                  text.style.textAnchor = "middle";
+                  const s = shape.getBoundingClientRect();
+                  const l = labelGroup.getBoundingClientRect();
+                  const sCenterSvg = toSvg(s.left + s.width / 2, s.top + s.height / 2);
+                  const lCenterSvg = toSvg(l.left + l.width / 2, l.top + l.height / 2);
+                  const dx = sCenterSvg.x - lCenterSvg.x;
+                  const dy = sCenterSvg.y - lCenterSvg.y + 0.5; // slight upward nudge
+
+                  const existing = labelGroup.getAttribute("transform") || "";
+                  labelGroup.setAttribute("transform", `${existing} translate(${dx},${dy})`);
+
+                  // Ensure text anchor remains centred
+                  const text = labelGroup.querySelector<SVGTextElement>("text");
+                  if (text) {
+                    text.setAttribute("text-anchor", "middle");
+                    text.setAttribute("dominant-baseline", "middle");
+                    text.style.textAnchor = "middle";
+                  }
                 });
               }, 100);
             }
