@@ -106,7 +106,14 @@ export default function PrivacyPage() {
         <h2>Your rights</h2>
         <p>
           You may request access to, correction or deletion of personal data you have provided (e.g., guestbook entries
-          or contact messages). Email <a href="mailto:s@ainsworth.dev">s@ainsworth.dev</a> with your request.
+          or contact messages). Please{' '}
+          <EmailLink
+            user="privacy"
+            domain="ainsworth.dev"
+            label="email me"
+            className="underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
+          />{' '}
+          with your request.
         </p>
 
         <h2>Contact</h2>
