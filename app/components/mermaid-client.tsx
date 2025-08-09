@@ -127,7 +127,7 @@ export default function MermaidClient({
           fontFamily: "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace",
           maxTextSize: 90000,
           flowchart: {
-            useMaxWidth: false,
+            useMaxWidth: true,
             // Use SVG labels; they render reliably and keep edge labels intact
             htmlLabels: false,
             curve: "basis",
@@ -201,10 +201,11 @@ export default function MermaidClient({
                 const bb = svgElement.getBBox();
                 svgElement.setAttribute("viewBox", `${bb.x} ${bb.y} ${bb.width} ${bb.height}`);
               }
-              // Set explicit dimensions and positioning
-              svgElement.style.width = "auto";
+              // Responsive sizing via viewBox, avoid CSS transforms (Safari text offset)
+              svgElement.setAttribute("preserveAspectRatio", "xMidYMin meet");
+              svgElement.style.width = "100%";
               svgElement.style.height = "auto";
-              svgElement.style.maxWidth = "none";
+              svgElement.style.maxWidth = "100%";
               svgElement.style.marginLeft = "auto";
               svgElement.style.marginRight = "auto";
               svgElement.style.display = "block";
@@ -220,64 +221,9 @@ export default function MermaidClient({
                 }
               });
 
-              // Apply scaling to fit container width with small buffer
-              setTimeout(() => {
-                const containerWidth = elementRef.current?.offsetWidth || 800;
-                const svgBBox = svgElement.getBBox();
-                const estimatedWidth = svgBBox.width * 1.06; // small buffer
-                const scale = Math.min(1, (containerWidth - 24) / estimatedWidth);
-                svgElement.style.transform = `scale(${scale})`;
-                svgElement.style.transformOrigin = "center top";
-
-                const scaledHeight = svgBBox.height * scale;
-                if (elementRef.current) {
-                  elementRef.current.style.height = `${scaledHeight + 24}px`;
-                }
-                svgElement.style.overflow = "visible";
-
-                // Safari-only label alignment correction
-                const ua = navigator.userAgent.toLowerCase();
-                const isSafari = ua.includes("safari") &&
-                  !ua.includes("chrome") &&
-                  !ua.includes("crios") &&
-                  !ua.includes("android") &&
-                  !ua.includes("edg") &&
-                  !ua.includes("opr");
-
-                if (isSafari) {
-                  const nodes = svgElement.querySelectorAll<SVGGElement>(".node");
-                  nodes.forEach((node) => {
-                    const labelGroup = node.querySelector<SVGGElement>(".label");
-                    const shape = node.querySelector<SVGGraphicsElement>(
-                      "rect, polygon, ellipse, circle, path",
-                    );
-                    if (!labelGroup || !shape) return;
-
-                    // Use SVG-space bboxes which remain stable under CSS scale
-                    const sb = shape.getBBox();
-                    const lb = labelGroup.getBBox();
-                    const cx = sb.x + sb.width / 2;
-                    const cy = sb.y + sb.height / 2;
-                    const lcx = lb.x + lb.width / 2;
-                    const lcy = lb.y + lb.height / 2;
-
-                    const dx = cx - lcx;
-                    const dy = cy - lcy - 0.5; // small upward nudge
-
-                    // Reset any previous transforms to avoid compounding
-                    labelGroup.removeAttribute("transform");
-                    labelGroup.setAttribute("transform", `translate(${dx},${dy})`);
-
-                    // Ensure text is centred
-                    const text = labelGroup.querySelector<SVGTextElement>("text");
-                    if (text) {
-                      text.setAttribute("text-anchor", "middle");
-                      text.setAttribute("dominant-baseline", "middle");
-                      (text.style as any).textAnchor = "middle";
-                    }
-                  });
-                }
-              }, 100);
+              // No CSS transform scaling; let viewBox handle responsiveness
+              svgElement.style.transform = "none";
+              svgElement.style.overflow = "visible";
             }
 
             setIsLoaded(true);
