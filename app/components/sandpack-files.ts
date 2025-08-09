@@ -36,7 +36,7 @@ export const CSS = `:root {
   --main-bg-color: #f3f4f6;
   --title-color: #262626;
   --text-color: #525252;
-  --font-family: "Arial", sans-serif;
+  --font-family: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", monospace;
 }
 
 body {
@@ -146,7 +146,7 @@ export const tokens = stylex.defineVars({
   bgColor: "#f3f4f6",
   titleColor: "#262626",
   textColor: "#525252",
-  fontFamily: 'Arial, sans-serif',
+  fontFamily: 'var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", monospace',
 });
 `;
 

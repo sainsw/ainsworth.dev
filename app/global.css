@@ -130,12 +130,14 @@ html {
 
 .prose code {
     @apply px-1 py-0.5 rounded-lg;
+    font-family: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", monospace !important;
 }
 
 .prose pre code {
     @apply p-0;
     border: initial;
     line-height: 1.5;
+    font-family: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", monospace !important;
 }
 
 .prose code span {
@@ -230,7 +232,7 @@ table {
 /* Ensure labels have proper padding and don't get cut off */
 .mermaid-diagram .nodeLabel,
 .mermaid-diagram .edgeLabel {
-    font-family: ui-monospace, SFMono-Regular, "SF Mono", monospace !important;
+    font-family: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", monospace !important;
     font-size: 13px !important;
     line-height: 1.4 !important;
     overflow: visible !important;
@@ -268,32 +270,13 @@ table {
     alignment-baseline: middle !important;
 }
 
-/* Ensure proper spacing for multiline text */
-.mermaid-diagram tspan {
-    text-anchor: middle !important;
-}
-
-/* Fix text centering in mermaid boxes */
+/* Typography for labels only; let Mermaid control exact positioning */
 .mermaid-diagram .nodeLabel,
+.mermaid-diagram .edgeLabel,
 .mermaid-diagram .node text,
 .mermaid-diagram text {
-    font-family: ui-monospace, SFMono-Regular, "SF Mono", monospace !important;
+    font-family: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", monospace !important;
     font-size: 13px !important;
-    text-anchor: middle !important;
-    dominant-baseline: central !important;
-    alignment-baseline: middle !important;
-}
-
-/* Center text within node shapes */
-.mermaid-diagram .label {
-    text-anchor: middle !important;
-}
-
-/* Fix flowchart label positioning */
-.mermaid-diagram .flowchart-label text,
-.mermaid-diagram .flowchartTitleText {
-    text-anchor: middle !important;
-    dominant-baseline: central !important;
 }
 
 /* Force SVG to not constrain content */

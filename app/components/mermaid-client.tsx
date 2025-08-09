@@ -62,11 +62,12 @@ export default function MermaidClient({
           // Use built-in dark theme when dark mode is active
           theme: isDark ? "dark" : "neutral",
           securityLevel: "loose",
-          fontFamily: "'Geist Mono', ui-monospace, monospace",
+          fontFamily: "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace",
           maxTextSize: 90000,
           flowchart: {
             useMaxWidth: false,
-            htmlLabels: true,
+            // Use SVG text labels for consistent centring across themes
+            htmlLabels: false,
             curve: "basis",
             padding: 12,
             nodeSpacing: 30,
@@ -74,7 +75,7 @@ export default function MermaidClient({
             diagramPadding: 12,
           },
           themeVariables: {
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontFamily: "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace",
             fontSize: "13px",
             // Base colours
             background: 'transparent',
@@ -134,40 +135,19 @@ export default function MermaidClient({
                 }
               });
 
-              // Force recreate text positioning
+              // Apply scaling to fit container width with small buffer
               setTimeout(() => {
-                const labels =
-                  svgElement.querySelectorAll(".label, .nodeLabel");
-                labels.forEach((label: any) => {
-                  const textEl = label.querySelector("text") || label;
-                  if (textEl.tagName === "text") {
-                    // Get current x position and adjust slightly left
-                    const currentX = parseFloat(
-                      textEl.getAttribute("x") || "0",
-                    );
-                    textEl.setAttribute("x", (currentX - 3).toString());
-                    textEl.style.textAnchor = "middle";
-                  }
-                });
-
-                // Apply scaling to fit container width with modest buffer for labels
                 const containerWidth = elementRef.current?.offsetWidth || 800;
-                
-                // Use a modest buffer for edge labels - 10% should be sufficient
                 const svgBBox = svgElement.getBBox();
-                const estimatedWidth = svgBBox.width * 1.1;
-                
+                const estimatedWidth = svgBBox.width * 1.06; // small buffer
                 const scale = Math.min(1, (containerWidth - 24) / estimatedWidth);
                 svgElement.style.transform = `scale(${scale})`;
                 svgElement.style.transformOrigin = "center top";
-                
-                // Set container height to match scaled SVG height
+
                 const scaledHeight = svgBBox.height * scale;
                 if (elementRef.current) {
-                  elementRef.current.style.height = `${scaledHeight + 24}px`; // +24 for padding
+                  elementRef.current.style.height = `${scaledHeight + 24}px`;
                 }
-                
-                // Ensure no clipping occurs
                 svgElement.style.overflow = "visible";
               }, 100);
             }
