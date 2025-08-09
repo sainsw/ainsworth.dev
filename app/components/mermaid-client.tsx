@@ -43,7 +43,7 @@ export default function MermaidClient({
           },
           themeVariables: {
             fontFamily: "'Geist Mono', ui-monospace, monospace",
-            fontSize: "11px",
+            fontSize: "13px",
             primaryColor: "#ffffff",
             primaryTextColor: "#000000",
             primaryBorderColor: "#cccccc",
@@ -102,8 +102,11 @@ export default function MermaidClient({
                   }
                 });
 
-                // Apply scaling after everything is processed
-                svgElement.style.transform = "scale(0.85)";
+                // Apply scaling to fit container width
+                const containerWidth = elementRef.current?.offsetWidth || 800;
+                const svgWidth = svgElement.getBBox().width;
+                const scale = Math.min(1, containerWidth / svgWidth);
+                svgElement.style.transform = `scale(${scale})`;
                 svgElement.style.transformOrigin = "center top";
               }, 100);
             }
