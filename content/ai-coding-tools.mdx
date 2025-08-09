@@ -1,0 +1,192 @@
+---
+title: 'AI Coding Tools Compared: Zed, Claude Code, and OpenAI Codex in Practice'
+publishedAt: '2025-08-09'
+summary: 'Real-world comparison of three AI coding tools used extensively during the vibe coding transformation - their strengths, weaknesses, and ideal use cases.'
+---
+
+## The Landscape
+
+During the [vibe coding transformation](/blog/vibe-coding) of this site, I extensively used three different AI coding tools: **Zed Editor**, **Claude Code**, and **OpenAI Codex**. Each brought unique strengths to different aspects of the development process.
+
+After 100+ AI-generated commits, here's an honest comparison of how these tools performed in real-world scenarios.
+
+## 🚀 Zed Editor
+
+Zed's AI integration focuses on contextual assistance within a lightning-fast native editor.
+
+### Strengths
+- **Blazing Performance**: Native Rust implementation with sub-millisecond response times
+- **Context Awareness**: Understands entire project structure and dependencies
+- **Seamless Integration**: AI feels like a natural part of the editing experience
+- **Multi-file Edits**: Excellent at coordinating changes across related files
+- **Real-time Collaboration**: Live sharing with AI assistance for pair programming
+
+### Weaknesses
+- **Limited Reasoning**: Better at code completion than architectural decisions
+- **Newer Ecosystem**: Fewer plugins and integrations compared to VS Code
+- **macOS Focus**: Best experience is on macOS (though Linux support exists)
+
+### Best Use Cases
+- **Refactoring sessions** where you need quick, contextual suggestions
+- **Component development** with real-time feedback
+- **Performance-critical editing** where editor speed matters
+- **Team collaboration** with shared AI context
+
+*Example: Zed excelled at the SVG sprite system implementation, understanding the relationship between component files and build scripts.*
+
+## 🧠 Claude Code
+
+Claude Code offers conversational AI development with deep reasoning capabilities.
+
+### Strengths
+- **Architectural Thinking**: Excellent at system design and planning
+- **Code Quality**: Generates well-structured, documented code
+- **Problem Solving**: Can debug complex issues through conversation
+- **Multiple Languages**: Strong across web technologies and beyond
+- **Iterative Development**: Great at refining solutions based on feedback
+
+### VS Code Integration
+Claude Code offers a unique CLI-driven workflow that bridges the gap between conversation and code:
+
+- **Command Line Interface**: Initiate conversations and edits from your terminal
+- **VS Code Preview**: Proposed changes appear in VS Code windows for review
+- **Approval Workflow**: Accept/reject changes before they're applied to files
+- **Multi-file Operations**: Can coordinate changes across multiple files simultaneously
+
+### Weaknesses
+- **Not for CLI Haters**: Requires comfort with command-line workflows
+- **Context Switching**: Still requires moving between terminal, Claude, and editor
+- **File Management**: Less seamless than native IDE integrations
+- **Rate Limits**: Usage caps can interrupt extended coding sessions
+
+### Best Use Cases
+- **Feature planning** and architectural decisions
+- **Complex debugging** that requires reasoning
+- **Code reviews** and quality improvements
+- **Learning new patterns** and best practices
+
+*Example: Claude Code designed the entire cookie consent system architecture, from GDPR compliance to Zaraz integration.*
+
+## 🤖 OpenAI Codex
+
+The original AI coding assistant, now integrated into GitHub Copilot and other tools.
+
+### Strengths
+- **Broad Training**: Massive codebase training across many languages
+- **IDE Integration**: Native support in VS Code, Vim, and others
+- **Pattern Recognition**: Excellent at completing common coding patterns
+- **Speed**: Fast suggestions with minimal latency
+- **Community**: Large user base and extensive documentation
+
+### Weaknesses
+- **Less Reasoning**: Focuses on completion rather than problem-solving
+- **Context Limitations**: Limited understanding of broader project goals
+- **Generic Solutions**: Sometimes suggests boilerplate over optimal approaches
+- **Subscription Model**: Requires GitHub Copilot or API access
+
+### Best Use Cases
+- **Rapid prototyping** where speed matters most
+- **Boilerplate generation** for repetitive code
+- **Learning syntax** in unfamiliar languages
+- **Code completion** during regular development
+
+*Example: Codex was perfect for generating the repetitive test cases and utility functions throughout the project.*
+
+## 📊 Head-to-Head Comparison
+
+| Feature | Zed | Claude Code | OpenAI Codex |
+|---------|-----|-------------|--------------|
+| **Speed** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **Reasoning** | ⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐ |
+| **Code Quality** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **IDE Integration** | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐ |
+| **Multi-file Ops** | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| **Learning Curve** | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+
+## 🛠️ Workflow Integration
+
+### The Ideal Combination
+
+Through the vibe coding process, I discovered each tool excels at different phases:
+
+**1. Planning & Architecture** → **Claude Code**
+- Design system architecture
+- Plan implementation approach  
+- Identify potential issues
+
+**2. Active Development** → **Zed Editor**
+- Fast, contextual coding
+- Real-time refactoring
+- Multi-file coordination
+
+**3. Completion & Polish** → **OpenAI Codex**
+- Fill in boilerplate
+- Generate test cases
+- Quick syntax help
+
+### Real Project Example
+
+For the [GitHub avatar sync pipeline](/blog/github-image-sync):
+
+1. **Claude Code** designed the content-hashing strategy and error handling approach
+2. **Zed** handled the actual Sharp integration and file management implementation  
+3. **Codex** generated the utility functions and build script integration
+
+## 💡 Key Insights
+
+### What I Learned
+
+**Tool Selection Matters**: Different AI tools excel at different tasks. Using the right tool for each phase dramatically improves results.
+
+**Context is King**: Tools with better project understanding (like Zed) produce more relevant suggestions than generic completions.
+
+**Human Oversight Essential**: All tools occasionally produce incorrect or suboptimal code. Active review and iteration is crucial.
+
+**Workflow Adaptation**: The most effective approach was adapting my workflow to each tool's strengths rather than forcing one tool to do everything.
+
+### Surprising Discoveries
+
+- **Zed's speed** genuinely changed how I interact with AI suggestions
+- **Claude's reasoning** often identified edge cases I would have missed
+- **Codex's breadth** helped in unfamiliar domains like LaTeX generation
+
+## 🔮 The Future
+
+### Emerging Trends
+
+**Multi-modal AI**: Tools are beginning to understand visual context, not just code
+**Deeper Integration**: AI becoming part of the IDE rather than a separate feature  
+**Specialized Models**: Domain-specific AI for frontend, backend, DevOps, etc.
+**Collaborative AI**: Multiple AI models working together on complex problems
+
+### Recommendations
+
+**For Beginners**: Start with OpenAI Codex/GitHub Copilot for immediate productivity gains
+
+**For Architects**: Claude Code's reasoning capabilities are invaluable for system design
+
+**For Performance-Focused**: Zed's speed and native integration create the smoothest experience
+
+**For Teams**: Consider tools that support collaborative AI development
+
+## 📸 Screenshots Guide
+
+*[Screenshots of each tool in action would appear here, showing:]*
+
+- Zed Editor's AI completions in a real codebase
+- Claude Code's conversational interface solving a complex problem  
+- OpenAI Codex generating boilerplate in VS Code
+- Side-by-side code quality comparisons
+- Performance/speed comparisons where measurable
+
+## 🎯 Conclusion
+
+There's no single "best" AI coding tool - each excels in different scenarios. The most productive approach is understanding each tool's strengths and building a workflow that leverages them effectively.
+
+The [100+ commits of vibe coding](/blog/vibe-coding) wouldn't have been possible with just one tool. It was the combination of Claude's reasoning, Zed's speed, and Codex's breadth that enabled such comprehensive improvements.
+
+As AI coding tools continue evolving rapidly, the key is staying adaptable and experimenting with new approaches. The tools that seem cutting-edge today will likely feel primitive in just a few months.
+
+---
+
+*What AI coding tools are you using? I'd love to hear about your experiences - [get in touch](/contact)!*
