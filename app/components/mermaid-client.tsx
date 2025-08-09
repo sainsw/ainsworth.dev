@@ -104,7 +104,29 @@ export default function MermaidClient({
 
                 // Apply scaling to fit container width
                 const containerWidth = elementRef.current?.offsetWidth || 800;
-                const svgWidth = svgElement.getBBox().width;
+                
+                // Get the actual width including all elements (labels, text, etc.)
+                let maxWidth = 0;
+                const allElements = svgElement.querySelectorAll('*');
+                allElements.forEach((el: any) => {
+                  if (el.getBBox) {
+                    try {
+                      const bbox = el.getBBox();
+                      const rightEdge = bbox.x + bbox.width;
+                      maxWidth = Math.max(maxWidth, rightEdge);
+                    } catch (e) {
+                      // Some elements might not support getBBox
+                    }
+                  }
+                });
+                
+                // Fallback to SVG getBBox if no elements found
+                if (maxWidth === 0) {
+                  maxWidth = svgElement.getBBox().width;
+                }
+                
+                // Add some padding to ensure nothing is cut off
+                const svgWidth = maxWidth + 20;
                 const scale = Math.min(1, containerWidth / svgWidth);
                 svgElement.style.transform = `scale(${scale})`;
                 svgElement.style.transformOrigin = "center top";
