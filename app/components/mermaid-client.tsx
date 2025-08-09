@@ -176,7 +176,7 @@ export default function MermaidClient({
       )}
       <div
         ref={elementRef}
-        className={`mermaid-diagram flex justify-center ${!isLoaded ? "hidden" : ""}`}
+        className={`mermaid-diagram flex justify-start ${!isLoaded ? "hidden" : ""}`}
         style={{
           width: "100%",
           minWidth: "400px",
