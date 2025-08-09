@@ -9,10 +9,10 @@ interface AvatarDemoProps {
 export function AvatarDemo({ className = "" }: AvatarDemoProps) {
   return (
     <div
-      className={`flex flex-row gap-32 items-center justify-center my-8 ${className}`}
+      className={`flex flex-row items-center justify-center my-8 ${className}`}
     >
       {/* Normal Avatar */}
-      <div className="flex flex-col items-center space-y-3">
+      <div className="flex flex-col items-center space-y-3 mr-24">
         <div className="relative">
           <picture>
             <source
@@ -37,7 +37,7 @@ export function AvatarDemo({ className = "" }: AvatarDemoProps) {
       </div>
 
       {/* Pride Avatar */}
-      <div className="flex flex-col items-center space-y-3">
+      <div className="flex flex-col items-center space-y-3 ml-24">
         <div className="relative">
           <div
             className="rounded-full"
