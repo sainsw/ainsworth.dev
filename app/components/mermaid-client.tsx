@@ -36,10 +36,10 @@ export default function MermaidClient({
             useMaxWidth: false,
             htmlLabels: false,
             curve: "basis",
-            padding: 40,
-            nodeSpacing: 60,
-            rankSpacing: 100,
-            diagramPadding: 30,
+            padding: 20,
+            nodeSpacing: 50,
+            rankSpacing: 80,
+            diagramPadding: 20,
           },
           themeVariables: {
             fontFamily: "inherit",
@@ -142,8 +142,8 @@ export default function MermaidClient({
         className={`mermaid-diagram overflow-x-auto ${!isLoaded ? "hidden" : ""}`}
         style={{
           width: "100%",
-          minWidth: "800px",
-          padding: "30px",
+          minWidth: "600px",
+          padding: "20px",
           overflow: "visible",
         }}
       />

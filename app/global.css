@@ -206,10 +206,9 @@ table {
 }
 
 .mermaid-diagram svg {
-    max-width: none !important;
+    max-width: 100% !important;
     height: auto !important;
     width: auto !important;
-    min-width: 800px;
     overflow: visible !important;
 }
 
