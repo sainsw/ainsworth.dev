@@ -1,0 +1,283 @@
+---
+title: 'Building a GitHub Avatar Sync Pipeline: From API to Cache-Busted CDN'
+publishedAt: '2025-08-09'
+summary: 'Deep dive into building an automated GitHub avatar sync pipeline with Sharp optimization, content-based versioning, and seasonal Pride Month borders.'
+---
+
+## The Problem
+
+Personal websites often feature profile photos that quickly become outdated. You update your GitHub avatar, but your personal site still shows that photo from 2019. Manual updates are tedious and easy to forget.
+
+What if your website could automatically sync with your latest GitHub avatar during every build? Here's how I built a comprehensive avatar sync pipeline that handles everything from API fetching to WebP optimization.
+
+## 🏗️ Architecture Overview
+
+The pipeline consists of several interconnected components:
+
+1. **GitHub API Integration** - Fetches latest avatar URL
+2. **Sharp Image Processing** - Optimizes and converts to WebP/JPG
+3. **Content-Based Versioning** - Generates cache-busting hashes
+4. **Build Integration** - Runs automatically on deployment
+5. **Fallback System** - Graceful degradation when API fails
+
+## 📡 GitHub API Integration
+
+The process starts with fetching user data from GitHub's REST API:
+
+```typescript
+const userData = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}`, {
+  headers: {
+    'User-Agent': 'ainsworth.dev-avatar-fetcher'
+  }
+});
+
+const avatarUrl = `${userData.avatar_url}&s=${AVATAR_SIZE}`;
+```
+
+Key considerations:
+- **User-Agent header** is required by GitHub API
+- **Size parameter** (`&s=400`) requests high-quality source
+- **Error handling** for rate limits and network failures
+
+## 🖼️ Image Processing Pipeline
+
+Once downloaded, the image goes through Sharp optimization:
+
+```javascript
+// WebP generation (priority format)
+await sharp(inputPath)
+  .resize(200, 200, { 
+    fit: 'cover',
+    position: 'center'
+  })
+  .webp({ 
+    quality: 85,
+    effort: 6 // Maximum compression effort
+  })
+  .toFile(webpPath);
+
+// JPG fallback
+await sharp(inputPath)
+  .resize(200, 200, { 
+    fit: 'cover',
+    position: 'center'
+  })
+  .jpeg({ 
+    quality: 90,
+    progressive: true
+  })
+  .toFile(jpgPath);
+```
+
+The pipeline produces two optimized formats:
+- **WebP** for modern browsers (smaller file size)
+- **JPG** for legacy browser support
+
+## 🔐 Content-Based Versioning
+
+Instead of timestamps, the system uses SHA256 content hashing:
+
+```javascript
+async function generateContentHash(filePath) {
+  const content = fs.readFileSync(filePath);
+  return crypto.createHash('sha256').update(content).digest('hex').substring(0, 8);
+}
+```
+
+This approach ensures:
+- **Deterministic versioning** - Same content = same hash
+- **Efficient caching** - Only updates when image actually changes
+- **Cache invalidation** - New content automatically gets new URL
+
+Files are saved as `avatar-{hash}.webp` and `avatar-{hash}.jpg`.
+
+## 🚀 Build Integration
+
+The pipeline integrates seamlessly with the build process:
+
+```json
+{
+  "scripts": {
+    "build": "npm run fetch-avatar && npm run generate-version && next build",
+    "fetch-avatar": "node ./scripts/fetch-avatar.js"
+  }
+}
+```
+
+During Vercel deployment:
+1. Latest avatar is fetched from GitHub
+2. Images are optimized and versioned
+3. Version hash is written to `lib/version.js`
+4. Next.js build references the versioned files
+
+## 🎯 Smart Preloading
+
+The versioned avatar gets preloaded in the document head:
+
+```tsx
+import { AVATAR_VERSION } from '../lib/version';
+
+// In <head>
+<link 
+  rel="preload" 
+  href={`/images/home/avatar-${AVATAR_VERSION}.webp`} 
+  as="image" 
+  type="image/webp" 
+/>
+```
+
+And used with modern picture elements:
+
+```tsx
+<picture>
+  <source srcSet={`/images/home/avatar-${AVATAR_VERSION}.webp`} type="image/webp" />
+  <img 
+    src={`/images/home/avatar-${AVATAR_VERSION}.jpg`} 
+    alt="my face"
+    width={80}
+    height={80}
+    loading="eager"
+  />
+</picture>
+```
+
+## 🛡️ Robust Error Handling
+
+The system includes comprehensive fallback mechanisms:
+
+```javascript
+try {
+  // Fetch from GitHub and optimize
+  await fetchAndOptimize();
+} catch (error) {
+  console.log('Avatar fetch failed, using existing files');
+  
+  // Find existing avatar and ensure versioned files exist
+  const existingHash = await getExistingAvatarHash();
+  await createVersionedFromExisting(existingHash);
+  await updateVersionFile(existingHash);
+}
+```
+
+Failure scenarios handled:
+- **Network errors** - Uses existing avatar files
+- **API rate limits** - Falls back to current version
+- **Sharp missing** - Copies original file as fallback
+- **No existing files** - Fails build with clear error
+
+## 🏳️‍🌈 Seasonal Enhancements
+
+The avatar system includes a delightful Pride Month feature:
+
+```tsx
+export function PrideAvatar({ children }: PrideAvatarProps) {
+  const [isPrideTime, setIsPrideTime] = useState(false);
+
+  useEffect(() => {
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    
+    // Pride Month - entire June
+    if (month === 6) {
+      setIsPrideTime(true);
+    }
+    
+    // Manchester Pride - week before August bank holiday
+    if (month === 8) {
+      // Complex logic to find bank holiday week...
+    }
+  }, []);
+
+  if (!isPrideTime) {
+    return <div className="ring-2 ring-black dark:ring-white rounded-full">{children}</div>;
+  }
+
+  // Rainbow border using CSS box-shadow
+  return (
+    <div style={{
+      boxShadow: `
+        0 0 0 3px rgb(239 68 68),   /* red */
+        0 0 0 6px rgb(249 115 22),  /* orange */
+        0 0 0 9px rgb(250 204 21),  /* yellow */
+        0 0 0 12px rgb(34 197 94),  /* green */
+        0 0 0 15px rgb(59 130 246), /* blue */
+        0 0 0 18px rgb(147 51 234)  /* purple */
+      `
+    }}>
+      {children}
+    </div>
+  );
+}
+```
+
+This automatically adds a rainbow border during:
+- **June** (Pride Month)
+- **Manchester Pride week** (calculated week before August bank holiday)
+
+## 📊 Performance Impact
+
+The optimized pipeline delivers significant improvements:
+
+- **File size reduction**: ~60% smaller with WebP
+- **Cache efficiency**: Only re-downloads when avatar changes
+- **Load performance**: Preloaded critical resources
+- **Modern formats**: WebP with progressive JPG fallback
+
+## 🔧 Implementation Tips
+
+### 1. Handle Sharp Gracefully
+Sharp might not be available in all environments:
+
+```javascript
+try {
+  const sharp = require('sharp');
+  // Use Sharp for optimization
+} catch (error) {
+  // Fallback to copying original file
+  fs.copyFileSync(inputPath, outputPath);
+}
+```
+
+### 2. Ensure Directory Structure
+Create necessary directories before writing files:
+
+```javascript
+const outputDir = path.join(__dirname, '..', 'public', 'images', 'home');
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
+```
+
+### 3. Debug Build Issues
+Add comprehensive logging for troubleshooting:
+
+```javascript
+console.log(`📁 WebP: ${path.relative(process.cwd(), webpPath)}`);
+console.log(`🔍 File size: ${fs.statSync(webpPath).size} bytes`);
+console.log(`🔑 Content hash: ${contentHash}`);
+```
+
+## 🌟 Results
+
+This automated pipeline has eliminated manual avatar updates entirely. The system:
+
+- **Fetches latest avatar** on every deployment
+- **Optimizes images** automatically with WebP/JPG
+- **Handles failures gracefully** with existing files
+- **Adds seasonal flair** with Pride Month borders
+- **Provides excellent performance** with smart caching
+
+The avatar you see on this site was fetched, optimized, and deployed completely automatically. When I update my GitHub profile photo, the next deployment will sync it across the entire site.
+
+## 🚀 Future Enhancements
+
+Potential improvements for the pipeline:
+
+- **Multiple image sources** - Fallback to other social platforms
+- **Smart cropping** - AI-based face detection for better framing  
+- **A/B testing** - Rotate between multiple profile photos
+- **Analytics integration** - Track avatar update impact on engagement
+
+---
+
+*The complete implementation is available in the [repository](https://github.com/sainsw/ainsworth.dev) - check out `scripts/fetch-avatar.js` for the full pipeline code.*

@@ -1,0 +1,145 @@
+---
+title: 'Vibe Coding: When AI Takes the Wheel'
+publishedAt: '2025-08-09'
+summary: 'A deep dive into 100+ AI-generated commits that transformed my personal website through performance optimizations, accessibility improvements, and feature additions.'
+---
+
+## The Experiment
+
+What happens when you let an AI assistant loose on your codebase for a few months? After commit `dc16da2`, I embarked on what the industry calls "vibe coding" - a collaborative development approach where AI generates the majority of code changes while you provide direction and feedback.
+
+The results? Over 100 commits, 94% image size reduction, comprehensive accessibility improvements, and a significantly more polished site. Here's the journey.
+
+## 🎯 Performance Revolution
+
+### Image Optimization Breakthrough
+The most dramatic improvement came from comprehensive image optimization. A single commit (`403edea`) delivered:
+
+- **2.5MB → 140KB** (94% reduction in total image payload)
+- ASFC logos: 1.4MB → 30KB (98% reduction)
+- Modern WebP format with PNG fallbacks
+- Smart `<picture>` elements for optimal loading
+
+### Critical Performance Fixes
+- Eliminated render-blocking CSS with async loading strategies
+- Fixed forced reflows by replacing `transition-all` with `transition-colors`
+- Implemented strategic prefetching for key navigation links
+- Deferred analytics loading to prevent layout shifts
+
+## 🍪 Privacy & Compliance
+
+One of the major additions was a GDPR-compliant cookie consent system:
+
+- Mini cookie banner with Tailwind styling
+- Cloudflare Zaraz consent management integration
+- Gated Vercel Analytics behind user consent
+- Comprehensive privacy policy covering analytics, data retention, and user rights
+- Responsive design with proper dark mode support
+
+## 🎨 Visual Polish & Accessibility
+
+### Component System Evolution
+- Integrated shadcn/ui Button components for consistent styling
+- Implemented proper hover states that work across all devices
+- Fixed cookie banner animations with smooth slide-in effects
+- Unified pill button styles throughout the interface
+
+### Accessibility Improvements
+- Made cookie banner links descriptive ("Privacy policy" instead of "Learn more")
+- Added proper focus rings for keyboard navigation
+- Fixed image alt text across the site
+- Obfuscated email addresses to reduce scraping while maintaining accessibility
+
+## 📊 Content & Data Management
+
+### Blog Infrastructure Fixes
+- Switched from next-mdx-remote to @next/mdx for better performance
+- Fixed MDX content rendering with proper React Markdown integration
+- Added rehype-raw plugin for proper HTML anchor processing
+- Restored async view counts on blog listing pages
+
+### CV & Resume Pipeline
+Perhaps the most ambitious feature was implementing a single source of truth for CV content:
+
+- Converted resume data from TypeScript to JSON format
+- Built LaTeX generation pipeline with content-based versioning
+- Implemented intelligent PDF prefetching with cache busting
+- Added automated GitHub avatar sync system (*[detailed in separate post](/blog/github-image-sync)*)
+
+## 🌈 Delightful Features
+
+### Avatar System
+Built a comprehensive automated avatar pipeline with seasonal enhancements - *[full technical breakdown here](/blog/github-image-sync)*:
+
+- Automatic GitHub avatar syncing on every build
+- WebP optimization with 60% size reduction
+- Content-based versioning for efficient caching  
+- Seasonal Pride Month rainbow borders 🏳️‍🌈
+
+### Work Experience Showcase
+- Redesigned skills section with proper tag cloud layout
+- Enhanced work page with containerized sections
+- Added SVG sprite system to eliminate 20+ HTTP requests
+- Consistent badge styling with color variations
+
+## 📱 Modern Development Practices
+
+### Testing & Quality Assurance
+- Added comprehensive frontend testing framework
+- Fixed TypeScript compilation issues
+- Integrated build-time testing pipeline
+- Added debug logging for Vercel deployment troubleshooting
+
+### Dark Mode & Responsive Design
+- Restored system preference detection for dark mode
+- Ensured consistent styling across light/dark themes
+- Fixed viewport positioning for mobile elements
+- Improved touch targets and spacing
+
+## 🔧 Technical Deep Dives
+
+### Cookie Banner Evolution
+The cookie banner went through multiple iterations, showcasing the iterative nature of AI-assisted development from basic GDPR compliance to polished animations with proper accessibility.
+
+### SVG Sprite Optimization
+Implemented a comprehensive sprite system that converted 20+ individual logo requests into a single optimized SVG with proper fallbacks and cache busting.
+
+## 📈 The Numbers
+
+Looking at the commit history, the AI-generated improvements delivered:
+
+- **140+ files changed** across the entire codebase
+- **94% reduction** in image payload size
+- **20+ HTTP requests eliminated** through sprite optimization
+- **100+ commits** of consistent, documented changes
+- **Iterative fixes** for issues like blog post rendering errors and build failures
+
+## 🤔 Reflections on AI-Assisted Development
+
+### What Worked Well
+- **Consistent code quality**: Every commit followed established patterns
+- **Comprehensive documentation**: Each change included detailed commit messages
+- **Iterative refinement**: Problems were identified and fixed systematically
+- **Best practices**: Modern web standards were applied throughout
+
+### The Human Touch
+While AI generated the code, human oversight was crucial for:
+- Setting priorities and direction
+- Understanding business requirements
+- Making strategic architectural decisions
+- Testing and validation
+
+### Co-Authoring the Future
+Every commit includes `Co-Authored-By: Claude <noreply@anthropic.com>` - a testament to this collaborative approach. It's not about replacing human developers, but augmenting capabilities and accelerating development cycles.
+
+## 🚀 Looking Forward
+
+This experiment in "vibe coding" has fundamentally changed how I approach personal projects. The combination of human creativity and AI execution creates a powerful development workflow that's both efficient and enjoyable.
+
+The site you're reading this on is a living testament to what's possible when you embrace AI as a development partner. Every pixel, every line of code, every optimization - all generated through conversation and collaboration.
+
+*Want to see the full commit history? Check out the [repository](https://github.com/sainsw/ainsworth.dev) and explore the journey from `dc16da2` to the present.*
+
+---
+
+*This post was written by a human but the entire codebase transformation it describes was generated by AI. The future of development is collaborative, and it's pretty exciting.*
