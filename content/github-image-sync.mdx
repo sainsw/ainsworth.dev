@@ -14,6 +14,37 @@ What if your website could automatically sync with your latest GitHub avatar dur
 
 The pipeline consists of several interconnected components:
 
+```mermaid
+graph TD
+    A[GitHub API] --> B[Download Avatar]
+    B --> C{Sharp Available?}
+    C -->|Yes| D[Sharp Processing]
+    C -->|No| E[Copy Original]
+    D --> F[Generate WebP]
+    D --> G[Generate JPG]
+    E --> G
+    F --> H[Content Hash]
+    G --> H
+    H --> I[Versioned Files<br/>avatar-{hash}.webp<br/>avatar-{hash}.jpg]
+    I --> J[Update Version File<br/>lib/version.js]
+    J --> K[Next.js Build]
+    K --> L[Preload Resources]
+    K --> M[Picture Elements]
+    
+    N[Build Failure] --> O[Use Existing Files]
+    O --> P[Generate Fallback Hash]
+    P --> J
+    
+    B -.->|Network Error| N
+    D -.->|Sharp Error| N
+    
+    style A fill:#e1f5fe
+    style I fill:#e8f5e8
+    style J fill:#fff3e0
+    style L fill:#f3e5f5
+    style M fill:#f3e5f5
+```
+
 1. **GitHub API Integration** - Fetches latest avatar URL
 2. **Sharp Image Processing** - Optimizes and converts to WebP/JPG
 3. **Content-Based Versioning** - Generates cache-busting hashes
@@ -213,6 +244,24 @@ export function PrideAvatar({ children }: PrideAvatarProps) {
 This automatically adds a rainbow border during:
 - **June** (Pride Month)
 - **Manchester Pride week** (calculated week before August bank holiday)
+
+```mermaid
+flowchart TD
+    A[Page Load] --> B[Check Current Date]
+    B --> C{Month == 6?}
+    C -->|Yes| D[Pride Month!<br/>🏳️‍🌈 Rainbow Border]
+    C -->|No| E{Month == 8?}
+    E -->|No| F[Normal Border]
+    E -->|Yes| G[Calculate Bank Holiday]
+    G --> H[Find Last Monday of August]
+    H --> I[Pride Week = 7 Days Before]
+    I --> J{Current Date in<br/>Pride Week?}
+    J -->|Yes| D
+    J -->|No| F
+    
+    style D fill:#ff69b4
+    style F fill:#e1f5fe
+```
 
 ## 📊 Performance Impact
 

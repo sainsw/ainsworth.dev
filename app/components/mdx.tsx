@@ -1,12 +1,14 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import { TweetComponent } from './tweet';
-import { highlight } from 'sugar-high';
-import React from 'react';
-import { useMDXComponents } from '../../mdx-components';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
+import Link from "next/link";
+import Image from "next/image";
+import { TweetComponent } from "./tweet";
+import { highlight } from "sugar-high";
+import React from "react";
+import { useMDXComponents } from "../../mdx-components";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import mdxMermaid from "mdx-mermaid";
+import { Mermaid } from "mdx-mermaid/lib/Mermaid";
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -31,14 +33,14 @@ function Table({ data }) {
 }
 
 function CustomLink(props) {
-  const href = typeof props.href === 'string' ? props.href : '';
+  const href = typeof props.href === "string" ? props.href : "";
 
   // Fallback: render a normal anchor if href is missing or not a string
   if (!href) {
     return <a {...props} />;
   }
 
-  if (href.startsWith('/')) {
+  if (href.startsWith("/")) {
     return (
       <Link href={href} {...props}>
         {props.children}
@@ -46,7 +48,7 @@ function CustomLink(props) {
     );
   }
 
-  if (href.startsWith('#')) {
+  if (href.startsWith("#")) {
     return <a {...props} />;
   }
 
@@ -130,10 +132,10 @@ function slugify(str) {
     .toString()
     .toLowerCase()
     .trim() // Remove whitespace from both ends of a string
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/&/g, '-and-') // Replace & with 'and'
-    .replace(/[^\w\-]+/g, '') // Remove all non-word characters except for -
-    .replace(/\-\-+/g, '-'); // Replace multiple - with single -
+    .replace(/\s+/g, "-") // Replace spaces with -
+    .replace(/&/g, "-and-") // Replace & with 'and'
+    .replace(/[^\w\-]+/g, "") // Remove all non-word characters except for -
+    .replace(/\-\-+/g, "-"); // Replace multiple - with single -
 }
 
 function createHeading(level) {
@@ -143,13 +145,13 @@ function createHeading(level) {
       `h${level}`,
       { id: slug },
       [
-        React.createElement('a', {
+        React.createElement("a", {
           href: `#${slug}`,
           key: `link-${slug}`,
-          className: 'anchor',
+          className: "anchor",
         }),
       ],
-      children
+      children,
     );
   };
 }
@@ -169,20 +171,29 @@ let components = {
   StaticTweet: TweetComponent,
   code: Code,
   Table,
+  mermaid: Mermaid,
+  Mermaid,
   // LiveCode, // Temporarily disabled to test for React conflicts
 };
 
 // Proper MDX renderer using react-markdown
-export function CustomMDX({ children, ...props }: { children?: any; source?: string; [key: string]: any }) {
+export function CustomMDX({
+  children,
+  ...props
+}: {
+  children?: any;
+  source?: string;
+  [key: string]: any;
+}) {
   const mdxComponents = useMDXComponents(components);
-  
+
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[remarkGfm, [mdxMermaid, { output: "svg" }]]}
       rehypePlugins={[rehypeRaw]}
       components={mdxComponents}
     >
-      {props.source || children || ''}
+      {props.source || children || ""}
     </ReactMarkdown>
   );
 }

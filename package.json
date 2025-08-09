@@ -35,6 +35,8 @@
     "autoprefixer": "^10.4.17",
     "dotenv": "^17.2.0",
     "geist": "^1.4.2",
+    "mdx-mermaid": "^2.0.3",
+    "mermaid": "^11.9.0",
     "next": "^15.4.1",
     "next-auth": "5.0.0-beta.29",
     "postcss": "^8.4.35",
