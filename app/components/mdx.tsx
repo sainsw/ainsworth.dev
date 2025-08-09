@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { TweetComponent } from "./tweet";
@@ -7,9 +9,10 @@ import { useMDXComponents } from "../../mdx-components";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
-import mdxMermaid from "mdx-mermaid";
-import { Mermaid } from "mdx-mermaid/lib/Mermaid";
 import { AvatarDemo } from "./avatar-demo";
+import dynamic from "next/dynamic";
+
+const MermaidClient = dynamic(() => import("./mermaid-client"), { ssr: false });
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -172,8 +175,6 @@ let components = {
   StaticTweet: TweetComponent,
   code: Code,
   Table,
-  mermaid: Mermaid,
-  Mermaid,
   AvatarDemo,
   // LiveCode, // Temporarily disabled to test for React conflicts
 };
@@ -191,9 +192,23 @@ export function CustomMDX({
 
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm, [mdxMermaid, { output: "svg" }]]}
+      remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeRaw]}
-      components={mdxComponents}
+      components={{
+        ...mdxComponents,
+        code: ({ className, children, ...props }: any) => {
+          const match = /language-(\w+)/.exec(className || "");
+          const language = match ? match[1] : "";
+
+          if (language === "mermaid") {
+            return (
+              <MermaidClient chart={String(children).replace(/\n$/, "")} />
+            );
+          }
+
+          return <Code {...props}>{children}</Code>;
+        },
+      }}
     >
       {props.source || children || ""}
     </ReactMarkdown>
