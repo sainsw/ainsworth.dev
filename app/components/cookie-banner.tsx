@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { Button } from '../../components/ui/button'
 
 interface CookieConsentProps {
   variant?: 'default' | 'small' | 'mini'
@@ -125,20 +126,12 @@ export function CookieConsent({
               </a>
             )}
             <div className="flex items-center flex-wrap gap-4 mt-4">
-              <button
-                onClick={handleDecline}
-                className="inline-flex items-center justify-center whitespace-nowrap h-8 px-3 text-sm font-medium rounded-full border transition-colors duration-150 cursor-pointer border-neutral-300 text-neutral-900 bg-white hover:bg-black hover:text-white hover:border-black dark:border-neutral-700 dark:text-neutral-100 dark:bg-neutral-900 dark:hover:bg-white dark:hover:text-black dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
-                aria-label="Decline"
-              >
+              <Button onClick={handleDecline} aria-label="Decline">
                 Decline
-              </button>
-              <button
-                onClick={handleAccept}
-                className="inline-flex items-center justify-center whitespace-nowrap h-8 px-3 text-sm font-medium rounded-full border transition-colors duration-150 cursor-pointer border-neutral-300 text-neutral-900 bg-white hover:bg-black hover:text-white hover:border-black dark:border-neutral-700 dark:text-neutral-100 dark:bg-neutral-900 dark:hover:bg-white dark:hover:text-black dark:hover:border-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
-                aria-label="Accept"
-              >
+              </Button>
+              <Button onClick={handleAccept} aria-label="Accept">
                 Accept
-              </button>
+              </Button>
             </div>
           </div>
         </div>
