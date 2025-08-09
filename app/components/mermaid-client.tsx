@@ -128,8 +128,8 @@ export default function MermaidClient({
           maxTextSize: 90000,
           flowchart: {
             useMaxWidth: false,
-            // Use SVG text labels for consistent centring across themes
-            htmlLabels: false,
+            // Use HTML labels for accurate text metrics/positioning
+            htmlLabels: true,
             curve: "basis",
             padding: 12,
             nodeSpacing: 30,
@@ -175,9 +175,6 @@ export default function MermaidClient({
             // Fix SVG viewBox to prevent text clipping
             const svgElement = elementRef.current.querySelector("svg");
             if (svgElement) {
-              // Remove viewBox constraint
-              svgElement.removeAttribute("viewBox");
-
               // Set explicit dimensions and positioning
               svgElement.style.width = "auto";
               svgElement.style.height = "auto";
@@ -213,19 +210,7 @@ export default function MermaidClient({
                 svgElement.style.overflow = "visible";
 
                 // Post-fix: precisely centre text labels within nodes
-                const nodeGroups = svgElement.querySelectorAll<SVGGElement>(".node");
-                nodeGroups.forEach((node) => {
-                  const labelText = node.querySelector<SVGTextElement>(".label text, text");
-                  if (!labelText) return;
-                  const bbox = node.getBBox();
-                  const centerX = bbox.x + bbox.width / 2;
-                  const centerY = bbox.y + bbox.height / 2;
-                  labelText.setAttribute("x", String(centerX));
-                  labelText.setAttribute("y", String(centerY));
-                  labelText.setAttribute("text-anchor", "middle");
-                  labelText.style.textAnchor = "middle";
-                  labelText.setAttribute("dominant-baseline", "middle");
-                });
+                // No manual recentering: allow Mermaid to position HTML labels
               }, 100);
             }
 

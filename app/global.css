@@ -289,10 +289,4 @@ table {
     stroke-linejoin: round;
 }
 
-/* Ensure box labels are centred horizontally and vertically */
-.mermaid-diagram .node .label text,
-.mermaid-diagram .node .nodeLabel {
-    text-anchor: middle !important;
-    dominant-baseline: middle !important;
-    alignment-baseline: middle !important;
-}
+/* Do not force SVG text centring; HTML labels handle positioning accurately */
