@@ -214,18 +214,41 @@ export default function MermaidClient({
                 
                 // Force dark mode colors by directly overriding SVG styles
                 if (isDark) {
-                  // Override node fills and text colors
-                  const nodes = svgElement.querySelectorAll('.node rect, .node circle, .node polygon');
+                  // Override node fills and text colors - target all possible fill elements
+                  const nodes = svgElement.querySelectorAll('rect, circle, polygon, ellipse, path[fill]');
                   nodes.forEach((node: any) => {
                     const currentFill = node.style.fill || node.getAttribute('fill');
-                    // Check if it's a light color that needs to be darkened
-                    if (currentFill && (currentFill.includes('rgb(') || currentFill.startsWith('#'))) {
-                      if (currentFill.includes('255,255,255') || currentFill === '#ffffff' || currentFill === '#fff') {
-                        node.style.fill = '#374151'; // Replace white
-                      } else if (currentFill.includes('240,') || currentFill.includes('250,') || currentFill.includes('248,')) {
-                        node.style.fill = '#4b5563'; // Replace light colors
-                      } else if (currentFill.includes('220,') || currentFill.includes('230,')) {
-                        node.style.fill = '#6b7280'; // Replace medium light colors  
+                    if (currentFill && currentFill !== 'none' && currentFill !== 'transparent') {
+                      // Convert RGB to check brightness
+                      let shouldReplace = false;
+                      
+                      if (currentFill.startsWith('#')) {
+                        // Convert hex to RGB and check if it's light
+                        const hex = currentFill.replace('#', '');
+                        const r = parseInt(hex.substr(0, 2), 16);
+                        const g = parseInt(hex.substr(2, 2), 16);
+                        const b = parseInt(hex.substr(4, 2), 16);
+                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                        shouldReplace = brightness > 180; // Light colors
+                      } else if (currentFill.includes('rgb(')) {
+                        // Parse RGB values
+                        const rgb = currentFill.match(/\d+/g);
+                        if (rgb && rgb.length >= 3) {
+                          const brightness = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
+                          shouldReplace = brightness > 180; // Light colors
+                        }
+                      }
+                      
+                      // Also check for common Mermaid light colors
+                      const lightColors = ['#ffffff', '#fff', '#f9f9f9', '#f5f5f5', '#eeeeee', '#e6e6e6', 
+                                         '#dddddd', '#d3d3d3', '#cccccc', '#c0c0c0', '#b8b8b8', '#a8a8a8',
+                                         'rgb(255,255,255)', 'rgb(249,249,249)', 'rgb(245,245,245)',
+                                         'rgb(238,238,238)', 'rgb(230,230,230)', 'rgb(221,221,221)',
+                                         'rgb(211,211,211)', 'rgb(204,204,204)', 'rgb(192,192,192)'];
+                      
+                      if (shouldReplace || lightColors.includes(currentFill.toLowerCase())) {
+                        node.style.fill = '#374151';
+                        node.setAttribute('fill', '#374151');
                       }
                     }
                   });
