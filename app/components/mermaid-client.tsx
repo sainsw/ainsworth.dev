@@ -234,6 +234,49 @@ export default function MermaidClient({
                   elementRef.current.style.height = `${scaledHeight + 24}px`;
                 }
                 svgElement.style.overflow = "visible";
+
+                // Safari-only label alignment correction
+                const ua = navigator.userAgent.toLowerCase();
+                const isSafari = ua.includes("safari") &&
+                  !ua.includes("chrome") &&
+                  !ua.includes("crios") &&
+                  !ua.includes("android") &&
+                  !ua.includes("edg") &&
+                  !ua.includes("opr");
+
+                if (isSafari) {
+                  const nodes = svgElement.querySelectorAll<SVGGElement>(".node");
+                  nodes.forEach((node) => {
+                    const labelGroup = node.querySelector<SVGGElement>(".label");
+                    const shape = node.querySelector<SVGGraphicsElement>(
+                      "rect, polygon, ellipse, circle, path",
+                    );
+                    if (!labelGroup || !shape) return;
+
+                    // Use SVG-space bboxes which remain stable under CSS scale
+                    const sb = shape.getBBox();
+                    const lb = labelGroup.getBBox();
+                    const cx = sb.x + sb.width / 2;
+                    const cy = sb.y + sb.height / 2;
+                    const lcx = lb.x + lb.width / 2;
+                    const lcy = lb.y + lb.height / 2;
+
+                    const dx = cx - lcx;
+                    const dy = cy - lcy - 0.5; // small upward nudge
+
+                    // Reset any previous transforms to avoid compounding
+                    labelGroup.removeAttribute("transform");
+                    labelGroup.setAttribute("transform", `translate(${dx},${dy})`);
+
+                    // Ensure text is centred
+                    const text = labelGroup.querySelector<SVGTextElement>("text");
+                    if (text) {
+                      text.setAttribute("text-anchor", "middle");
+                      text.setAttribute("dominant-baseline", "middle");
+                      (text.style as any).textAnchor = "middle";
+                    }
+                  });
+                }
               }, 100);
             }
 
