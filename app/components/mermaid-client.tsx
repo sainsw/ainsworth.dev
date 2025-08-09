@@ -222,12 +222,28 @@ export default function MermaidClient({
                   const shape = node.querySelector<SVGGraphicsElement>("rect, polygon, ellipse, circle, path");
                   if (!text || !shape) return;
 
-                  const sb = shape.getBBox();
-                  const cx = sb.x + sb.width / 2;
-                  const cy = sb.y + sb.height / 2;
+                  // Compute the visual centre of the shape in screen space, then
+                  // project back into the node's coordinate system to avoid group transforms skewing it
+                  const rect = shape.getBoundingClientRect();
+                  const screenCenterX = rect.left + rect.width / 2;
+                  const screenCenterY = rect.top + rect.height / 2;
+                  const svgRoot = text.ownerSVGElement;
+                  if (!svgRoot) return;
+                  const pt = svgRoot.createSVGPoint();
+                  pt.x = screenCenterX;
+                  pt.y = screenCenterY;
+                  const ctm = svgRoot.getScreenCTM();
+                  if (!ctm) return;
+                  const svgPoint = pt.matrixTransform(ctm.inverse());
 
-                  text.setAttribute("x", `${cx}`);
-                  text.setAttribute("y", `${cy}`);
+                  // Remove any text transforms that could offset placement
+                  text.removeAttribute("transform");
+                  text.removeAttribute("dx");
+                  text.removeAttribute("dy");
+
+                  text.setAttribute("x", `${svgPoint.x}`);
+                  // Slight upward nudge to compensate for baseline
+                  text.setAttribute("y", `${svgPoint.y - 0.5}`);
                   text.setAttribute("text-anchor", "middle");
                   text.setAttribute("dominant-baseline", "middle");
                   text.style.textAnchor = "middle";
