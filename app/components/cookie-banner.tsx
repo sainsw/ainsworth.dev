@@ -129,7 +129,7 @@ export function CookieConsent({
               <Button variant="outline" size="sm" className="rounded-full h-8 px-3" onClick={handleDecline} aria-label="Decline">
                 Decline
               </Button>
-              <Button size="sm" className="rounded-full h-8 px-3" onClick={handleAccept} aria-label="Accept">
+              <Button variant="outline" size="sm" className="rounded-full h-8 px-3" onClick={handleAccept} aria-label="Accept">
                 Accept
               </Button>
             </div>
