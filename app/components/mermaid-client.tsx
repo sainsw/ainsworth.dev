@@ -102,49 +102,20 @@ export default function MermaidClient({
                   }
                 });
 
-                // Apply scaling to fit container width
-                // Account for container padding (12px on each side = 24px total)
-                const containerWidth = (elementRef.current?.offsetWidth || 800) - 24;
+                // Apply scaling to fit container width with generous buffer for labels
+                const containerWidth = elementRef.current?.offsetWidth || 800;
                 
-                // Get the actual width including all elements, with special focus on edge labels
-                let maxWidth = 0;
+                // Use a more conservative approach - assume labels can extend significantly
+                const svgNaturalWidth = svgElement.getBBox().width;
+                // Add 25% buffer for labels that might extend beyond the main diagram
+                const estimatedWidth = svgNaturalWidth * 1.25;
                 
-                // Check all text elements, including edge labels
-                const textElements = svgElement.querySelectorAll('text, tspan, textPath, .edgeLabel');
-                textElements.forEach((el: any) => {
-                  try {
-                    const bbox = el.getBBox();
-                    const rightEdge = bbox.x + bbox.width;
-                    maxWidth = Math.max(maxWidth, rightEdge);
-                  } catch (e) {
-                    // Some elements might not support getBBox
-                  }
-                });
-                
-                // Also check all other elements
-                const allElements = svgElement.querySelectorAll('*');
-                allElements.forEach((el: any) => {
-                  if (el.getBBox && el.tagName !== 'text' && el.tagName !== 'tspan') {
-                    try {
-                      const bbox = el.getBBox();
-                      const rightEdge = bbox.x + bbox.width;
-                      maxWidth = Math.max(maxWidth, rightEdge);
-                    } catch (e) {
-                      // Some elements might not support getBBox
-                    }
-                  }
-                });
-                
-                // Fallback to SVG getBBox if no elements found
-                if (maxWidth === 0) {
-                  maxWidth = svgElement.getBBox().width;
-                }
-                
-                // Add generous padding to ensure edge labels aren't cut off
-                const svgWidth = maxWidth + 40;
-                const scale = Math.min(1, containerWidth / svgWidth);
+                const scale = Math.min(1, (containerWidth - 48) / estimatedWidth);
                 svgElement.style.transform = `scale(${scale})`;
                 svgElement.style.transformOrigin = "center top";
+                
+                // Ensure no clipping occurs
+                svgElement.style.overflow = "visible";
               }, 100);
             }
 
@@ -200,7 +171,7 @@ export default function MermaidClient({
       )}
       <div
         ref={elementRef}
-        className={`mermaid-diagram overflow-x-auto flex justify-center ${!isLoaded ? "hidden" : ""}`}
+        className={`mermaid-diagram flex justify-center ${!isLoaded ? "hidden" : ""}`}
         style={{
           width: "100%",
           minWidth: "400px",
