@@ -190,6 +190,15 @@ export function CustomMDX({
 }) {
   const mdxComponents = useMDXComponents(components);
 
+  // Process content to replace special markers
+  let content = props.source || children || "";
+
+  // Replace [AVATAR_DEMO] with a special placeholder that we can process
+  const processedContent = content.replace(
+    /\[AVATAR_DEMO\]/g,
+    '<div data-component="avatar-demo"></div>',
+  );
+
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
@@ -208,9 +217,15 @@ export function CustomMDX({
 
           return <Code {...props}>{children}</Code>;
         },
+        div: ({ ...props }: any) => {
+          if (props["data-component"] === "avatar-demo") {
+            return <AvatarDemo />;
+          }
+          return <div {...props} />;
+        },
       }}
     >
-      {props.source || children || ""}
+      {processedContent}
     </ReactMarkdown>
   );
 }

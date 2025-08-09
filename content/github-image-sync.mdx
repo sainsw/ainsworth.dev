@@ -25,8 +25,11 @@ graph TD
     E --> G
     F --> H[Content Hash]
     G --> H
-    H --> I[Versioned Files<br/>avatar-{hash}.webp<br/>avatar-{hash}.jpg]
-    I --> J[Update Version File<br/>lib/version.js]
+    H --> I["Versioned Files
+    avatar-{hash}.webp
+    avatar-{hash}.jpg"]
+    I --> J["Update Version File
+    lib/version.js"]
     J --> K[Next.js Build]
     K --> L[Preload Resources]
     K --> M[Picture Elements]
@@ -247,19 +250,21 @@ This automatically adds a rainbow border during:
 
 Here's the feature in action - the same avatar with different seasonal borders:
 
-<AvatarDemo />
+[AVATAR_DEMO]
 
 ```mermaid
 flowchart TD
     A[Page Load] --> B[Check Current Date]
     B --> C{Month == 6?}
-    C -->|Yes| D[Pride Month!<br/>🏳️‍🌈 Rainbow Border]
+    C -->|Yes| D["Pride Month!
+    🏳️‍🌈 Rainbow Border"]
     C -->|No| E{Month == 8?}
     E -->|No| F[Normal Border]
     E -->|Yes| G[Calculate Bank Holiday]
     G --> H[Find Last Monday of August]
     H --> I[Pride Week = 7 Days Before]
-    I --> J{Current Date in<br/>Pride Week?}
+    I --> J{"Current Date in
+    Pride Week?"}
     J -->|Yes| D
     J -->|No| F
     
