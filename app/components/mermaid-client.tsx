@@ -76,6 +76,31 @@ export default function MermaidClient({
             fillType5: "#d1d5db",
             fillType6: "#1f2937",
             fillType7: "#374151",
+            // Node class colors
+            classText: "#f9fafb",
+            nodeBkg: "#374151",
+            nodeTextColor: "#f9fafb",
+            // Flowchart specific colors
+            clusterBkg: "#1f2937",
+            clusterBorder: "#6b7280",
+            defaultLinkColor: "#9ca3af",
+            titleColor: "#f9fafb",
+            edgeLabelBackground: "#1f2937",
+            // Class diagram colors
+            altBackground: "#4b5563",
+            // Additional node fill colors for different classes
+            pie1: "#374151",
+            pie2: "#4b5563", 
+            pie3: "#6b7280",
+            pie4: "#9ca3af",
+            pie5: "#d1d5db",
+            pie6: "#1f2937",
+            pie7: "#374151",
+            pie8: "#4b5563",
+            pie9: "#6b7280",
+            pie10: "#9ca3af",
+            pie11: "#d1d5db",
+            pie12: "#1f2937",
           } : {
             fontFamily: "'Geist Mono', ui-monospace, monospace",
             fontSize: "13px",
