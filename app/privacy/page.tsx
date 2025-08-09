@@ -25,7 +25,7 @@ export default function PrivacyPage() {
         <p>
           This site is operated by Sam Ainsworth. For privacy questions or requests, please
           {' '}<EmailLink
-            user="s"
+            user="privacy"
             domain="ainsworth.dev"
             label="email me"
             className="underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
@@ -113,7 +113,7 @@ export default function PrivacyPage() {
         <p>
           For any privacy questions, please{' '}
           <EmailLink
-            user="s"
+            user="privacy"
             domain="ainsworth.dev"
             label="email me"
             className="underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
