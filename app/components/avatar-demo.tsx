@@ -12,7 +12,7 @@ export function AvatarDemo({ className = "" }: AvatarDemoProps) {
       className={`flex flex-row items-center justify-center my-8 ${className}`}
     >
       {/* Normal Avatar */}
-      <div className="flex flex-col items-center space-y-3 mr-24">
+      <div className="flex flex-col items-center space-y-3">
         <div className="relative">
           <picture>
             <source
@@ -36,8 +36,13 @@ export function AvatarDemo({ className = "" }: AvatarDemoProps) {
         </div>
       </div>
 
+      {/* Separator */}
+      <div className="w-32 text-center">
+        <span className="text-gray-400 dark:text-gray-600">vs</span>
+      </div>
+
       {/* Pride Avatar */}
-      <div className="flex flex-col items-center space-y-3 ml-24">
+      <div className="flex flex-col items-center space-y-3">
         <div className="relative">
           <div
             className="rounded-full"
