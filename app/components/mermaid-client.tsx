@@ -102,17 +102,22 @@ export default function MermaidClient({
                   }
                 });
 
-                // Apply scaling to fit container width with generous buffer for labels
+                // Apply scaling to fit container width with modest buffer for labels
                 const containerWidth = elementRef.current?.offsetWidth || 800;
                 
-                // Use a more conservative approach - assume labels can extend significantly
-                const svgNaturalWidth = svgElement.getBBox().width;
-                // Add 25% buffer for labels that might extend beyond the main diagram
-                const estimatedWidth = svgNaturalWidth * 1.25;
+                // Use a modest buffer for edge labels - 10% should be sufficient
+                const svgBBox = svgElement.getBBox();
+                const estimatedWidth = svgBBox.width * 1.1;
                 
-                const scale = Math.min(1, (containerWidth - 48) / estimatedWidth);
+                const scale = Math.min(1, (containerWidth - 24) / estimatedWidth);
                 svgElement.style.transform = `scale(${scale})`;
                 svgElement.style.transformOrigin = "center top";
+                
+                // Set container height to match scaled SVG height
+                const scaledHeight = svgBBox.height * scale;
+                if (elementRef.current) {
+                  elementRef.current.style.height = `${scaledHeight + 24}px`; // +24 for padding
+                }
                 
                 // Ensure no clipping occurs
                 svgElement.style.overflow = "visible";
