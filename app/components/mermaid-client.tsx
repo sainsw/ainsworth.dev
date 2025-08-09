@@ -211,6 +211,21 @@ export default function MermaidClient({
                   elementRef.current.style.height = `${scaledHeight + 24}px`;
                 }
                 svgElement.style.overflow = "visible";
+
+                // Post-fix: precisely centre text labels within nodes
+                const nodeGroups = svgElement.querySelectorAll<SVGGElement>(".node");
+                nodeGroups.forEach((node) => {
+                  const labelText = node.querySelector<SVGTextElement>(".label text, text");
+                  if (!labelText) return;
+                  const bbox = node.getBBox();
+                  const centerX = bbox.x + bbox.width / 2;
+                  const centerY = bbox.y + bbox.height / 2;
+                  labelText.setAttribute("x", String(centerX));
+                  labelText.setAttribute("y", String(centerY));
+                  labelText.setAttribute("text-anchor", "middle");
+                  labelText.style.textAnchor = "middle";
+                  labelText.setAttribute("dominant-baseline", "middle");
+                });
               }, 100);
             }
 

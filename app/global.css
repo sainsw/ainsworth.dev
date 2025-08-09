@@ -259,12 +259,7 @@ table {
     padding: 0 2px !important;
 }
 
-/* Fix flowchart node sizing */
-.mermaid-diagram .flowchart-label {
-    text-align: center !important;
-    dominant-baseline: middle !important;
-    alignment-baseline: middle !important;
-}
+/* Remove overrides that could misalign labels; rely on Mermaid defaults */
 
 /* Typography for labels only; let Mermaid control exact positioning */
 .mermaid-diagram .nodeLabel,
@@ -283,4 +278,21 @@ table {
 /* Ensure text content isn't masked or clipped */
 .mermaid-diagram g[clip-path] {
     clip-path: none !important;
+}
+
+/* Subtle halo for edge labels in dark mode to improve readability */
+.dark .mermaid-diagram .edgeLabel text,
+.dark .mermaid-diagram .edgeLabel tspan {
+    paint-order: stroke;
+    stroke: rgba(17, 16, 16, 0.85);
+    stroke-width: 2px;
+    stroke-linejoin: round;
+}
+
+/* Ensure box labels are centred horizontally and vertically */
+.mermaid-diagram .node .label text,
+.mermaid-diagram .node .nodeLabel {
+    text-anchor: middle !important;
+    dominant-baseline: middle !important;
+    alignment-baseline: middle !important;
 }
