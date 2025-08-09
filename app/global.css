@@ -202,7 +202,11 @@ table {
 
 /* Mermaid diagram styling to fix text cutoff issues */
 .mermaid-diagram {
-    @apply flex justify-center items-center w-full;
+    @apply flex justify-center items-center;
+    width: 60vw;
+    max-width: 1200px;
+    margin-left: calc(-30vw + 50%);
+    margin-right: calc(-30vw + 50%);
 }
 
 .mermaid-diagram svg {
