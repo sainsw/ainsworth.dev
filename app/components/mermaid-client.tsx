@@ -59,7 +59,7 @@ export default function MermaidClient({
         // Initialize mermaid with native theme switching
         mermaid.initialize({
           startOnLoad: false,
-          theme: isDark ? "dark" : "default",
+          theme: isDark ? "dark" : "neutral",
           securityLevel: "loose",
           fontFamily: "'Geist Mono', ui-monospace, monospace",
           maxTextSize: 90000,
