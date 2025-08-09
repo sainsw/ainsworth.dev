@@ -106,11 +106,25 @@ export default function MermaidClient({
                 // Account for container padding (12px on each side = 24px total)
                 const containerWidth = (elementRef.current?.offsetWidth || 800) - 24;
                 
-                // Get the actual width including all elements (labels, text, etc.)
+                // Get the actual width including all elements, with special focus on edge labels
                 let maxWidth = 0;
+                
+                // Check all text elements, including edge labels
+                const textElements = svgElement.querySelectorAll('text, tspan, textPath, .edgeLabel');
+                textElements.forEach((el: any) => {
+                  try {
+                    const bbox = el.getBBox();
+                    const rightEdge = bbox.x + bbox.width;
+                    maxWidth = Math.max(maxWidth, rightEdge);
+                  } catch (e) {
+                    // Some elements might not support getBBox
+                  }
+                });
+                
+                // Also check all other elements
                 const allElements = svgElement.querySelectorAll('*');
                 allElements.forEach((el: any) => {
-                  if (el.getBBox) {
+                  if (el.getBBox && el.tagName !== 'text' && el.tagName !== 'tspan') {
                     try {
                       const bbox = el.getBBox();
                       const rightEdge = bbox.x + bbox.width;
@@ -126,8 +140,8 @@ export default function MermaidClient({
                   maxWidth = svgElement.getBBox().width;
                 }
                 
-                // Add some padding to ensure nothing is cut off
-                const svgWidth = maxWidth + 20;
+                // Add generous padding to ensure edge labels aren't cut off
+                const svgWidth = maxWidth + 40;
                 const scale = Math.min(1, containerWidth / svgWidth);
                 svgElement.style.transform = `scale(${scale})`;
                 svgElement.style.transformOrigin = "center top";
