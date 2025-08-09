@@ -56,7 +56,7 @@ export default function MermaidClient({
 
         // Use the isDark state
 
-        // Initialize mermaid with neutral theme and explicit dark mode setting
+        // Initialize mermaid with explicit theme variables for robust light/dark styling
         mermaid.initialize({
           startOnLoad: false,
           theme: "neutral",
@@ -76,6 +76,23 @@ export default function MermaidClient({
             darkMode: isDark,
             fontFamily: "'Geist Mono', ui-monospace, monospace",
             fontSize: "13px",
+            // Base colours
+            background: 'transparent',
+            primaryColor: isDark ? '#111827' : '#ffffff',
+            primaryTextColor: isDark ? '#e5e7eb' : '#111827',
+            primaryBorderColor: isDark ? '#374151' : '#d1d5db',
+            secondaryColor: isDark ? '#1f2937' : '#f9fafb',
+            secondaryTextColor: isDark ? '#e5e7eb' : '#111827',
+            tertiaryColor: isDark ? '#374151' : '#e5e7eb',
+            tertiaryTextColor: isDark ? '#e5e7eb' : '#111827',
+            lineColor: isDark ? '#6b7280' : '#9ca3af',
+            textColor: isDark ? '#e5e7eb' : '#111827',
+            // Cluster and label styling
+            clusterBkg: isDark ? '#0b1220' : '#ffffff',
+            clusterBorder: isDark ? '#374151' : '#d1d5db',
+            noteBkgColor: isDark ? '#0f172a' : '#f9fafb',
+            noteTextColor: isDark ? '#e5e7eb' : '#111827',
+            edgeLabelBackground: isDark ? '#000000cc' : '#ffffffcc',
           },
         });
 
@@ -102,7 +119,7 @@ export default function MermaidClient({
               svgElement.style.width = "auto";
               svgElement.style.height = "auto";
               svgElement.style.maxWidth = "none";
-              svgElement.style.marginLeft = "0";
+              svgElement.style.marginLeft = "auto";
               svgElement.style.marginRight = "auto";
               svgElement.style.display = "block";
 
@@ -142,7 +159,7 @@ export default function MermaidClient({
                 
                 const scale = Math.min(1, (containerWidth - 24) / estimatedWidth);
                 svgElement.style.transform = `scale(${scale})`;
-                svgElement.style.transformOrigin = "left top";
+                svgElement.style.transformOrigin = "center top";
                 
                 // Set container height to match scaled SVG height
                 const scaledHeight = svgBBox.height * scale;
@@ -207,7 +224,7 @@ export default function MermaidClient({
       )}
       <div
         ref={elementRef}
-        className={`mermaid-diagram flex justify-start ${!isLoaded ? "hidden" : ""}`}
+        className={`mermaid-diagram flex justify-center ${!isLoaded ? "hidden" : ""}`}
         style={{
           width: "100%",
           minWidth: "400px",
