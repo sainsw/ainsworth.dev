@@ -103,7 +103,8 @@ export default function MermaidClient({
                 });
 
                 // Apply scaling to fit container width
-                const containerWidth = elementRef.current?.offsetWidth || 800;
+                // Account for container padding (12px on each side = 24px total)
+                const containerWidth = (elementRef.current?.offsetWidth || 800) - 24;
                 
                 // Get the actual width including all elements (labels, text, etc.)
                 let maxWidth = 0;
