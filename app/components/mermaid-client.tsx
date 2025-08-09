@@ -166,6 +166,27 @@ export default function MermaidClient({
           // Generate unique ID for this diagram
           const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
 
+          // Ensure fonts are loaded before measuring/laying out labels
+          const ensureFontsLoaded = async () => {
+            try {
+              const fonts: any = (document as any).fonts;
+              if (fonts?.ready) {
+                await fonts.ready;
+                await Promise.all([
+                  fonts.load("13px var(--font-geist-mono)"),
+                  fonts.load("13px 'Geist Mono'"),
+                  fonts.load("700 13px var(--font-geist-mono)"),
+                ]);
+              } else {
+                await new Promise((r) => setTimeout(r, 50));
+              }
+            } catch {
+              // ignore font load errors; fall back to default
+            }
+          };
+
+          await ensureFontsLoaded();
+
           // Render the diagram with theme-aware chart
           const { svg } = await mermaid.render(id, themedChart);
 
@@ -213,44 +234,6 @@ export default function MermaidClient({
                   elementRef.current.style.height = `${scaledHeight + 24}px`;
                 }
                 svgElement.style.overflow = "visible";
-
-                // Post-fix: precisely centre text labels within nodes
-                // Correct box-label drift by computing centres from the shape only
-                const nodes = svgElement.querySelectorAll<SVGGElement>(".node");
-                nodes.forEach((node) => {
-                  const labelGroup = node.querySelector<SVGGElement>(".label");
-                  const shape = node.querySelector<SVGGraphicsElement>("rect, polygon, ellipse, circle, path");
-                  if (!labelGroup || !shape) return;
-
-                  const svgRoot = labelGroup.ownerSVGElement;
-                  const ctm = svgRoot?.getScreenCTM();
-                  if (!svgRoot || !ctm) return;
-
-                  const toSvg = (x: number, y: number) => {
-                    const pt = svgRoot.createSVGPoint();
-                    pt.x = x;
-                    pt.y = y;
-                    return pt.matrixTransform(ctm.inverse());
-                  };
-
-                  const s = shape.getBoundingClientRect();
-                  const l = labelGroup.getBoundingClientRect();
-                  const sCenterSvg = toSvg(s.left + s.width / 2, s.top + s.height / 2);
-                  const lCenterSvg = toSvg(l.left + l.width / 2, l.top + l.height / 2);
-                  const dx = sCenterSvg.x - lCenterSvg.x;
-                  const dy = sCenterSvg.y - lCenterSvg.y + 0.5; // slight upward nudge
-
-                  const existing = labelGroup.getAttribute("transform") || "";
-                  labelGroup.setAttribute("transform", `${existing} translate(${dx},${dy})`);
-
-                  // Ensure text anchor remains centred
-                  const text = labelGroup.querySelector<SVGTextElement>("text");
-                  if (text) {
-                    text.setAttribute("text-anchor", "middle");
-                    text.setAttribute("dominant-baseline", "middle");
-                    text.style.textAnchor = "middle";
-                  }
-                });
               }, 100);
             }
 
