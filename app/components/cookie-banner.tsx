@@ -85,9 +85,11 @@ export function CookieConsent({
       // Show banner after 2 seconds delay like Vercel
       const timer = setTimeout(() => {
         setShouldRender(true)
-        // Trigger animation after DOM render
+        // Trigger animation after DOM render with double rAF for Safari
         requestAnimationFrame(() => {
-          setIsOpen(true)
+          requestAnimationFrame(() => {
+            setIsOpen(true)
+          })
         })
       }, 2000)
       return () => clearTimeout(timer)
@@ -110,7 +112,12 @@ export function CookieConsent({
           position: 'fixed',
           left: '1rem', 
           bottom: '1rem',
-          zIndex: 9999
+          zIndex: 9999,
+          willChange: 'transform, opacity',
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden',
+          WebkitTransform: 'translateZ(0)',
+          transform: 'translateZ(0)'
         }}
       >
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg p-4 sm:p-5">
