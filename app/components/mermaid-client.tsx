@@ -56,10 +56,10 @@ export default function MermaidClient({
 
         // Use the isDark state
 
-        // Initialize mermaid with theme-aware configuration
+        // Initialize mermaid with native theme switching
         mermaid.initialize({
           startOnLoad: false,
-          theme: "base",
+          theme: isDark ? "dark" : "default",
           securityLevel: "loose",
           fontFamily: "'Geist Mono', ui-monospace, monospace",
           maxTextSize: 90000,
@@ -72,69 +72,9 @@ export default function MermaidClient({
             rankSpacing: 50,
             diagramPadding: 12,
           },
-          themeVariables: isDark ? {
+          themeVariables: {
             fontFamily: "'Geist Mono', ui-monospace, monospace",
             fontSize: "13px",
-            primaryColor: "#374151",
-            primaryTextColor: "#f9fafb",
-            primaryBorderColor: "#6b7280",
-            lineColor: "#9ca3af",
-            secondaryColor: "#4b5563",
-            tertiaryColor: "#1f2937",
-            background: "#111827",
-            mainBkg: "#374151",
-            secondBkg: "#4b5563",
-            tertiaryBkg: "#6b7280",
-            // Additional colors for various node types
-            cScale0: "#1f2937",
-            cScale1: "#374151", 
-            cScale2: "#4b5563",
-            cScale3: "#6b7280",
-            cScale4: "#9ca3af",
-            cScale5: "#d1d5db",
-            // Specific colors for different states
-            errorBkgColor: "#7f1d1d",
-            errorTextColor: "#fecaca",
-            fillType0: "#1f2937",
-            fillType1: "#374151",
-            fillType2: "#4b5563",
-            fillType3: "#6b7280",
-            fillType4: "#9ca3af",
-            fillType5: "#d1d5db",
-            fillType6: "#1f2937",
-            fillType7: "#374151",
-            // Node class colors
-            classText: "#f9fafb",
-            nodeBkg: "#374151",
-            nodeTextColor: "#f9fafb",
-            // Flowchart specific colors
-            clusterBkg: "#1f2937",
-            clusterBorder: "#6b7280",
-            defaultLinkColor: "#9ca3af",
-            titleColor: "#f9fafb",
-            edgeLabelBackground: "#1f2937",
-            // Class diagram colors
-            altBackground: "#4b5563",
-            // Additional node fill colors for different classes
-            pie1: "#374151",
-            pie2: "#4b5563", 
-            pie3: "#6b7280",
-            pie4: "#9ca3af",
-            pie5: "#d1d5db",
-            pie6: "#1f2937",
-            pie7: "#374151",
-            pie8: "#4b5563",
-            pie9: "#6b7280",
-            pie10: "#9ca3af",
-            pie11: "#d1d5db",
-            pie12: "#1f2937",
-          } : {
-            fontFamily: "'Geist Mono', ui-monospace, monospace",
-            fontSize: "13px",
-            primaryColor: "#ffffff",
-            primaryTextColor: "#000000",
-            primaryBorderColor: "#cccccc",
-            lineColor: "#333333",
           },
         });
 
@@ -211,63 +151,6 @@ export default function MermaidClient({
                 
                 // Ensure no clipping occurs
                 svgElement.style.overflow = "visible";
-                
-                // Force dark mode colors by directly overriding SVG styles
-                if (isDark) {
-                  // Override node fills and text colors - target all possible fill elements
-                  const nodes = svgElement.querySelectorAll('rect, circle, polygon, ellipse, path[fill]');
-                  nodes.forEach((node: any) => {
-                    const currentFill = node.style.fill || node.getAttribute('fill');
-                    if (currentFill && currentFill !== 'none' && currentFill !== 'transparent') {
-                      // Convert RGB to check brightness
-                      let shouldReplace = false;
-                      
-                      if (currentFill.startsWith('#')) {
-                        // Convert hex to RGB and check if it's light
-                        const hex = currentFill.replace('#', '');
-                        const r = parseInt(hex.substr(0, 2), 16);
-                        const g = parseInt(hex.substr(2, 2), 16);
-                        const b = parseInt(hex.substr(4, 2), 16);
-                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-                        shouldReplace = brightness > 180; // Light colors
-                      } else if (currentFill.includes('rgb(')) {
-                        // Parse RGB values
-                        const rgb = currentFill.match(/\d+/g);
-                        if (rgb && rgb.length >= 3) {
-                          const brightness = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
-                          shouldReplace = brightness > 180; // Light colors
-                        }
-                      }
-                      
-                      // Also check for common Mermaid light colors
-                      const lightColors = ['#ffffff', '#fff', '#f9f9f9', '#f5f5f5', '#eeeeee', '#e6e6e6', 
-                                         '#dddddd', '#d3d3d3', '#cccccc', '#c0c0c0', '#b8b8b8', '#a8a8a8',
-                                         'rgb(255,255,255)', 'rgb(249,249,249)', 'rgb(245,245,245)',
-                                         'rgb(238,238,238)', 'rgb(230,230,230)', 'rgb(221,221,221)',
-                                         'rgb(211,211,211)', 'rgb(204,204,204)', 'rgb(192,192,192)'];
-                      
-                      if (shouldReplace || lightColors.includes(currentFill.toLowerCase())) {
-                        node.style.fill = '#374151';
-                        node.setAttribute('fill', '#374151');
-                      }
-                    }
-                  });
-                  
-                  // Override text colors
-                  const texts = svgElement.querySelectorAll('text, .nodeLabel, .edgeLabel');
-                  texts.forEach((text: any) => {
-                    text.style.fill = '#f9fafb';
-                  });
-                  
-                  // Override stroke colors
-                  const strokes = svgElement.querySelectorAll('[stroke]');
-                  strokes.forEach((stroke: any) => {
-                    const currentStroke = stroke.style.stroke || stroke.getAttribute('stroke');
-                    if (currentStroke && currentStroke !== 'none') {
-                      stroke.style.stroke = '#6b7280';
-                    }
-                  });
-                }
               }, 100);
             }
 
