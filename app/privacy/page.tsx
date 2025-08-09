@@ -3,6 +3,8 @@ export const metadata = {
   description: 'Privacy policy and cookie information for ainsworth.dev',
 }
 
+import { EmailLink } from '../../components/email-link'
+
 export default function PrivacyPage() {
   return (
     <section>
@@ -21,8 +23,14 @@ export default function PrivacyPage() {
 
         <h2>Who I am</h2>
         <p>
-          This site is operated by Sam Ainsworth. You can contact me at
-          {' '}<a href="mailto:s@ainsworth.dev">s@ainsworth.dev</a> for any privacy questions or requests.
+          This site is operated by Sam Ainsworth. For privacy questions or requests, please
+          {' '}<EmailLink
+            user="s"
+            domain="ainsworth.dev"
+            label="email me"
+            className="underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
+          />
+          {' '}or use the contact form.
         </p>
 
         <h2>Cookies and Analytics</h2>
@@ -103,7 +111,14 @@ export default function PrivacyPage() {
 
         <h2>Contact</h2>
         <p>
-          For any privacy questions, contact me at <a href="mailto:s@ainsworth.dev">s@ainsworth.dev</a>.
+          For any privacy questions, please{' '}
+          <EmailLink
+            user="s"
+            domain="ainsworth.dev"
+            label="email me"
+            className="underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
+          />
+          .
         </p>
       </div>
     </section>
