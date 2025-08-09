@@ -153,8 +153,9 @@ export function CookieConsent({
                 <a
                   href={learnMoreHref}
                   className="ms-auto text-sm underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
+                  aria-label="Privacy policy"
                 >
-                  Learn more
+                  Privacy policy
                 </a>
               )}
             </div>
