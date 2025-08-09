@@ -2,7 +2,8 @@ import type { Config } from 'tailwindcss';
 import typography from '@tailwindcss/typography';
 
 export default {
-  darkMode: ['class'],
+  // Revert to OS-level dark mode preference
+  darkMode: 'media',
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './content/**/*.mdx', './public/**/*.svg'],
   theme: {
     extend: {
