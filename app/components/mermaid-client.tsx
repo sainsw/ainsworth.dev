@@ -128,8 +128,8 @@ export default function MermaidClient({
           maxTextSize: 90000,
           flowchart: {
             useMaxWidth: false,
-            // Use HTML labels for accurate text metrics/positioning
-            htmlLabels: true,
+            // Use SVG labels; they render reliably and keep edge labels intact
+            htmlLabels: false,
             curve: "basis",
             padding: 12,
             nodeSpacing: 30,
@@ -175,6 +175,11 @@ export default function MermaidClient({
             // Fix SVG viewBox to prevent text clipping
             const svgElement = elementRef.current.querySelector("svg");
             if (svgElement) {
+              // Ensure viewBox exists so internal coordinates/centres are accurate
+              if (!svgElement.getAttribute("viewBox")) {
+                const bb = svgElement.getBBox();
+                svgElement.setAttribute("viewBox", `${bb.x} ${bb.y} ${bb.width} ${bb.height}`);
+              }
               // Set explicit dimensions and positioning
               svgElement.style.width = "auto";
               svgElement.style.height = "auto";
@@ -210,7 +215,23 @@ export default function MermaidClient({
                 svgElement.style.overflow = "visible";
 
                 // Post-fix: precisely centre text labels within nodes
-                // No manual recentering: allow Mermaid to position HTML labels
+                // Correct box-label drift by computing centres from the shape only
+                const nodes = svgElement.querySelectorAll<SVGGElement>(".node");
+                nodes.forEach((node) => {
+                  const text = node.querySelector<SVGTextElement>(".label text, text");
+                  const shape = node.querySelector<SVGGraphicsElement>("rect, polygon, ellipse, circle, path");
+                  if (!text || !shape) return;
+
+                  const sb = shape.getBBox();
+                  const cx = sb.x + sb.width / 2;
+                  const cy = sb.y + sb.height / 2;
+
+                  text.setAttribute("x", `${cx}`);
+                  text.setAttribute("y", `${cy}`);
+                  text.setAttribute("text-anchor", "middle");
+                  text.setAttribute("dominant-baseline", "middle");
+                  text.style.textAnchor = "middle";
+                });
               }, 100);
             }
 

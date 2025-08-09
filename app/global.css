@@ -289,4 +289,4 @@ table {
     stroke-linejoin: round;
 }
 
-/* Do not force SVG text centring; HTML labels handle positioning accurately */
+/* Keep SVG label positioning; do not override centring values here */
