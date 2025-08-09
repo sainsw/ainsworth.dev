@@ -28,13 +28,13 @@ export default function MermaidClient({
         // Initialize mermaid with configuration
         mermaid.initialize({
           startOnLoad: false,
-          theme: "neutral",
+          theme: "base",
           securityLevel: "loose",
-          fontFamily: "inherit",
+          fontFamily: "'Geist Mono', ui-monospace, monospace",
           maxTextSize: 90000,
           flowchart: {
             useMaxWidth: false,
-            htmlLabels: false,
+            htmlLabels: true,
             curve: "basis",
             padding: 20,
             nodeSpacing: 50,
@@ -42,12 +42,12 @@ export default function MermaidClient({
             diagramPadding: 20,
           },
           themeVariables: {
-            fontFamily: "inherit",
-            fontSize: "14px",
-            primaryColor: "#f9f9f9",
-            primaryTextColor: "#333",
-            primaryBorderColor: "#666",
-            lineColor: "#666",
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontSize: "13px",
+            primaryColor: "#ffffff",
+            primaryTextColor: "#000000",
+            primaryBorderColor: "#cccccc",
+            lineColor: "#333333",
           },
         });
 
@@ -84,13 +84,24 @@ export default function MermaidClient({
                 if (el.style.textOverflow) {
                   el.style.textOverflow = "clip";
                 }
-                // Ensure proper text centering
-                if (el.tagName === "text") {
-                  el.setAttribute("text-anchor", "middle");
-                  el.setAttribute("dominant-baseline", "central");
-                  el.setAttribute("alignment-baseline", "middle");
-                }
               });
+
+              // Force recreate text positioning
+              setTimeout(() => {
+                const labels =
+                  svgElement.querySelectorAll(".label, .nodeLabel");
+                labels.forEach((label: any) => {
+                  const textEl = label.querySelector("text") || label;
+                  if (textEl.tagName === "text") {
+                    // Get current x position and adjust slightly left
+                    const currentX = parseFloat(
+                      textEl.getAttribute("x") || "0",
+                    );
+                    textEl.setAttribute("x", (currentX - 3).toString());
+                    textEl.style.textAnchor = "middle";
+                  }
+                });
+              }, 100);
             }
 
             setIsLoaded(true);
