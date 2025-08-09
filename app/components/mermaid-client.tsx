@@ -25,7 +25,11 @@ export default function MermaidClient({
 
         if (!mounted) return;
 
-        // Initialize mermaid with configuration
+        // Detect dark mode
+        const isDark = document.documentElement.classList.contains('dark') || 
+                      window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        // Initialize mermaid with theme-aware configuration
         mermaid.initialize({
           startOnLoad: false,
           theme: "base",
@@ -41,7 +45,20 @@ export default function MermaidClient({
             rankSpacing: 50,
             diagramPadding: 12,
           },
-          themeVariables: {
+          themeVariables: isDark ? {
+            fontFamily: "'Geist Mono', ui-monospace, monospace",
+            fontSize: "13px",
+            primaryColor: "#374151",
+            primaryTextColor: "#f9fafb",
+            primaryBorderColor: "#6b7280",
+            lineColor: "#9ca3af",
+            secondaryColor: "#4b5563",
+            tertiaryColor: "#1f2937",
+            background: "#111827",
+            mainBkg: "#374151",
+            secondBkg: "#4b5563",
+            tertiaryBkg: "#6b7280",
+          } : {
             fontFamily: "'Geist Mono', ui-monospace, monospace",
             fontSize: "13px",
             primaryColor: "#ffffff",
