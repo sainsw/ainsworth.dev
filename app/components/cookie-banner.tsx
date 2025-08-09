@@ -118,14 +118,6 @@ export function CookieConsent({
             <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
               {description}
             </p>
-            {learnMoreHref && (
-              <a
-                href={learnMoreHref}
-                className="block text-sm underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80 mt-3"
-              >
-                Learn more
-              </a>
-            )}
             <div className="flex items-center flex-wrap gap-4 mt-4">
               <Button
                 variant="outline"
@@ -157,6 +149,14 @@ export function CookieConsent({
               >
                 Accept
               </Button>
+              {learnMoreHref && (
+                <a
+                  href={learnMoreHref}
+                  className="ms-auto text-sm underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
+                >
+                  Learn more
+                </a>
+              )}
             </div>
           </div>
         </div>
