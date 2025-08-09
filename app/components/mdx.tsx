@@ -9,6 +9,7 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import mdxMermaid from "mdx-mermaid";
 import { Mermaid } from "mdx-mermaid/lib/Mermaid";
+import { AvatarDemo } from "./avatar-demo";
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -173,6 +174,7 @@ let components = {
   Table,
   mermaid: Mermaid,
   Mermaid,
+  AvatarDemo,
   // LiveCode, // Temporarily disabled to test for React conflicts
 };
 
