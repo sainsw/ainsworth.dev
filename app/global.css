@@ -206,10 +206,11 @@ table {
 }
 
 .mermaid-diagram svg {
-    max-width: 100% !important;
+    max-width: none !important;
     height: auto !important;
     width: auto !important;
-    min-width: 600px;
+    min-width: 800px;
+    overflow: visible !important;
 }
 
 /* Fix mermaid node text cutoff */
@@ -227,6 +228,21 @@ table {
     font-family: inherit !important;
     font-size: 14px !important;
     line-height: 1.4 !important;
+    overflow: visible !important;
+}
+
+/* Fix all text elements to prevent clipping */
+.mermaid-diagram text,
+.mermaid-diagram tspan,
+.mermaid-diagram foreignObject {
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+/* Remove any clipPath constraints that might cut off text */
+.mermaid-diagram clipPath,
+.mermaid-diagram defs clipPath {
+    display: none !important;
 }
 
 /* Add padding to edge labels */
@@ -250,4 +266,14 @@ table {
 /* Ensure proper spacing for multiline text */
 .mermaid-diagram tspan {
     text-anchor: middle !important;
+}
+
+/* Force SVG to not constrain content */
+.mermaid-diagram svg[viewBox] {
+    viewbox: none !important;
+}
+
+/* Ensure text content isn't masked or clipped */
+.mermaid-diagram g[clip-path] {
+    clip-path: none !important;
 }

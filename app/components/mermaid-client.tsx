@@ -31,14 +31,15 @@ export default function MermaidClient({
           theme: "neutral",
           securityLevel: "loose",
           fontFamily: "inherit",
+          maxTextSize: 90000,
           flowchart: {
             useMaxWidth: false,
-            htmlLabels: true,
+            htmlLabels: false,
             curve: "basis",
-            padding: 30,
-            nodeSpacing: 50,
-            rankSpacing: 80,
-            diagramPadding: 20,
+            padding: 40,
+            nodeSpacing: 60,
+            rankSpacing: 100,
+            diagramPadding: 30,
           },
           themeVariables: {
             fontFamily: "inherit",
@@ -62,6 +63,30 @@ export default function MermaidClient({
 
           if (mounted && elementRef.current) {
             elementRef.current.innerHTML = svg;
+
+            // Fix SVG viewBox to prevent text clipping
+            const svgElement = elementRef.current.querySelector("svg");
+            if (svgElement) {
+              // Remove viewBox constraint
+              svgElement.removeAttribute("viewBox");
+
+              // Set explicit dimensions to prevent clipping
+              svgElement.style.width = "auto";
+              svgElement.style.height = "auto";
+              svgElement.style.maxWidth = "none";
+
+              // Fix text elements that might be clipped
+              const textElements = svgElement.querySelectorAll(
+                "text, tspan, foreignObject",
+              );
+              textElements.forEach((el: any) => {
+                el.style.overflow = "visible";
+                if (el.style.textOverflow) {
+                  el.style.textOverflow = "clip";
+                }
+              });
+            }
+
             setIsLoaded(true);
           }
         }
@@ -117,8 +142,9 @@ export default function MermaidClient({
         className={`mermaid-diagram overflow-x-auto ${!isLoaded ? "hidden" : ""}`}
         style={{
           width: "100%",
-          minWidth: "700px",
-          padding: "20px",
+          minWidth: "800px",
+          padding: "30px",
+          overflow: "visible",
         }}
       />
     </div>
