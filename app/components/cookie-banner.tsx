@@ -105,7 +105,7 @@ export function CookieConsent({
   if (variant === 'mini') {
     return (
       <div 
-        className={`transition-all duration-700 ease-out max-w-sm ${
+        className={`transition-all duration-700 ease-out max-w-sm transform-gpu ${
           isOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}
         style={{
@@ -116,8 +116,7 @@ export function CookieConsent({
           willChange: 'transform, opacity',
           WebkitBackfaceVisibility: 'hidden',
           backfaceVisibility: 'hidden',
-          WebkitTransform: 'translateZ(0)',
-          transform: 'translateZ(0)'
+          // Avoid setting transform here; Tailwind translate classes need full control
         }}
       >
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg p-4 sm:p-5">
