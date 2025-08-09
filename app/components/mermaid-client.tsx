@@ -14,6 +14,35 @@ export default function MermaidClient({
   const elementRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
+
+  // Effect to detect theme changes
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const darkMode = document.documentElement.classList.contains('dark') || 
+                      window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsDark(darkMode);
+    };
+
+    // Initial check
+    checkDarkMode();
+
+    // Watch for class changes on html element
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    // Watch for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', checkDarkMode);
+
+    return () => {
+      observer.disconnect();
+      mediaQuery.removeEventListener('change', checkDarkMode);
+    };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -25,9 +54,7 @@ export default function MermaidClient({
 
         if (!mounted) return;
 
-        // Detect dark mode
-        const isDark = document.documentElement.classList.contains('dark') || 
-                      window.matchMedia('(prefers-color-scheme: dark)').matches;
+        // Use the isDark state
 
         // Initialize mermaid with theme-aware configuration
         mermaid.initialize({
@@ -184,6 +211,40 @@ export default function MermaidClient({
                 
                 // Ensure no clipping occurs
                 svgElement.style.overflow = "visible";
+                
+                // Force dark mode colors by directly overriding SVG styles
+                if (isDark) {
+                  // Override node fills and text colors
+                  const nodes = svgElement.querySelectorAll('.node rect, .node circle, .node polygon');
+                  nodes.forEach((node: any) => {
+                    const currentFill = node.style.fill || node.getAttribute('fill');
+                    // Check if it's a light color that needs to be darkened
+                    if (currentFill && (currentFill.includes('rgb(') || currentFill.startsWith('#'))) {
+                      if (currentFill.includes('255,255,255') || currentFill === '#ffffff' || currentFill === '#fff') {
+                        node.style.fill = '#374151'; // Replace white
+                      } else if (currentFill.includes('240,') || currentFill.includes('250,') || currentFill.includes('248,')) {
+                        node.style.fill = '#4b5563'; // Replace light colors
+                      } else if (currentFill.includes('220,') || currentFill.includes('230,')) {
+                        node.style.fill = '#6b7280'; // Replace medium light colors  
+                      }
+                    }
+                  });
+                  
+                  // Override text colors
+                  const texts = svgElement.querySelectorAll('text, .nodeLabel, .edgeLabel');
+                  texts.forEach((text: any) => {
+                    text.style.fill = '#f9fafb';
+                  });
+                  
+                  // Override stroke colors
+                  const strokes = svgElement.querySelectorAll('[stroke]');
+                  strokes.forEach((stroke: any) => {
+                    const currentStroke = stroke.style.stroke || stroke.getAttribute('stroke');
+                    if (currentStroke && currentStroke !== 'none') {
+                      stroke.style.stroke = '#6b7280';
+                    }
+                  });
+                }
               }, 100);
             }
 
@@ -205,7 +266,7 @@ export default function MermaidClient({
     return () => {
       mounted = false;
     };
-  }, [chart]);
+  }, [chart, isDark]);
 
   if (error) {
     return (
