@@ -271,6 +271,27 @@ table {
     text-anchor: middle !important;
 }
 
+/* Fix text centering in mermaid boxes */
+.mermaid-diagram .nodeLabel,
+.mermaid-diagram .node text,
+.mermaid-diagram text {
+    text-anchor: middle !important;
+    dominant-baseline: central !important;
+    alignment-baseline: middle !important;
+}
+
+/* Center text within node shapes */
+.mermaid-diagram .label {
+    text-anchor: middle !important;
+}
+
+/* Fix flowchart label positioning */
+.mermaid-diagram .flowchart-label text,
+.mermaid-diagram .flowchartTitleText {
+    text-anchor: middle !important;
+    dominant-baseline: central !important;
+}
+
 /* Force SVG to not constrain content */
 .mermaid-diagram svg[viewBox] {
     viewbox: none !important;

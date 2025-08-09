@@ -84,6 +84,12 @@ export default function MermaidClient({
                 if (el.style.textOverflow) {
                   el.style.textOverflow = "clip";
                 }
+                // Ensure proper text centering
+                if (el.tagName === "text") {
+                  el.setAttribute("text-anchor", "middle");
+                  el.setAttribute("dominant-baseline", "central");
+                  el.setAttribute("alignment-baseline", "middle");
+                }
               });
             }
 
