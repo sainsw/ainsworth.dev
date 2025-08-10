@@ -1,145 +1,131 @@
 ---
-title: 'Vibe Coding: When AI Takes the Wheel'
+title: 'Vibe Coding: Shipping Faster Without Shipping Garbage'
 publishedAt: '2025-08-06'
-summary: 'A deep dive into 100+ AI-generated commits that transformed my personal website through performance optimizations, accessibility improvements, and feature additions.'
+summary: 'How I iteratively polished my personal site using AI help: spot an issue, prompt, push, measure in prod. Biggest win: image optimisation. Hardest part: Mermaid visuals. Guardrails: unit tests and intent-driven prompts.'
 ---
 
-## The Experiment
+# Vibe Coding: Shipping Faster Without Shipping Garbage
 
-What happens when you let an AI assistant loose on your codebase for a few months? After commit `dc16da2`, I embarked on what the industry calls "vibe coding" - a collaborative development approach where AI generates the majority of code changes while you provide direction and feedback.
+This wasn't a sprint or a grand plan. I browsed my site like a visitor, found rough spots (CV out of date, blog light on content, slow pages, Lighthouse a11y warnings, weak SEO), and polished them one by one. Think **detailing a car**: fix a scuff, step back, spot the next one.
 
-The results? Over 100 commits, 94% image size reduction, comprehensive accessibility improvements, and a significantly more polished site. Here's the journey.
+The twist: I used an AI assistant to handle the **gruntwork**, while I kept ownership of **intent and review**.
 
-## 🎯 Performance Revolution
+## What actually moved the needle
 
-### Image Optimization Breakthrough
-The most dramatic improvement came from comprehensive image optimization. A single commit (`403edea`) delivered:
+### 1) Images — the highest ROI
+- Converted PNG/JPEG assets to **WebP**, added `<picture>` fallbacks.
+- Set explicit **width/height** to kill layout shift; `loading="lazy"` and `decoding="async"` where safe.
+- Right-sized oversized art and logos; kept photos less aggressively compressed to protect quality.
+- Result: drastically smaller payloads and snappier LCP — with almost no creative risk.
 
-- **2.5MB → 140KB** (94% reduction in total image payload)
-- ASFC logos: 1.4MB → 30KB (98% reduction)
-- Modern WebP format with PNG fallbacks
-- Smart `<picture>` elements for optimal loading
+```tsx
+// Example shape used across components
+export function BrandLogo() {
+  return (
+    <picture>
+      <source srcSet="/images/logo.webp" type="image/webp" />
+      <img
+        src="/images/logo.png"
+        width="160"
+        height="48"
+        alt="Brand"
+        loading="lazy"
+        decoding="async"
+      />
+    </picture>
+  );
+}
+```
 
-### Critical Performance Fixes
-- Eliminated render-blocking CSS with async loading strategies
-- Fixed forced reflows by replacing `transition-all` with `transition-colors`
-- Implemented strategic prefetching for key navigation links
-- Deferred analytics loading to prevent layout shifts
+### 2) Loading & CSS
+- Removed render-blocking CSS; inlined only critical styles and deferred the rest.
+- Tightened preconnect/preload hints to match real assets.
+- Swapped "transition-all" for targeted transitions to reduce forced reflows.
 
-## 🍪 Privacy & Compliance
+### 3) Content & pipeline hygiene
+- Hardened the MDX/blog pipeline so content renders the same locally and in prod.
+- Kept CV page and CV PDF in lockstep (a small build step prevents drift).
+- Added lightweight checks so broken links/image paths don't slip through.
 
-One of the major additions was a GDPR-compliant cookie consent system:
+### 4) Accessibility & SEO
+- Wrote meaningful alt text and clarified semantics.
+- Cleaned up titles/descriptions/canonicals; avoided duplicated headings.
+- Small changes, but Lighthouse and search previews improved fast.
 
-- Mini cookie banner with Tailwind styling
-- Cloudflare Zaraz consent management integration
-- Gated Vercel Analytics behind user consent
-- Comprehensive privacy policy covering analytics, data retention, and user rights
-- Responsive design with proper dark mode support
+## Hardest problem: Mermaid visuals
 
-## 🎨 Visual Polish & Accessibility
+Front-end visuals were where AI struggled most — especially Mermaid styling, sizing, and theme. What worked:
+- Treat diagrams as responsive components (container-width, not fixed px).
+- Use Mermaid's built-in theming for dark mode instead of ad-hoc CSS.
+- Ensure fonts load predictably so label sizes don't jump between devices.
+- Avoid position: absolute hacks; give diagrams a real layout context.
 
-### Component System Evolution
-- Integrated shadcn/ui Button components for consistent styling
-- Implemented proper hover states that work across all devices
-- Fixed cookie banner animations with smooth slide-in effects
-- Unified pill button styles throughout the interface
+```tsx
+// components/Mermaid.tsx
+'use client';
+import { useEffect } from 'react';
+import mermaid from 'mermaid';
 
-### Accessibility Improvements
-- Made cookie banner links descriptive ("Privacy policy" instead of "Learn more")
-- Added proper focus rings for keyboard navigation
-- Fixed image alt text across the site
-- Obfuscated email addresses to reduce scraping while maintaining accessibility
+export default function Mermaid({ chart }: { chart: string }) {
+  useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      securityLevel: 'loose',
+      fontFamily: 'ui-sans-serif, system-ui',
+    });
+  }, []);
+  return <div className="mermaid max-w-full overflow-auto">{chart}</div>;
+}
+```
 
-## 📊 Content & Data Management
+## My real loop (because it's a personal site)
 
-### Blog Infrastructure Fixes
-- Switched from next-mdx-remote to @next/mdx for better performance
-- Fixed MDX content rendering with proper React Markdown integration
-- Added rehype-raw plugin for proper HTML anchor processing
-- Restored async view counts on blog listing pages
+I ran an extreme programming cycle that I would not use in enterprise apps: prompt → push to main → test in prod. It kept momentum high and the feedback real (because prod is the only truth that matters for a personal site).
 
-### CV & Resume Pipeline
-Perhaps the most ambitious feature was implementing a single source of truth for CV content:
+```mermaid
+flowchart TD
+  A[Spot issue on site] --> B[Write intent + constraints as a prompt]
+  B --> C[AI proposes a patch]
+  C --> D[Push to main]
+  D --> E[Prod deploy]
+  E --> F[Measure: Lighthouse/UX check]
+  F --> G{Good?}
+  G -- No --> H[Revise prompt with concrete diffs/errors]
+  H --> C
+  G -- Yes --> I[Keep moving]
+```
 
-- Converted resume data from TypeScript to JSON format
-- Built LaTeX generation pipeline with content-based versioning
-- Implemented intelligent PDF prefetching with cache busting
-- Added automated GitHub avatar sync system (*[detailed in separate post](/blog/github-image-sync)*)
+If I were doing this at work, I'd use a safer loop (local run, tests, preview deployments) — but for a personal site, this speed was fun and productive.
 
-## 🌈 Delightful Features
+## Guardrails that actually helped
+- Unit tests as "intent beacons". I add or update tests around the area I'm changing, so the AI has a target and I have a safety net.
+- Do-not-touch zones. Config/secrets/infra are off-limits unless I explicitly say otherwise.
+- Small diffs with measurable outcomes. If I can't write a one-line "why" in the commit, it's probably too big.
 
-### Avatar System
-Built a comprehensive automated avatar pipeline with seasonal enhancements - *[full technical breakdown here](/blog/github-image-sync#-seasonal-enhancements)*:
+```tsx
+// Example: make CLS improvements explicit
+import { render } from '@testing-library/react';
+import Home from '@/app/page';
 
-- Automatic GitHub avatar syncing on every build
-- WebP optimization with 60% size reduction
-- Content-based versioning for efficient caching  
-- Seasonal Pride Month rainbow borders 🏳️‍🌈
+it('renders hero image with fixed dimensions to avoid layout shift', () => {
+  const { getByAltText } = render(<Home />);
+  const img = getByAltText(/hero/i) as HTMLImageElement;
+  expect(img.width).toBeGreaterThan(0);
+  expect(img.height).toBeGreaterThan(0);
+  expect(img.getAttribute('loading')).toBe('lazy');
+});
+```
 
-### Work Experience Showcase
-- Redesigned skills section with proper tag cloud layout
-- Enhanced work page with containerized sections
-- Added SVG sprite system to eliminate 20+ HTTP requests
-- Consistent badge styling with colour variations
+## One big "aha"
 
-## 📱 Modern Development Practices
+If you're stuck in a prompt loop, it's almost always one of two things:
+1. **Context**. You haven't given enough specific code, constraints, or failure output.
+2. **Model**. You gave everything you can; it's time to switch tools (e.g., try a different model).
 
-### Testing & Quality Assurance
-- Added comprehensive frontend testing framework
-- Fixed TypeScript compilation issues
-- Integrated build-time testing pipeline
-- Added debug logging for Vercel deployment troubleshooting
+Swapping the model broke several deadlocks for me. When context is maxed out, try a different brain.
 
-### Dark Mode & Responsive Design
-- Restored system preference detection for dark mode
-- Ensured consistent styling across light/dark themes
-- Fixed viewport positioning for mobile elements
-- Improved touch targets and spacing
-
-## 🔧 Technical Deep Dives
-
-### Cookie Banner Evolution
-The cookie banner went through multiple iterations, showcasing the iterative nature of AI-assisted development from basic GDPR compliance to polished animations with proper accessibility.
-
-### SVG Sprite Optimization
-Implemented a comprehensive sprite system that converted 20+ individual logo requests into a single optimised SVG with proper fallbacks and cache busting.
-
-## 📈 The Numbers
-
-Looking at the commit history, the AI-generated improvements delivered:
-
-- **140+ files changed** across the entire codebase
-- **94% reduction** in image payload size
-- **20+ HTTP requests eliminated** through sprite optimization
-- **100+ commits** of consistent, documented changes
-- **Iterative fixes** for issues like blog post rendering errors and build failures
-
-## 🤔 Reflections on AI-Assisted Development
-
-### What Worked Well
-- **Consistent code quality**: Every commit followed established patterns
-- **Comprehensive documentation**: Each change included detailed commit messages
-- **Iterative refinement**: Problems were identified and fixed systematically
-- **Best practices**: Modern web standards were applied throughout
-
-### The Human Touch
-While AI generated the code, human oversight was crucial for:
-- Setting priorities and direction
-- Understanding business requirements
-- Making strategic architectural decisions
-- Testing and validation
-
-### Co-Authoring the Future
-Every commit includes `Co-Authored-By: Claude <noreply@anthropic.com>` - a testament to this collaborative approach. It's not about replacing human developers, but augmenting capabilities and accelerating development cycles.
-
-## 🚀 Looking Forward
-
-This experiment in "vibe coding" has fundamentally changed how I approach personal projects. The combination of human creativity and AI execution creates a powerful development workflow that's both efficient and enjoyable.
-
-The site you're reading this on is a living testament to what's possible when you embrace AI as a development partner. Every pixel, every line of code, every optimization - all generated through conversation and collaboration.
-
-*Want to see the full commit history? Check out the [repository](https://github.com/sainsw/ainsworth.dev) and explore the journey from `dc16da2` to the present.*
-
----
-
-*This post was written by a human but the entire codebase transformation it describes was generated by AI. The future of development is collaborative, and it's pretty exciting.*
+## Related posts
+- [Automating My GitHub Avatar Sync](/blog/github-image-sync) — small automation, big ROI.
+- [Seasonal Avatar Borders](/blog/seasonal-avatar-borders) — runtime flair via simple date logic.
+- [AI Coding Tools: My Journey From Frustration to Flow](/blog/ai-coding-tools) — what I hand to automation and why.
