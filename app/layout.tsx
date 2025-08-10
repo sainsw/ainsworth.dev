@@ -81,6 +81,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://va.vercel-scripts.com" crossOrigin="" />
         <link rel="preconnect" href="https://static.cloudflareinsights.com" crossOrigin="" />
         <link rel="preconnect" href="https://api.resend.com" crossOrigin="" />
+        <meta property="og:logo" content="https://ainsworth.dev/favicon.ico" />
         <SandpackCSS />
         <script dangerouslySetInnerHTML={{
           __html: `
