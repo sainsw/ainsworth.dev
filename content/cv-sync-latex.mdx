@@ -15,13 +15,13 @@ Vercel never touches LaTeX; it just gets a version number and a ready-made PDF.
 
 ```mermaid
 flowchart TD
-  A[resume.json] --> B[generate-latex.js → cv-source/main.tex]
-  B --> C[pdflatex (local) → public/files/cv-<hash>.pdf]
-  C --> D[git add/commit old + new PDFs]
-  D --> E[push]
-  E --> F[Vercel build → generate-version.js]
-  F --> G[lib/version.js: export const CV_VERSION='<hash>']
-  G --> H[Front end links /files/cv-${CV_VERSION}.pdf]
+  A["resume.json"] --> B["generate-latex.js → cv-source/main.tex"]
+  B --> C["pdflatex (local) → public/files/cv-<hash>.pdf"]
+  C --> D["git add/commit old + new PDFs"]
+  D --> E["push"]
+  E --> F["Vercel build → generate-version.js"]
+  F --> G["lib/version.js: export const CV_VERSION='<hash>'"]
+  G --> H["Front end links /files/cv-${CV_VERSION}.pdf"]
 ```
 
 - **Hashed artifacts kept**: old PDFs remain in /public/files (cv-<hash>.pdf history).
