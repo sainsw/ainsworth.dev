@@ -12,14 +12,14 @@ I wanted my site to feel alive without adding another manual chore. This compone
 
 ```mermaid
 flowchart TD
-  A[Page load (client)] --> B[compute isPrideTime()]
-  B -->|month === June| C[Enable ring]
-  B -->|month === August| D[Find last Monday of August]
-  D --> E[Define Pride week: lastMonday-7 .. lastMonday]
+  A["Page load (client)"] --> B["compute isPrideTime()"]
+  B -->|month === June| C["Enable ring"]
+  B -->|month === August| D["Find last Monday of August"]
+  D --> E["Define Pride week: lastMonday-7 .. lastMonday"]
   E -->|date in range| C
-  B -->|otherwise| F[Disable ring]
-  C --> G[Render avatar with layered box‑shadow]
-  F --> H[Render avatar with default ring]
+  B -->|otherwise| F["Disable ring"]
+  C --> G["Render avatar with layered box‑shadow"]
+  F --> H["Render avatar with default ring"]
 ```
 
 ## Core Logic (TypeScript, client-side)
