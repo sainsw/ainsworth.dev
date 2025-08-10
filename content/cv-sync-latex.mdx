@@ -24,35 +24,35 @@ flowchart LR
   classDef decision fill:#fff,stroke:#999,color:#111,stroke-dasharray:4 2;
 
   %% Change type
-  D{What changed?}:::decision
+  D{"What changed?"}:::decision
 
   %% Minor change path (JSON-driven)
-  A[Edit resume.json]:::file --> G[generate-latex.js → cv-source/main.tex]:::local
+  A["Edit resume.json"]:::file --> G["generate-latex.js → cv-source/main.tex"]:::local
   D -- Minor content/layout --> A
 
   %% Theme overhaul path (Overleaf-driven)
-  O[Draft in Overleaf<br/>new/updated template]:::local --> O2[Export main.tex back to repo]:::local --> G
+  O["Draft in Overleaf<br/>new/updated template"]:::local --> O2["Export main.tex back to repo"]:::local --> G
   D -- Theme overhaul --> O
 
   %% Build PDF locally
-  G --> P[pdflatex (local) → public/files/cv-&lt;hash&gt;.pdf]:::local
-  P --> K[Keep older PDFs in /public/files]:::local
-  P --> C[git add/commit]:::local
-  C --> U[push]:::local
+  G --> P["pdflatex (local) → public/files/cv-<hash>.pdf"]:::local
+  P --> K["Keep older PDFs in /public/files"]:::local
+  P --> C["git add/commit"]:::local
+  C --> U["push"]:::local
 
   %% Vercel side
   subgraph "Vercel build (no LaTeX)"
     direction LR
-    V1[Install deps]:::vercel --> V2[Skip LaTeX build]:::vercel
-    V2 --> V3[generate-version.js<br/>CV_VERSION = hash(main.tex + cls)]:::vercel
-    V3 --> V4[Next build: /cv links → /files/cv-${CV_VERSION}.pdf]:::vercel
+    V1["Install deps"]:::vercel --> V2["Skip LaTeX build"]:::vercel
+    V2 --> V3["generate-version.js<br/>CV_VERSION = hash(main.tex + cls)"]:::vercel
+    V3 --> V4["Next build: /cv links → /files/cv-${CV_VERSION}.pdf"]:::vercel
   end
 
   U --> V1
 
   %% Outcomes
-  V4 --> S[Users download the latest PDF (cache-busted by filename)]:::vercel
-  ```
+  V4 --> S["Users download the latest PDF (cache-busted by filename)"]:::vercel
+```
 
 - **Hashed artifacts kept**: old PDFs remain in /public/files (cv-<hash>.pdf history).
 - **Linking**: the site imports CV_VERSION and links directly to /files/cv-${CV_VERSION}.pdf (no query param).
