@@ -7,10 +7,11 @@ export const runtime = 'nodejs';
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
+  const { slug } = await params;
   const all = getBlogPosts();
-  const post = all.find((p) => p.slug === params.slug);
+  const post = all.find((p) => p.slug === slug);
 
   if (!post) {
     return new Response('Not found', { status: 404 });
@@ -57,4 +58,3 @@ export async function GET(
     { width: 1200, height: 630 }
   );
 }
-
