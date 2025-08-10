@@ -9,16 +9,37 @@ The slow part wasn’t updating my GitHub avatar — that’s quick thanks to Gi
 ## Architecture at a Glance
 
 ```mermaid
-flowchart TD
-  A[Push to main] --> B[Vercel Build]
-  B --> C["Node script: fetch GitHub avatar (HTTPS)"]
-  C --> D["Node script: optimise with Sharp (resize to WebP)"]
-  D --> E[Compute content hash]
-  E --> F["Keep filename - leverage Cloudflare/Vercel/browser cache"]
-  E --> G["Write new hashed filename - instant cache-bust"]
-  F --> H[Publish]
-  G --> H[Publish]
-  H --> I[Site serves latest avatar]
+graph TD
+    A[GitHub API] --> B[Download Avatar]
+    B --> C{Sharp Available?}
+    C -->|Yes| D[Sharp Processing]
+    C -->|No| E[Copy Original]
+    D --> F[Generate WebP]
+    D --> G[Generate JPG]
+    E --> G
+    F --> H[Content Hash]
+    G --> H
+    H --> I["Versioned Files
+    avatar-{hash}.webp
+    avatar-{hash}.jpg"]
+    I --> J["Update Version File
+    lib/version.js"]
+    J --> K[Next.js Build]
+    K --> L[Preload Resources]
+    K --> M[Picture Elements]
+    
+    N[Build Failure] --> O[Use Existing Files]
+    O --> P[Generate Fallback Hash]
+    P --> J
+    
+    B -.->|Network Error| N
+    D -.->|Sharp Error| N
+    
+    style A fill:#e1f5fe
+    style I fill:#e8f5e8
+    style J fill:#fff3e0
+    style L fill:#f3e5f5
+    style M fill:#f3e5f5
 ```
 
 ## How It Works
