@@ -21,15 +21,16 @@ That's it. Here's the minimal code.
 ### 1) Post index (whatever you already have)
 
 ```ts
-// lib/posts.ts
-export type PostMeta = {
-  slug: string; title: string; summary: string; publishedAt: string;
+// app/db/blog.ts
+export type Metadata = {
+  title: string;
+  publishedAt: string;
+  summary: string;
+  image?: string;
 };
-export const posts: PostMeta[] = [
-  // Build this from your MDX frontmatter
-];
-export function getPost(slug: string) {
-  return posts.find(p => p.slug === slug) ?? null;
+
+export function getBlogPosts() {
+  return getMDXData(path.join(process.cwd(), 'content'));
 }
 ```
 
@@ -38,31 +39,45 @@ export function getPost(slug: string) {
 ```tsx
 // app/api/og/[slug]/route.ts
 import { ImageResponse } from "next/server";
-import { getPost } from "@/lib/posts";
+import { getBlogPosts } from "@/app/db/blog";
 
 // Edge runtime = fast cold starts for tiny images
 export const runtime = "edge";
 
 export async function GET(_: Request, { params }: { params: { slug: string } }) {
-  const post = getPost(params.slug);
+  const posts = getBlogPosts();
+  const post = posts.find(p => p.slug === params.slug);
+  
   if (!post) return new Response("Not found", { status: 404 });
+
+  const { metadata } = post;
 
   return new ImageResponse(
     (
       <div
         style={{
-          width: 1200, height: 630, display: "flex", flexDirection: "column",
-          background: "#0b1220", color: "#e5e7eb", padding: 64, gap: 28
+          width: 1200,
+          height: 630,
+          display: "flex",
+          flexDirection: "column",
+          background: "#0b1220",
+          color: "#e5e7eb",
+          padding: 64,
+          gap: 28
         }}
       >
         <div style={{ fontSize: 56, lineHeight: 1.05, letterSpacing: -0.5 }}>
-          {post.title}
+          {metadata.title}
         </div>
         <div style={{ fontSize: 28, opacity: 0.9, maxWidth: 960 }}>
-          {post.summary}
+          {metadata.summary}
         </div>
         <div style={{ marginTop: "auto", fontSize: 24, opacity: 0.8 }}>
-          {new Date(post.publishedAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+          {new Date(metadata.publishedAt).toLocaleDateString("en-GB", { 
+            day: "2-digit", 
+            month: "short", 
+            year: "numeric" 
+          })}
         </div>
       </div>
     ),
@@ -76,24 +91,46 @@ export async function GET(_: Request, { params }: { params: { slug: string } }) 
 ### 3) Wire it into `<head>`
 
 ```tsx
-// app/blog/[slug]/head.tsx (or inside Metadata in Next 13+)
-import { getPost } from "@/lib/posts";
+// app/blog/[slug]/page.tsx (using Next.js 13+ Metadata API)
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata | undefined> {
+  const { slug } = await params;
+  let post = getBlogPosts().find((post) => post.slug === slug);
+  if (!post) {
+    return;
+  }
 
-export default function Head({ params }: { params: { slug: string } }) {
-  const p = getPost(params.slug)!;
-  const site = process.env.NEXT_PUBLIC_SITE_URL!;
-  const og = `${site}/api/og/${p.slug}`;
+  let {
+    title,
+    publishedAt: publishedTime,
+    summary: description,
+    image,
+  } = post.metadata;
+  let ogImage = image
+    ? `https://ainsworth.dev${image}`
+    : `https://ainsworth.dev/api/og/${post.slug}`;
 
-  return (
-    <>
-      <title>{p.title}</title>
-      <meta name="description" content={p.summary} />
-      <meta property="og:title" content={p.title} />
-      <meta property="og:description" content={p.summary} />
-      <meta property="og:image" content={og} />
-      <meta name="twitter:card" content="summary_large_image" />
-    </>
-  );
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      publishedTime,
+      url: `https://ainsworth.dev/blog/${post.slug}`,
+      images: [{ url: ogImage }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
 }
 ```
 
@@ -114,6 +151,4 @@ export default function Head({ params }: { params: { slug: string } }) {
 - **Share a post** to Slack/Twitter — you should see a clean preview.
 - **If you like it**, add a brand font and logo dot next.
 
-One-liner if you care later: pre-generate PNGs at build or set a long cache header — but you don't need either to get great previews today.
-
-If you want, I can tailor the styling (font, colors, tiny logo) to match your site brand—just tell me your preferred font and whether you want a small mark in the corner.
+In an enterprise production environment I would pre-generate PNGs at build or set a long cache header — but you don't need either to get great previews today.
