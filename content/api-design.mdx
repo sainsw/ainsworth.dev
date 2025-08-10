@@ -1,172 +1,303 @@
 ---
-title: 'API Specification Design Guide with Stoplight.io and Postman'
+title: 'API Specification Design Guide with OpenAPI, Stoplight & Postman'
 publishedAt: '2024-02-24'
-summary: 'This is my first real blog post.'
+summary: 'A practical, opinionated playbook for design-first APIs: OpenAPI 3.1, error envelopes, pagination, idempotency, async jobs, versioning, security, and testable contracts with Stoplight and Postman.'
 ---
 
-## Introduction
+# API Specification Design Guide with OpenAPI, Stoplight & Postman
 
-Welcome to the API Specification Design Guide for developers. This document aims to provide you with a comprehensive guide on designing API specifications using popular design tools like Stoplight.io and Postman. Whether you are a seasoned developer or just getting started with API development, this guide will walk you through the process of creating a well-structured API specification.
+This isn't a "click here to sign up" tutorial. It's the **practical API design playbook** I wish every team started with: design-first using **OpenAPI 3.1**, model the hard edges early (errors, pagination, idempotency), and use **Stoplight** to author/spec-review and **Postman** to test/enforce the contract.
 
-## 1. Getting Access to Stoplight.io and Postman<a name="getting-access"></a>
+## Why design-first?
 
-### Stoplight.io
-Stoplight.io offers a user-friendly API design and documentation platform. To get started:
+- **Cheaper changes**: it's easier to fix a schema than to unpick a shipped endpoint.
+- **Parallel work**: product, back-end, and front-end can move together using mocks.
+- **Living contract**: the spec is the source of truth for code, docs, and tests.
 
-1. Visit [Stoplight.io](https://stoplight.io/) and sign up for an account.
-2. Once registered, log in to your account.
-3. Explore the available features and create a new project to begin designing your API.
+**Tooling roles**
+- **Stoplight (or your preferred OpenAPI editor)**: author the spec, validate, mock, and publish docs.
+- **Postman**: import the spec as a collection, write test assertions, run in CI to keep the implementation honest.
 
-### Postman
-Postman is a powerful API development and testing tool. Follow these steps:
+## OpenAPI foundation (3.1)
 
-1. Visit [Postman](https://www.postman.com/) and sign up for an account.
-2. After signing up, log in to your Postman account.
-3. Download and install the Postman app on your machine.
-
-## 2. Stoplight.io Tutorial<a name="stoplight-tutorial"></a>
-
-### 2.1 Creating a New Project<a name="creating-project"></a>
-
-In Stoplight.io:
-
-1. Click on the purple plus button or "Create New" within the Projects tab to start a new project.
-2. Choose the appropriate template (e.g., OpenAPI, GraphQL). We will mainly be using OpenAPI specs.
-3. Name your project.
-
-### 2.2 Designing Endpoints<a name="designing-endpoints"></a>
-
-1. Navigate to the "Design" tab.
-2. Add new paths and define operations for each endpoint.
-3. Use the intuitive visual editor to specify request and response details.
-
-### 2.3 Collaboration and Version Control<a name="collaboration"></a>
-
-1. Invite team members to collaborate on your project. This may be a paid feature, we do not currently have a license for Stoplight.io.
-2. Utilize version control features to track changes and manage different versions of your API.
-
-### 2.4 Sharing the specification to non-collaborators <a name="sharing"></a>
-
-1. Use the 'Publish' function within the project to save your changes and push them to the sharable URL.
-2. Copy the published URL and add to the ticket for PR.
-
-## 3. Understanding YAML OpenAPI Specification<a name="yaml-openapi"></a>
-
-Stoplight gives you access to edit the YML/JSON definition for your API specification directly for more fine control. This is done using the 'Code' button on the top right of the design interface for each endpoint.
-
-The following is a basic overview of how this specification is laid out.
-
-**_Hot tip #1_**
-You can visit any of our existing SwaggerDoc pages for our APIs and download the 'swagger.json' file using the link at the top - this is an API specification you could use as a starting point within Stoplight or Postman. 
-
-A quick way of switching from JSON to YML if you prefer it is by importing it to Stoplight under a new project, then in the Files tab on the left locate the JSON file, right click and export as YML format.
-
-**_Hot tip #2_**
-If you find you are more comfortable using the specification definition directly to design your API then there are tools available in VS Code to publish these files to web-based documentation directly. These tools don't provide a GUI for design at all, you just have the JSON/YML spec.
-
-This extension requires a free Redocly account, and API Key - instructions are provided on first usage in VSCode:
-[Redocly OpenAPI Editor VSCode Extension](https://marketplace.visualstudio.com/items?itemName=Redocly.openapi-vs-code)
-
-This extension runs without the need for an account or API key, but it isn't as stable:
-[42Crunch OpenAPI Editor VSCode Extension](https://marketplace.visualstudio.com/items?itemName=42Crunch.vscode-openapi)
-
-### 3.1 Basic Structure<a name="basic-structure"></a>
+Start with **OpenAPI 3.1** (JSON Schema compliant). Keep the structure predictable:
 
 ```yaml
-openapi: 3.0.0
+openapi: 3.1.0
 info:
-  title: Your API Title
+  title: Example API
   version: 1.0.0
-```
-### 3.2 Defining Paths and Operations<a name="defining-paths"></a>
-```yaml
-paths:
-  /users:
-    get:
-      summary: Get a list of users
-      responses:
-        '200':
-          description: Successful response
-```
+servers:
+  - url: https://api.example.com
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.example.com/oauth/token
+          scopes:
+            read: Read access
+            write: Write access
+  parameters:
+    CorrelationId:
+      in: header
+      name: X-Correlation-ID
+      schema: { type: string, format: uuid }
+      required: false
+  responses:
+    Error:
+      description: Error envelope
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string, example: 'validation_error' }
+            message: { type: string }
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field: { type: string }
+                  issue: { type: string }
 
-### 3.3 Adding Parameters and Request/Response Examples<a name="parameters-examples"></a>
-```yaml
 paths:
-  /users/{id}:
+  /v1/things:
     get:
-      summary: Get user by ID
+      summary: List things (cursor pagination)
       parameters:
-        - name: id
-          in: path
-          required: true
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: cursor
+          in: query
+          schema: { type: string, nullable: true }
+        - $ref: '#/components/parameters/CorrelationId'
       responses:
         '200':
-          description: Successful response
+          description: A page of things
           content:
             application/json:
-              example:
-                id: 123
-                name: John Doe
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Thing'
+                  next_cursor:
+                    type: string
+                    nullable: true
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+    post:
+      summary: Create a thing (idempotent)
+      security: [{ OAuth2: [write] }]
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string, description: 'Client-generated unique key per create attempt' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ThingCreate' }
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema: { type: string, format: uri }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '400': { $ref: '#/components/responses/Error' }
 ```
-### 3.4 Reusable Components and References<a name="components-references"></a>
+
+### Key ideas baked in
+- **Error envelope**: one, consistent shape for all errors (code, message, optional details[]).
+- **Correlation ID**: echo X-Correlation-ID in logs; include it in error responses.
+- **Cursor pagination**: stable iteration, better than page=N for large datasets.
+- **Idempotency**: Idempotency-Key header on creates to make retries safe.
+- **Version in the path**: /v1/... (simple and explicit).
+
+---
+
+## Error taxonomy (make failures boring)
+
+Keep errors predictable for clients:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "name is required",
+    "details": [{ "field": "name", "issue": "required" }]
+  }
+}
+```
+
+### Suggested codes
+- **validation_error** (400)
+- **authentication_failed** (401)
+- **authorization_failed** (403)
+- **resource_not_found** (404)
+- **conflict** (409)
+- **rate_limited** (429)
+- **internal_error** (500)
+
+Return 409 for genuine conflicts (e.g., duplicate unique key), not for validation failures (422).
+
+---
+
+## Pagination that won't bite you later
+
+Prefer cursor pagination:
+- **Request**: GET /v1/things?limit=50&cursor={token}
+- **Response**: include next_cursor (or null).
+
+Cursors should be opaque (base64 data you can change server-side later). If you must support sorting/filters, treat them as part of the cursor calculation so pagination remains stable.
+
+---
+
+## Idempotency (safe retries)
+
+Clients will retry. Make POST safe with an Idempotency-Key:
+- Store (key, request hash) → response mapping for a window (e.g., 24h).
+- If the same key arrives with the same request, replay the original response (201/200).
+- If the same key arrives with a different request body, return 409 conflict.
+
+This enables aggressive client-side retry without fear.
+
+---
+
+## Long-running work (async jobs)
+
+For heavy operations, respond 202 Accepted and let the client poll a job resource (or use webhooks).
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant API
+  Client->>API: POST /v1/reports
+  API-->>Client: 202 Accepted + Operation-Location: /v1/operations/{id}
+  Client->>API: GET /v1/operations/{id}
+  API-->>Client: 200 { status: 'running' | 'succeeded' | 'failed' }
+  Client->>API: GET /v1/operations/{id}
+  API-->>Client: 303 See Other (Location: /v1/reports/{reportId}) OR 200 { status:'failed', error:{...} }
+```
+
+- **Use Operation-Location (or Location) to point at a status resource.**
+- **When done, 303 See Other to the final resource, or return a terminal failure with the error envelope.**
+
+If your consumers can accept callbacks, consider webhooks:
+
+```mermaid
+flowchart TD
+  A[Client registers webhook] --> B[POST /v1/webhooks {url, secret}]
+  B --> C[POST /v1/reports]
+  C --> D[API completes job]
+  D --> E[API POSTs event to webhook URL (HMAC signed)]
+  E --> F[Client acknowledges 2xx]
+```
+
+Document retries, signing (HMAC), event schema, and backoff.
+
+---
+
+## Filtering, sorting, and sparse fields
+- **Filters**: explicit query params (?status=active&created_after=2025-01-01).
+- **Sorting**: ?sort=created_at or ?sort=-created_at (descending with -).
+- **Sparse fields**: ?fields=thing:id,name,status to keep payloads small.
+
+Write these into the spec so code and docs stay aligned.
+
+---
+
+## Versioning & deprecation
+- **Major versions via the path**: /v1, /v2.
+- **Within a major version, changes must be backwards compatible.**
+- **Deprecate with Deprecation and Sunset headers and a Link: <url>; rel="deprecation" to the migration guide. Set clear dates.**
+
+---
+
+## Security: OAuth 2.0 (client credentials) + scopes
+
+Model scopes in the spec and put them on operations:
+
 ```yaml
-components:
-  schemas:
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
+security:
+  - OAuth2: [read]
 ```
 
-## 4. Postman for API Design<a name="postman-api-design"></a>
+Return 403 with a clear authorization_failed code if the token lacks scope.
 
-### 4.1 Creating Collections<a name="creating-collections"></a>
+Also model rate limits:
+- **Response headers**: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After.
+- **Exhausted? Return 429 with rate_limited.**
 
-1. Open Postman and click "New" to create a collection.
-2. Define the collection's name and description.
-3. Add requests to the collection, specifying method, URL, headers, and body.
+---
 
-### 4.2 Designing Requests<a name="designing-requests"></a>
+## Stoplight + Postman workflow (enforce the contract)
 
-1. Configure request details such as method, URL, headers, and parameters.
-2. Utilize the visual editor to structure request body content.
+### In Stoplight
+1. Author endpoints and schemas.
+2. Validate with built-in rules (lint for naming, descriptions, examples).
+3. Publish preview docs for review.
+4. Use mock server to unblock front-end.
 
-### 4.3 Collaboration with Postman<a name="postman-collaboration"></a>
+### In Postman
+1. Import the OpenAPI spec → collection.
+2. Add tests (assert status codes, schema matches, error shapes, headers like X-Correlation-ID).
+3. Run in CI on every PR: if tests fail, the implementation doesn't match the spec.
 
-1. Share your Postman collection with team members for collaborative development and testing.
-2. Use Postman workspaces to organize and manage your API projects.
+Example Postman test (JSON schema + headers):
 
-### 4.4 Publishing your Design<a name="postman-sharing"></a>
-1. In the workspace side bar on the left side locate your new collection.
-2. Use the context menu (three dots button) to 'View Documentation'
-3. Review the generated documentation and ensure you don't need to make any tweaks.
-4. When you are happy click the Publish button in the top right - this will open your browser.
-5. Complete the form and click publish.
-6. Copy the shown 'URL for published documentation' and post into the ticket for peer review.
+```javascript
+pm.test("has correlation id", () => {
+  pm.expect(pm.response.headers.has("X-Correlation-ID")).to.be.true;
+});
+pm.test("error envelope shape", () => {
+  if (pm.response.code >= 400) {
+    const body = pm.response.json();
+    pm.expect(body).to.have.property("error");
+    pm.expect(body.error).to.have.keys(["code","message"]);
+  }
+});
+```
 
-### 4.4 Testing and Mocking - Additional Functionality<a name="testing-mocking"></a>
+---
 
-1. Write test scripts to validate API responses.
-2. Use Postman's mocking feature to simulate API responses for testing purposes.
+## Naming & consistency (the boring bits that matter)
+- **Nouns for resources, verbs for actions** (/v1/users, not /v1/getUsers).
+- **Plural collections, singular items** (/v1/things vs /v1/things/{id}).
+- **snake_case in JSON, kebab-case in URLs, and PascalCase only in code** – pick a style and stick to it.
+- **Keep timestamps UTC in RFC 3339.**
 
-## 5. Best Practices<a name="best-practices"></a>
+---
 
-### 5.1 Consistency and Naming<a name="consistency-naming"></a>
+## Ship it: a small checklist
+- Every path has summary, description, examples.
+- Error envelope is consistent across all 4xx/5xx.
+- Pagination is cursor-based for large lists.
+- Idempotency on POST creates.
+- Long-running operations are 202 + status resource (or webhooks).
+- OAuth scopes and rate limits modeled.
+- Postman tests run in CI against the spec.
+- Deprecation and versioning policy documented.
 
-- Maintain consistent naming conventions for paths, parameters, and schemas.
-- Use clear and descriptive names for endpoints and operations.
+---
 
-### 5.2 Documentation<a name="documentation"></a>
-
-- Document each endpoint, parameter, and response to provide clear guidance for users. This could be the form of detailed descriptions added to your yaml spec.
-- Utilize tools like Stoplight.io or Postman for automated documentation generation.
-
-### 5.3 Security Considerations<a name="security-considerations"></a>
-
-- Implement appropriate security measures, such as API keys or OAuth, as per your application requirements. We should always include these on our APIs, so details about the OAuth 2.0 setup and token URL should be in the specification.
-- Clearly document security considerations in your API documentation.
-
-By following this guide, you'll be well-equipped to design robust API specifications using popular tools like Stoplight.io and Postman. Remember to adhere to best practices and continuously iterate on your designs based on feedback and evolving requirements. Happy designing!
+Good APIs make success easy and failure predictable. Start with a spec you can test, model the "unhappy paths" early, and let Stoplight + Postman keep your implementation honest.
