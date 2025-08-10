@@ -12,14 +12,22 @@ I wanted my site to feel alive without adding another manual chore. This compone
 
 ```mermaid
 flowchart TD
-  A["Page load (client)"] --> B["compute isPrideTime()"]
-  B -->|month === June| C["Enable ring"]
-  B -->|month === August| D["Find last Monday of August"]
-  D --> E["Define Pride week: lastMonday-7 .. lastMonday"]
-  E -->|date in range| C
-  B -->|otherwise| F["Disable ring"]
-  C --> G["Render avatar with layered box‑shadow"]
-  F --> H["Render avatar with default ring"]
+    A[Page Load] --> B[Check Current Date]
+    B --> C{Month == 6?}
+    C -->|Yes| D["Pride Month!
+    🏳️‍🌈 Rainbow Border"]
+    C -->|No| E{Month == 8?}
+    E -->|No| F[Normal Border]
+    E -->|Yes| G[Calculate Bank Holiday]
+    G --> H[Find Last Monday of August]
+    H --> I[Pride Week = 7 Days Before]
+    I --> J{"Current Date in
+    Pride Week?"}
+    J -->|Yes| D
+    J -->|No| F
+    
+    style D fill:#ff69b4
+    style F fill:#e1f5fe
 ```
 
 ## Core Logic (TypeScript, client-side)
@@ -108,6 +116,10 @@ export default function ProfilePic() {
   );
 }
 ```
+
+## Demo
+
+[AVATAR_DEMO]
 
 ## Related posts
 
