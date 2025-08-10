@@ -127,7 +127,7 @@ export default function MermaidClient({
           fontFamily: "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace",
           maxTextSize: 90000,
           flowchart: {
-            useMaxWidth: true,
+            useMaxWidth: false,
             // Use SVG labels; they render reliably and keep edge labels intact
             htmlLabels: false,
             curve: "basis",
@@ -196,10 +196,34 @@ export default function MermaidClient({
             // Fix SVG viewBox to prevent text clipping
             const svgElement = elementRef.current.querySelector("svg");
             if (svgElement) {
-              // Responsive sizing via viewBox, avoid CSS transforms (Safari text offset)
-              svgElement.setAttribute("preserveAspectRatio", "xMidYMin meet");
-              svgElement.style.width = "100%";
-              svgElement.style.height = "auto";
+              // Safari-specific sizing improvements for full container width usage
+              const ua = navigator.userAgent.toLowerCase();
+              const isSafari = ua.includes("safari") &&
+                !ua.includes("chrome") &&
+                !ua.includes("crios") &&
+                !ua.includes("android") &&
+                !ua.includes("edg") &&
+                !ua.includes("opr");
+
+              // Get the current viewBox to maintain aspect ratio
+              const viewBox = svgElement.getAttribute("viewBox");
+              if (viewBox && isSafari) {
+                const [, , width, height] = viewBox.split(" ").map(Number);
+                const aspectRatio = height / width;
+                
+                // Force Safari to use the full container width
+                svgElement.style.width = "100%";
+                svgElement.style.height = `${aspectRatio * 100}vw`;
+                svgElement.style.maxHeight = `${height}px`;
+                svgElement.style.minWidth = "100%";
+                svgElement.setAttribute("preserveAspectRatio", "xMidYMid meet");
+              } else {
+                // Standard responsive sizing for other browsers
+                svgElement.setAttribute("preserveAspectRatio", "xMidYMin meet");
+                svgElement.style.width = "100%";
+                svgElement.style.height = "auto";
+              }
+              
               svgElement.style.maxWidth = "100%";
               svgElement.style.marginLeft = "auto";
               svgElement.style.marginRight = "auto";
@@ -221,13 +245,6 @@ export default function MermaidClient({
               svgElement.style.overflow = "visible";
 
               // Safari-specific label centre correction without CSS scaling
-              const ua = navigator.userAgent.toLowerCase();
-              const isSafari = ua.includes("safari") &&
-                !ua.includes("chrome") &&
-                !ua.includes("crios") &&
-                !ua.includes("android") &&
-                !ua.includes("edg") &&
-                !ua.includes("opr");
 
               if (isSafari) {
                 const nodes = svgElement.querySelectorAll<SVGGElement>(".node");
@@ -309,7 +326,6 @@ export default function MermaidClient({
         className={`mermaid-diagram flex justify-center ${!isLoaded ? "hidden" : ""}`}
         style={{
           width: "100%",
-          minWidth: "400px",
           padding: "12px",
           overflow: "visible",
         }}
