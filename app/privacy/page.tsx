@@ -35,14 +35,14 @@ export default function PrivacyPage() {
 
         <h2>Cookies and Analytics</h2>
         <p>
-          I use cookies and analytics tools to understand how visitors interact with the site and to improve
-          the user experience. Optional analytics only run with your consent.
+          I use a small number of tools to understand performance and usage. Optional analytics only run with your
+          consent. Performance measurements (Vercel Speed Insights) do not use cookies and run without consent.
         </p>
 
         <h3>What I collect</h3>
         <ul>
-          <li><strong>Analytics:</strong> Page views, session duration, device and browser info via Vercel Analytics (aggregated).</li>
-          <li><strong>Performance:</strong> Core Web Vitals and page performance via Vercel Speed Insights.</li>
+          <li><strong>Analytics (consent):</strong> Page views, session duration, device and browser info via Vercel Analytics (aggregated; runs only after consent).</li>
+          <li><strong>Performance (no cookies):</strong> Core Web Vitals (e.g. LCP, CLS, INP, TTFB) via Vercel Speed Insights. These measurements are collected without cookies or local storage and are reported in an anonymised, aggregate form to help improve site performance.</li>
           <li><strong>Optional tools:</strong> Cloudflare Zaraz may load analytics tools when consent is given.</li>
           <li><strong>View counts:</strong> Aggregate counts per blog post slug in my database (no IPs or identifiers).</li>
         </ul>
@@ -52,6 +52,7 @@ export default function PrivacyPage() {
           <li>Personal information unless you explicitly provide it (e.g., guestbook or contact form).</li>
           <li>Sensitive categories of data or payment information.</li>
           <li>Optional analytics data if you decline cookie consent.</li>
+          <li>Any cookies for performance measurements (Vercel Speed Insights uses none).</li>
         </ul>
 
         <h2>Your choices</h2>
@@ -81,6 +82,7 @@ export default function PrivacyPage() {
         </p>
         <ul>
           <li>Vercel Analytics: 90 days (per Vercel policy).</li>
+          <li>Vercel Speed Insights: Web Vitals metrics without identifiers; reported in aggregate for performance monitoring.</li>
           <li>Cloudflare Analytics (if enabled via Zaraz): up to 6 months (per Cloudflare policy).</li>
           <li>Guestbook entries: until you request deletion or I remove spam/abuse.</li>
           <li>Contact form emails: retained in my email account as part of correspondence.</li>
@@ -99,7 +101,7 @@ export default function PrivacyPage() {
         <h2>Legal basis</h2>
         <ul>
           <li><strong>Consent:</strong> Optional analytics via cookie banner.</li>
-          <li><strong>Legitimate interests:</strong> Operating the site, preventing abuse, measuring aggregate interest (view counters).</li>
+          <li><strong>Legitimate interests:</strong> Operating the site, preventing abuse, measuring aggregate interest (view counters), and measuring/improving site performance (Vercel Speed Insights; no cookies).</li>
           <li><strong>Contract/consent:</strong> Responding to contact requests you submit.</li>
         </ul>
 
