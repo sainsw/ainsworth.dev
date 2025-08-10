@@ -206,10 +206,10 @@ If your consumers can accept callbacks, consider webhooks:
 
 ```mermaid
 flowchart TD
-  A[Client registers webhook] --> B[POST /v1/webhooks {url, secret}]
+  A[Client registers webhook] --> B["POST /v1/webhooks {url, secret}"]
   B --> C[POST /v1/reports]
   C --> D[API completes job]
-  D --> E[API POSTs event to webhook URL (HMAC signed)]
+  D --> E["API POSTs event to webhook URL (HMAC signed)"]
   E --> F[Client acknowledges 2xx]
 ```
 

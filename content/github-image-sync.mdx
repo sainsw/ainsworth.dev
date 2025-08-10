@@ -11,14 +11,15 @@ The slow part wasn’t updating my GitHub avatar — that’s quick thanks to Gi
 ```mermaid
 flowchart TD
   A[Push to main] --> B[Vercel Build]
-  B --> C[Node script: fetch GitHub avatar (HTTPS)]
-  C --> D[Node script: optimise with Sharp (resize → WebP)]
+  B --> C["Node script: fetch GitHub avatar (HTTPS)"]
+  C --> D["Node script: optimise with Sharp (resize to WebP)"]
   D --> E[Compute content hash]
-  E -->|unchanged| F[Keep filename → leverage Cloudflare/Vercel/browser cache]
-  E -->|changed| G[Write new hashed filename → instant cache-bust]
+  E --> F["Keep filename - leverage Cloudflare/Vercel/browser cache"]
+  E --> G["Write new hashed filename - instant cache-bust"]
   F --> H[Publish]
   G --> H[Publish]
   H --> I[Site serves latest avatar]
+```
 
 ## How It Works
 	•	Source of truth: I update my avatar through GitHub’s UI (which already has a great circular crop).
