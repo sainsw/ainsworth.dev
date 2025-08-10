@@ -40,7 +40,7 @@ flowchart TD
 
   %% Vercel side
   subgraph "Vercel build (no LaTeX)"
-    direction LR
+    direction TD
     V1["Install deps"]:::vercel --> V2["Skip LaTeX build"]:::vercel
     V2 --> V3["generate-version.js<br/>CV_VERSION = hash(main.tex + cls)"]:::vercel
     V3 --> V4["Next build: /cv links → /files/cv-${CV_VERSION}.pdf"]:::vercel
