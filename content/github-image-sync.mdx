@@ -1,280 +1,53 @@
 ---
-title: 'Building a GitHub Avatar Sync Pipeline: From API to Cache-Busted CDN'
-publishedAt: '2025-08-08'
-summary: 'Deep dive into building an automated GitHub avatar sync pipeline with Sharp optimization, content-based versioning, and intelligent fallback handling.'
+title: 'Automating My GitHub Avatar Sync'
+publishedAt: '2025-08-06'
+summary: 'Turn GitHub into the source of truth for your website avatar. A Node + Vercel pipeline fetches, optimises (Sharp), hashes, and deploys your image with smart cache-busting.'
 ---
 
-## The Problem
+# Automating My GitHub Avatar Sync
 
-Personal websites often feature profile photos that quickly become outdated. You update your GitHub avatar, but your personal site still shows that photo from 2019. Manual updates are tedious and easy to forget.
+The slow part wasn’t updating my GitHub avatar — that’s quick thanks to GitHub’s built-in cropping. The real time-sink was **keeping my website avatar in sync**: converting to WebP, resizing for the circle mask, and pushing updates to the repo. I automated the whole thing by making **GitHub the source of truth** and letting my build pipeline do the rest.
 
-What if your website could automatically sync with your latest GitHub avatar during every build? Here's how I built a comprehensive avatar sync pipeline that handles everything from API fetching to WebP optimization.
-
-## 🏗️ Architecture Overview
-
-The pipeline consists of several interconnected components:
+## Architecture at a Glance
 
 ```mermaid
-graph TD
-    A[GitHub API] --> B[Download Avatar]
-    B --> C{Sharp Available?}
-    C -->|Yes| D[Sharp Processing]
-    C -->|No| E[Copy Original]
-    D --> F[Generate WebP]
-    D --> G[Generate JPG]
-    E --> G
-    F --> H[Content Hash]
-    G --> H
-    H --> I["Versioned Files
-    avatar-{hash}.webp
-    avatar-{hash}.jpg"]
-    I --> J["Update Version File
-    lib/version.js"]
-    J --> K[Next.js Build]
-    K --> L[Preload Resources]
-    K --> M[Picture Elements]
-    
-    N[Build Failure] --> O[Use Existing Files]
-    O --> P[Generate Fallback Hash]
-    P --> J
-    
-    B -.->|Network Error| N
-    D -.->|Sharp Error| N
-    
-    style A fill:#e1f5fe
-    style I fill:#e8f5e8
-    style J fill:#fff3e0
-    style L fill:#f3e5f5
-    style M fill:#f3e5f5
-```
+flowchart TD
+  A[Push to main] --> B[Vercel Build]
+  B --> C[Node script: fetch GitHub avatar (HTTPS)]
+  C --> D[Node script: optimise with Sharp (resize → WebP)]
+  D --> E[Compute content hash]
+  E -->|unchanged| F[Keep filename → leverage Cloudflare/Vercel/browser cache]
+  E -->|changed| G[Write new hashed filename → instant cache-bust]
+  F --> H[Publish]
+  G --> H[Publish]
+  H --> I[Site serves latest avatar]
 
-1. **GitHub API Integration** - Fetches latest avatar URL
-2. **Sharp Image Processing** - Optimises and converts to WebP/JPG
-3. **Content-Based Versioning** - Generates cache-busting hashes
-4. **Build Integration** - Runs automatically on deployment
-5. **Fallback System** - Graceful degradation when API fails
+## How It Works
+	•	Source of truth: I update my avatar through GitHub’s UI (which already has a great circular crop).
+	•	Trigger: A push to main kicks off a Vercel build.
+	•	Fetch: A small Node.js script downloads the current GitHub avatar over HTTPS.
+	•	Optimise: Another Node.js script uses Sharp to resize, convert to WebP, and strip excess metadata.
+	•	Cache-smart deploy: The build computes a content hash. If the image bytes didn’t change, the filename stays the same (cache hits). If it did change, the filename changes immediately (cache busts) so Cloudflare, Vercel, and browsers serve the new file right away.
+	•	Publish: The optimised asset is written to the site’s assets folder and deployed.
 
-## 📡 GitHub API Integration
+Credit: the content-hashing approach came from Claude Sonnet 3.7 and has been rock-solid.
 
-The process starts with fetching user data from GitHub's REST API:
+## Why Node, Not Bash?
 
-```typescript
-const userData = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}`, {
-  headers: {
-    'User-Agent': 'ainsworth.dev-avatar-fetcher'
-  }
-});
+This pipeline started life in shell scripts but quickly moved to Node for reliability and portability:
+	•	HTTP fetching with retries and proper error handling is simpler in Node.
+	•	Sharp gives consistent, high-quality image processing without external system deps.
+	•	Cross-platform behaviour (local dev, CI, Vercel) is predictable.
 
-const avatarUrl = `${userData.avatar_url}&s=${AVATAR_SIZE}`;
-```
+## Lessons Learned
+	•	Designate a source of truth. Don’t crop/convert in two places — let GitHub’s avatar UI handle that job.
+	•	Hash the bytes, not the idea. Human “this looks the same” isn’t good enough; content hashing makes cache behaviour deterministic.
+	•	Automate the boring parts. Image chores (resize/convert) are perfect for scripts; use your human time on design and writing.
 
-Key considerations:
-- **User-Agent header** is required by GitHub API
-- **Size parameter** (`&s=400`) requests high-quality source
-- **Error handling** for rate limits and network failures
+## Related Reading
+	•	AI Coding Tools: My Journey From Frustration to Flow — how I decide what work to hand to automation.
+	•	Seasonal Avatar Borders — another small automation that keeps the site feeling alive.
 
-## 🖼️ Image Processing Pipeline
+## Closing Thoughts
 
-Once downloaded, the image goes through Sharp optimization:
-
-```javascript
-// WebP generation (priority format)
-await sharp(inputPath)
-  .resize(200, 200, { 
-    fit: 'cover',
-    position: 'centre'
-  })
-  .webp({ 
-    quality: 85,
-    effort: 6 // Maximum compression effort
-  })
-  .toFile(webpPath);
-
-// JPG fallback
-await sharp(inputPath)
-  .resize(200, 200, { 
-    fit: 'cover',
-    position: 'centre'
-  })
-  .jpeg({ 
-    quality: 90,
-    progressive: true
-  })
-  .toFile(jpgPath);
-```
-
-The pipeline produces two optimised formats:
-- **WebP** for modern browsers (smaller file size)
-- **JPG** for legacy browser support
-
-## 🔐 Content-Based Versioning
-
-Instead of timestamps, the system uses SHA256 content hashing:
-
-```javascript
-async function generateContentHash(filePath) {
-  const content = fs.readFileSync(filePath);
-  return crypto.createHash('sha256').update(content).digest('hex').substring(0, 8);
-}
-```
-
-This approach ensures:
-- **Deterministic versioning** - Same content = same hash
-- **Efficient caching** - Only updates when image actually changes
-- **Cache invalidation** - New content automatically gets new URL
-
-Files are saved as `avatar-{hash}.webp` and `avatar-{hash}.jpg`.
-
-## 🚀 Build Integration
-
-The pipeline integrates seamlessly with the build process:
-
-```json
-{
-  "scripts": {
-    "build": "npm run fetch-avatar && npm run generate-version && next build",
-    "fetch-avatar": "node ./scripts/fetch-avatar.js"
-  }
-}
-```
-
-During Vercel deployment:
-1. Latest avatar is fetched from GitHub
-2. Images are optimised and versioned
-3. Version hash is written to `lib/version.js`
-4. Next.js build references the versioned files
-
-## 🎯 Smart Preloading
-
-The versioned avatar gets preloaded in the document head:
-
-```tsx
-import { AVATAR_VERSION } from '../lib/version';
-
-// In <head>
-<link 
-  rel="preload" 
-  href={`/images/home/avatar-${AVATAR_VERSION}.webp`} 
-  as="image" 
-  type="image/webp" 
-/>
-```
-
-And used with modern picture elements:
-
-```tsx
-<picture>
-  <source srcSet={`/images/home/avatar-${AVATAR_VERSION}.webp`} type="image/webp" />
-  <img 
-    src={`/images/home/avatar-${AVATAR_VERSION}.jpg`} 
-    alt="my face"
-    width={80}
-    height={80}
-    loading="eager"
-  />
-</picture>
-```
-
-## 🛡️ Robust Error Handling
-
-The system includes comprehensive fallback mechanisms:
-
-```javascript
-try {
-  // Fetch from GitHub and optimise
-  await fetchAndOptimise();
-} catch (error) {
-  console.log('Avatar fetch failed, using existing files');
-  
-  // Find existing avatar and ensure versioned files exist
-  const existingHash = await getExistingAvatarHash();
-  await createVersionedFromExisting(existingHash);
-  await updateVersionFile(existingHash);
-}
-```
-
-Failure scenarios handled:
-- **Network errors** - Uses existing avatar files
-- **API rate limits** - Falls back to current version
-- **Sharp missing** - Copies original file as fallback
-- **No existing files** - Fails build with clear error
-
-## 🎨 Visual Enhancements
-
-The avatar system integrates with the site's visual design through:
-
-- **Responsive borders** that adapt to light/dark themes
-- **Consistent sizing** across different screen sizes  
-- **Smooth loading states** with proper image optimization
-- **Accessibility features** with proper alt text and focus states
-
-The pipeline supports additional visual enhancements and can be extended with seasonal features or dynamic borders (*see the [seasonal avatar borders post](/blog/seasonal-avatar-borders) for a detailed implementation*).
-
-## 📊 Performance Impact
-
-The optimised pipeline delivers significant improvements:
-
-- **File size reduction**: ~60% smaller with WebP
-- **Cache efficiency**: Only re-downloads when avatar changes
-- **Load performance**: Preloaded critical resources
-- **Modern formats**: WebP with progressive JPG fallback
-
-## 🔧 Implementation Tips
-
-### 1. Handle Sharp Gracefully
-Sharp might not be available in all environments:
-
-```javascript
-try {
-  const sharp = require('sharp');
-  // Use Sharp for optimization
-} catch (error) {
-  // Fallback to copying original file
-  fs.copyFileSync(inputPath, outputPath);
-}
-```
-
-### 2. Ensure Directory Structure
-Create necessary directories before writing files:
-
-```javascript
-const outputDir = path.join(__dirname, '..', 'public', 'images', 'home');
-if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir, { recursive: true });
-}
-```
-
-### 3. Debug Build Issues
-Add comprehensive logging for troubleshooting:
-
-```javascript
-console.log(`📁 WebP: ${path.relative(process.cwd(), webpPath)}`);
-console.log(`🔍 File size: ${fs.statSync(webpPath).size} bytes`);
-console.log(`🔑 Content hash: ${contentHash}`);
-```
-
-## 🌟 Results
-
-This automated pipeline has eliminated manual avatar updates entirely. The system:
-
-- **Fetches latest avatar** on every deployment
-- **Optimises images** automatically with WebP/JPG
-- **Handles failures gracefully** with existing files
-- **Adds seasonal flair** with Pride Month borders
-- **Provides excellent performance** with smart caching
-
-The avatar you see on this site was fetched, optimised, and deployed completely automatically. When I update my GitHub profile photo, the next deployment will sync it across the entire site.
-
-## 🚀 Future Enhancements
-
-Potential improvements for the pipeline:
-
-- **Multiple image sources** - Fallback to other social platforms
-- **Smart cropping** - AI-based face detection for better framing  
-### A/B testing** - Rotate between multiple profile photos
-- **Analytics integration** - Track avatar update impact on engagement
-- **Visual enhancements** - Seasonal borders, themes, or celebrations
-
----
-
-*The complete implementation is available in the [repository](https://github.com/sainsw/ainsworth.dev) - check out `scripts/fetch-avatar.js` for the full pipeline code.*
+The best developer ergonomics often come from removing the micro-chores you’ve normalised. By treating GitHub as the master copy and letting Vercel + Node handle the rest, my site stays fresh without me opening an image editor.
