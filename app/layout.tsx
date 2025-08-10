@@ -5,6 +5,7 @@ import { GeistMono } from 'geist/font/mono';
 import { Navbar } from './components/nav';
 import { Footer } from './components/footer';
 import { Suspense } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { DeferredAnalytics } from './components/deferred-analytics';
 import { CookieConsent } from './components/cookie-banner';
 import { SandpackCSS } from './blog/[slug]/sandpack';
@@ -126,6 +127,8 @@ export default function RootLayout({
           </main>
         </div>
         <CookieConsent variant="mini" learnMoreHref="/privacy" />
+        {/* Load Speed Insights unconditionally (no cookies used) */}
+        <SpeedInsights />
       </body>
     </html>
   );
