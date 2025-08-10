@@ -15,39 +15,51 @@ Vercel never touches LaTeX; it just gets a version number and a ready-made PDF.
 
 ```mermaid
 flowchart TB
-  %% Legend
-  classDef local fill:#f5f5f5,stroke:#bbb,color:#111;
-  classDef vercel fill:#eef7ff,stroke:#8ab4f8,color:#111;
-  classDef file fill:#fffbe6,stroke:#e6c200,color:#111;
-  classDef decision fill:#fff,stroke:#999,color:#111,stroke-dasharray:4 2;
+  %% no parens, top-down, theme-friendly fills that your MermaidClient maps for dark mode
 
   %% Change type
-  D{"What changed?"}:::decision
+  D{"What changed?"}
 
-  %% Minor change path (JSON-driven)
-  A["Edit resume.json"]:::file --> G["generate-latex.js builds cv-source/main.tex"]:::local
+  %% Minor change path
+  A["Edit resume.json"] --> G["generate-latex.js builds cv-source/main.tex"]
   D -- "Minor content or layout" --> A
 
-  %% Theme overhaul path (Overleaf-driven)
-  O["Draft in Overleaf – new or updated template"]:::local --> O2["Export main.tex back to repo"]:::local --> G
+  %% Theme overhaul path
+  O["Draft in Overleaf – new or updated template"] --> O2["Export main.tex back to repo"] --> G
   D -- "Theme overhaul" --> O
 
   %% Build PDF locally
-  G --> P["pdflatex - local outputs public/files/cv-HASH.pdf"]:::local
-  P --> K["Keep old PDFs in /public/files"]:::local
-  P --> C["git add and commit"]:::local
-  C --> U["push"]:::local
+  G --> P["pdflatex local outputs public slash files slash cv-HASH dot pdf"]
+  P --> K["Keep old PDFs in public slash files"]
+  P --> C["git add and commit"]
+  C --> U["push"]
 
   %% Vercel side
-  subgraph VercelBuild["Vercel build - \"no LaTeX\""]
+  subgraph VercelBuild["Vercel build - no LaTeX"]
     direction TB
-    V1["Install dependencies"]:::vercel --> V2["Skip LaTeX build"]:::vercel
-    V2 --> V3["generate-version.js computes CV_VERSION from main.tex and class file"]:::vercel
-    V3 --> V4["Next build links to /files/cv-CV_VERSION.pdf"]:::vercel
+    V1["Install dependencies"] --> V2["Skip LaTeX build"]
+    V2 --> V3["generate-version.js computes CV_VERSION from main.tex and class file"]
+    V3 --> V4["Next build links to slash files slash cv-CV_VERSION dot pdf"]
   end
 
   U --> V1
-  V4 --> S["Users download latest PDF - cache-busted by filename"]:::vercel
+  V4 --> S["Users download latest PDF - cache busted by filename"]
+
+  %% Theme-aware fills (these hexes are auto-mapped by your MermaidClient in dark mode)
+  style D fill:#fff3e0
+  style A fill:#e1f5fe
+  style G fill:#e1f5fe
+  style O fill:#f3e5f5
+  style O2 fill:#e1f5fe
+  style P fill:#ff69b4
+  style K fill:#e8f5e8
+  style C fill:#e8f5e8
+  style U fill:#e8f5e8
+  style V1 fill:#e1f5fe
+  style V2 fill:#e1f5fe
+  style V3 fill:#e1f5fe
+  style V4 fill:#e1f5fe
+  style S fill:#e8f5e8
 ```
 
 - **Hashed artifacts kept**: old PDFs remain in /public/files (cv-<hash>.pdf history).
