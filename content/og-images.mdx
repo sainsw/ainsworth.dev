@@ -1,0 +1,121 @@
+---
+title: "Zero-Click Social Cards: Automatic OG images from MDX frontmatter"
+publishedAt: "2025-08-10"
+summary: "No more hand-made link previews. Generate on-brand OG images from your MDX frontmatter with one tiny endpoint."
+---
+
+# Zero-Click Social Cards: Automatic OG images from MDX frontmatter
+
+I was either shipping posts with bland link previews or hand-designing images I didn't have time for. The data I needed was already there — **title, summary, date** — sitting in MDX frontmatter. The fix: a tiny endpoint that turns that frontmatter into a good-looking OG image automatically.
+
+**Result:** push a post → deploy → share the link → solid preview every time. No Figma. No copy/paste.
+
+---
+
+## How it works (tiny)
+
+1. **Expose post data** (slug → title, summary, publishedAt).  
+2. **Add a small `/api/og/[slug]` route** to render a 1200×630 image on demand.  
+3. **Point `og:image`** to that route in your post page `<head>`.
+
+That's it. Here's the minimal code.
+
+### 1) Post index (whatever you already have)
+
+```ts
+// lib/posts.ts
+export type PostMeta = {
+  slug: string; title: string; summary: string; publishedAt: string;
+};
+export const posts: PostMeta[] = [
+  // Build this from your MDX frontmatter
+];
+export function getPost(slug: string) {
+  return posts.find(p => p.slug === slug) ?? null;
+}
+```
+
+### 2) The image route
+
+```tsx
+// app/api/og/[slug]/route.ts
+import { ImageResponse } from "next/server";
+import { getPost } from "@/lib/posts";
+
+// Edge runtime = fast cold starts for tiny images
+export const runtime = "edge";
+
+export async function GET(_: Request, { params }: { params: { slug: string } }) {
+  const post = getPost(params.slug);
+  if (!post) return new Response("Not found", { status: 404 });
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: 1200, height: 630, display: "flex", flexDirection: "column",
+          background: "#0b1220", color: "#e5e7eb", padding: 64, gap: 28
+        }}
+      >
+        <div style={{ fontSize: 56, lineHeight: 1.05, letterSpacing: -0.5 }}>
+          {post.title}
+        </div>
+        <div style={{ fontSize: 28, opacity: 0.9, maxWidth: 960 }}>
+          {post.summary}
+        </div>
+        <div style={{ marginTop: "auto", fontSize: 24, opacity: 0.8 }}>
+          {new Date(post.publishedAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+        </div>
+      </div>
+    ),
+    { width: 1200, height: 630 }
+  );
+}
+```
+
+**Tip:** If you want branded typography, embed a font: fetch the `.ttf`, pass it in `fonts: [{ name, data, weight }]`.
+
+### 3) Wire it into `<head>`
+
+```tsx
+// app/blog/[slug]/head.tsx (or inside Metadata in Next 13+)
+import { getPost } from "@/lib/posts";
+
+export default function Head({ params }: { params: { slug: string } }) {
+  const p = getPost(params.slug)!;
+  const site = process.env.NEXT_PUBLIC_SITE_URL!;
+  const og = `${site}/api/og/${p.slug}`;
+
+  return (
+    <>
+      <title>{p.title}</title>
+      <meta name="description" content={p.summary} />
+      <meta property="og:title" content={p.title} />
+      <meta property="og:description" content={p.summary} />
+      <meta property="og:image" content={og} />
+      <meta name="twitter:card" content="summary_large_image" />
+    </>
+  );
+}
+```
+
+---
+
+## Design tips that make it look "done"
+
+- **Big title, small summary.** Titles wrap; summaries don't dominate.
+- **One color, not a rainbow.** A dark background with light text is consistent and legible.
+- **Clamp long titles.** If you write essay-length titles, reduce font-size slightly after ~70 chars.
+- **Emoji are fine.** If they look off, switch to Twemoji SVGs.
+
+---
+
+## Your turn (5 minutes)
+
+- **Add the route**, render a plain card, and point `og:image` at it.
+- **Share a post** to Slack/Twitter — you should see a clean preview.
+- **If you like it**, add a brand font and logo dot next.
+
+One-liner if you care later: pre-generate PNGs at build or set a long cache header — but you don't need either to get great previews today.
+
+If you want, I can tailor the styling (font, colors, tiny logo) to match your site brand—just tell me your preferred font and whether you want a small mark in the corner.

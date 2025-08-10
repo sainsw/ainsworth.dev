@@ -25,7 +25,7 @@ export async function generateMetadata({
   } = post.metadata;
   let ogImage = image
     ? `https://ainsworth.dev${image}`
-    : `https://ainsworth.dev/og?title=${title}`;
+    : `https://ainsworth.dev/api/og/${post.slug}`;
 
   return {
     title,
@@ -107,7 +107,7 @@ export default function Blog({ params }) {
             description: post.metadata.summary,
             image: post.metadata.image
               ? `https://ainsworth.dev${post.metadata.image}`
-              : `https://ainsworth.dev/og?title=${post.metadata.title}`,
+              : `https://ainsworth.dev/api/og/${post.slug}`,
             url: `https://ainsworth.dev/blog/${post.slug}`,
             author: {
               '@type': 'Person',
