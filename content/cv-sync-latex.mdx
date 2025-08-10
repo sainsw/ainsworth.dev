@@ -21,7 +21,7 @@ flowchart TB
   D{"What changed?"}
 
   %% Minor change path
-  A["Edit resume.json"] --> G["generate-latex.js builds cv-source/main.tex"]
+  A["Edit resume.json"] --> G["generate-latex.js builds main.tex"]
   D -- "Minor content or layout" --> A
 
   %% Theme overhaul path
@@ -29,8 +29,8 @@ flowchart TB
   D -- "Theme overhaul" --> O
 
   %% Build PDF locally
-  G --> P["pdflatex local outputs public slash files slash cv-HASH dot pdf"]
-  P --> K["Keep old PDFs in public slash files"]
+  G --> P["pdflatex local outputs public/files/cv-CV_VERSION.pdf"]
+  P --> K["Keep old PDFs in public/files"]
   P --> C["git add and commit"]
   C --> U["push"]
 
@@ -39,7 +39,7 @@ flowchart TB
     direction TB
     V1["Install dependencies"] --> V2["Skip LaTeX build"]
     V2 --> V3["generate-version.js computes CV_VERSION from main.tex and class file"]
-    V3 --> V4["Next build links to slash files slash cv-CV_VERSION dot pdf"]
+    V3 --> V4["Next build links to /files/cv-CV_VERSION.pdf"]
   end
 
   U --> V1
