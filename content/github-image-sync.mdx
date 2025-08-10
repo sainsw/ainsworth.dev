@@ -90,6 +90,8 @@ async function fetchGitHubAvatar() {
 
 The key insight is using GitHub's public user API (`/users/{username}`) which doesn't require authentication and provides the current `avatar_url`. By appending `&s={size}` to the URL, we can request the exact dimensions we need.
 
+For more details, see the [GitHub REST API documentation](https://docs.github.com/en/rest/users/users#get-a-user).
+
 ## Why Node, Not Bash?
 
 This pipeline started life in shell scripts but quickly moved to Node for reliability and portability:
