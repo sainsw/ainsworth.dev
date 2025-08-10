@@ -22,30 +22,30 @@ flowchart TD
 ```
 
 ## How It Works
-	•	Source of truth: I update my avatar through GitHub’s UI (which already has a great circular crop).
-	•	Trigger: A push to main kicks off a Vercel build.
-	•	Fetch: A small Node.js script downloads the current GitHub avatar over HTTPS.
-	•	Optimise: Another Node.js script uses Sharp to resize, convert to WebP, and strip excess metadata.
-	•	Cache-smart deploy: The build computes a content hash. If the image bytes didn’t change, the filename stays the same (cache hits). If it did change, the filename changes immediately (cache busts) so Cloudflare, Vercel, and browsers serve the new file right away.
-	•	Publish: The optimised asset is written to the site’s assets folder and deployed.
+- **Source of truth**: I update my avatar through GitHub's UI (which already has a great circular crop).
+- **Trigger**: A push to main kicks off a Vercel build.
+- **Fetch**: A small Node.js script downloads the current GitHub avatar over HTTPS.
+- **Optimise**: Another Node.js script uses Sharp to resize, convert to WebP, and strip excess metadata.
+- **Cache-smart deploy**: The build computes a content hash. If the image bytes didn't change, the filename stays the same (cache hits). If it did change, the filename changes immediately (cache busts) so Cloudflare, Vercel, and browsers serve the new file right away.
+- **Publish**: The optimised asset is written to the site's assets folder and deployed.
 
 Credit: the content-hashing approach came from Claude Sonnet 3.7 and has been rock-solid.
 
 ## Why Node, Not Bash?
 
 This pipeline started life in shell scripts but quickly moved to Node for reliability and portability:
-	•	HTTP fetching with retries and proper error handling is simpler in Node.
-	•	Sharp gives consistent, high-quality image processing without external system deps.
-	•	Cross-platform behaviour (local dev, CI, Vercel) is predictable.
+- **HTTP fetching with retries and proper error handling** is simpler in Node.
+- **Sharp gives consistent, high-quality image processing** without external system deps.
+- **Cross-platform behaviour** (local dev, CI, Vercel) is predictable.
 
 ## Lessons Learned
-	•	Designate a source of truth. Don’t crop/convert in two places — let GitHub’s avatar UI handle that job.
-	•	Hash the bytes, not the idea. Human “this looks the same” isn’t good enough; content hashing makes cache behaviour deterministic.
-	•	Automate the boring parts. Image chores (resize/convert) are perfect for scripts; use your human time on design and writing.
+- **Designate a source of truth**. Don't crop/convert in two places — let GitHub's avatar UI handle that job.
+- **Hash the bytes, not the idea**. Human "this looks the same" isn't good enough; content hashing makes cache behaviour deterministic.
+- **Automate the boring parts**. Image chores (resize/convert) are perfect for scripts; use your human time on design and writing.
 
 ## Related Reading
-	•	AI Coding Tools: My Journey From Frustration to Flow — how I decide what work to hand to automation.
-	•	Seasonal Avatar Borders — another small automation that keeps the site feeling alive.
+- [AI Coding Tools: My Journey From Frustration to Flow](/blog/ai-coding-tools) — how I decide what work to hand to automation.
+- [Seasonal Avatar Borders](/blog/seasonal-avatar-borders) — another small automation that keeps the site feeling alive.
 
 ## Closing Thoughts
 
