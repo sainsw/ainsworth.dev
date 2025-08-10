@@ -31,8 +31,7 @@ flowchart TB
   %% Build PDF locally
   G --> P["pdflatex local outputs public/files/cv-CV_VERSION.pdf"]
   P --> K["Keep old PDFs in public/files"]
-  P --> C["git add and commit"]
-  C --> U["push"]
+  P --> U["git add, commit and push"]
 
   %% Vercel side
   subgraph VercelBuild["Vercel build - no LaTeX"]
