@@ -36,7 +36,7 @@ export default function Page() {
         {` at `}
         <span className="not-prose">
           <Badge href="https://www.ibm.com" aria-label="IBM">
-            <Icon id="ibm" size={16} className="!mr-0" decorative={true} />
+            <Icon id="ibm" height={16} className="!mr-0" decorative={true} />
           </Badge>
         </span>
         {` in Manchester, where I focus on enterprise software development and cloud architecture with `}

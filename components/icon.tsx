@@ -22,6 +22,15 @@ export function Icon({
   decorative = false,
   ...props
 }: IconProps) {
+  // Allow callers to specify only height or only width; if neither provided, use size for both.
+  const { width: widthProp, height: heightProp, ...restProps } = props as {
+    width?: number | string;
+    height?: number | string;
+  } & React.SVGProps<SVGSVGElement>;
+
+  const widthAttr = widthProp !== undefined ? widthProp : heightProp !== undefined ? undefined : size;
+  const heightAttr = heightProp !== undefined ? heightProp : widthProp !== undefined ? undefined : size;
+
   const altText = decorative ? "" : `${id} logo`;
   // Use PNG/WebP fallback for certain logos
   if (PNG_LOGOS.has(id)) {
@@ -46,8 +55,8 @@ export function Icon({
           <img
             src="/images/logos/asfc_black.png"
             alt={altText}
-            width={size}
-            height={size}
+            width={widthAttr}
+            height={heightAttr}
             className={className}
             style={{ objectFit: "contain" }}
           />
@@ -64,8 +73,8 @@ export function Icon({
         <img
           src={`/images/logos/${getLogoFilename(id)}.png`}
           alt={altText}
-          width={size}
-          height={size}
+          width={widthAttr}
+          height={heightAttr}
           className={className}
           style={{ objectFit: "contain" }}
         />
@@ -84,8 +93,8 @@ export function Icon({
         <img
           src={`/images/logos/${id}_colour.svg`}
           alt={altText}
-          width={size}
-          height={size}
+          width={widthAttr}
+          height={heightAttr}
           className={className}
           style={{ objectFit: "contain" }}
         />
@@ -102,8 +111,8 @@ export function Icon({
         <img
           src={`/images/logos/${id}.${fileExtension}`}
           alt={altText}
-          width={size}
-          height={size}
+          width={widthAttr}
+          height={heightAttr}
           className={className}
           style={{ objectFit: "contain" }}
         />
@@ -114,12 +123,12 @@ export function Icon({
   // Use sprite system for SVG logos with cache-busting
   return (
     <svg
-      width={size}
-      height={size}
+      width={widthAttr}
+      height={heightAttr}
       className={className}
       aria-label={decorative ? undefined : altText}
       role={decorative ? "presentation" : "img"}
-      {...props}
+      {...(restProps as React.SVGProps<SVGSVGElement>)}
     >
       <use href={`/sprite.svg?v=${SPRITE_VERSION}#${id}`} />
     </svg>
