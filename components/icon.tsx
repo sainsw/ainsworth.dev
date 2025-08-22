@@ -121,10 +121,23 @@ export function Icon({
   }
 
   // Use sprite system for SVG logos with cache-busting
+  // For sprite-based SVGs, compute width/height to preserve aspect ratio when only one is provided.
+  const ratio = getSpriteAspectRatio(id);
+  let svgWidth: number | string | undefined = widthAttr;
+  let svgHeight: number | string | undefined = heightAttr;
+
+  if (ratio) {
+    if (svgWidth === undefined && typeof svgHeight === "number") {
+      svgWidth = svgHeight * ratio;
+    } else if (svgHeight === undefined && typeof svgWidth === "number") {
+      svgHeight = svgWidth / ratio;
+    }
+  }
+
   return (
     <svg
-      width={widthAttr}
-      height={heightAttr}
+      width={svgWidth}
+      height={svgHeight}
       className={className}
       aria-label={decorative ? undefined : altText}
       role={decorative ? "presentation" : "img"}
@@ -133,6 +146,16 @@ export function Icon({
       <use href={`/sprite.svg?v=${SPRITE_VERSION}#${id}`} />
     </svg>
   );
+}
+
+// Aspect ratios for specific sprite symbols (viewBox width / height)
+function getSpriteAspectRatio(id: string): number | undefined {
+  switch (id) {
+    case "ibm":
+      return 58 / 23;
+    default:
+      return undefined;
+  }
 }
 
 function getLogoFilename(id: string): string {
