@@ -30,11 +30,11 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
       </div>
       <div className="flex flex-col">
         {url ? (
-          <a href={url} target="_blank" rel="noopener noreferrer" className="h-12 w-12 self-end">
-            <Icon id={iconId} size={48} className="h-12 w-12" />
+          <a href={url} target="_blank" rel="noopener noreferrer" className="self-end">
+            <Icon id={iconId} height={48} className="h-12" />
           </a>
         ) : (
-          <Icon id={iconId} size={48} className="h-12 w-12 self-end" />
+          <Icon id={iconId} height={48} className="h-12 self-end" />
         )}
       </div>
       {description && description.length > 0 && (
@@ -175,4 +175,3 @@ export default function Page() {
     </section>
   );
 }
-
