@@ -28,13 +28,13 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
           {dates}
         </p>
       </div>
-      <div className="flex flex-col w-full items-end">
+      <div className="flex flex-col w-full">
         {url ? (
-          <a href={url} target="_blank" rel="noopener noreferrer">
+          <a href={url} target="_blank" rel="noopener noreferrer" className="ml-auto block">
             <Icon id={iconId} height={48} className="h-12" />
           </a>
         ) : (
-          <Icon id={iconId} height={48} className="h-12" />
+          <Icon id={iconId} height={48} className="h-12 ml-auto" />
         )}
       </div>
       {description && description.length > 0 && (
