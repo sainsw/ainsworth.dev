@@ -153,6 +153,10 @@ function getSpriteAspectRatio(id: string): number | undefined {
   switch (id) {
     case "ibm":
       return 58 / 23;
+    case "musicmagpie":
+      return 91 / 91; // square viewBox
+    case "bott":
+      return 244.8 / 244.8; // square viewBox
     default:
       return undefined;
   }
