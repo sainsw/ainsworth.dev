@@ -9,6 +9,11 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     globals: true,
     css: true,
+    exclude: [
+      'e2e/**', // Playwright specs — handled by Playwright, not Vitest
+      'node_modules/**',
+      'dist/**',
+    ],
   },
   resolve: {
     alias: {
