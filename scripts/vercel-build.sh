@@ -20,8 +20,8 @@ echo "📄 Building CV..."
 npm run build-cv
 
 # Run unit tests (Vitest) in Vercel build
-echo "🧪 Running unit tests (vitest)..."
-npm run test:run
+echo "🧪 Running unit tests (vitest) with NODE_ENV=test..."
+NODE_ENV=test npm run test:run
 
 # Note: Playwright E2E tests are not run in Vercel build environment.
 # Use the `e2e:vercel` script in a separate CI job pointing at the Preview URL.
