@@ -20,6 +20,8 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
   usePathname: () => '/',
   notFound: vi.fn(),
+  useServerInsertedHTML: () => {},
+  redirect: vi.fn(),
 }))
 
 // Mock Next.js Image component
@@ -31,6 +33,15 @@ vi.mock('next/image', () => ({
 vi.mock('next/link', () => ({
   default: ({ children, ...props }: any) => React.createElement('a', props, children),
 }))
+
+// Mock react-dom server actions helpers used in forms
+vi.mock('react-dom', async () => {
+  const actual: any = await vi.importActual('react-dom')
+  return {
+    ...actual,
+    useFormStatus: () => ({ pending: false }),
+  }
+})
 
 // Mock problematic components
 vi.mock('app/components/tweet', () => ({

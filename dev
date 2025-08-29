@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Ensure env is created via predev hook
+if command -v bun >/dev/null 2>&1; then
+  exec bun run dev
+else
+  echo "bun not found; falling back to npm run dev" >&2
+  exec npm run dev
+fi
+
