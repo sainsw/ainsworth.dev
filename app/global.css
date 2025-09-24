@@ -117,8 +117,15 @@ html {
 }
 
 .prose .anchor:after {
-    @apply text-neutral-300 dark:text-neutral-700;
+    /* Tailwind v4: avoid @apply for text color tokens here */
+    color: #d4d4d4; /* neutral-300 */
     content: "#";
+}
+
+@media (prefers-color-scheme: dark) {
+    .prose .anchor:after {
+        color: #404040; /* neutral-700 */
+    }
 }
 
 .prose *:hover > .anchor {

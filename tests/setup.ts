@@ -29,9 +29,9 @@ vi.mock('next/image', () => ({
   default: (props: any) => React.createElement('img', props),
 }))
 
-// Mock Next.js Link component  
+// Mock Next.js Link component: filter non-DOM props like `prefetch`
 vi.mock('next/link', () => ({
-  default: ({ children, ...props }: any) => React.createElement('a', props, children),
+  default: ({ children, prefetch, ...props }: any) => React.createElement('a', props, children),
 }))
 
 // Mock react-dom server actions helpers used in forms
