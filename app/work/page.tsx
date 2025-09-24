@@ -16,7 +16,7 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
   technologies?: string[];
 }) {
   return (
-    <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4">
+    <div className="border border-gray-200 dark:border-gray-900 bg-white dark:bg-[#141414] rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4">
       <div className="flex flex-col">
         <p className="prose-medium text-gray-900 dark:text-gray-100">
           {name}
@@ -43,7 +43,7 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
             <Paragraph key={index} str={desc} />
           ))}
           {technologies && technologies.length > 0 && (
-            <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+            <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-900">
               <p className="prose-sm text-gray-600 dark:text-gray-400 italic">
                 {technologies.join(' • ')}
               </p>  
@@ -70,7 +70,7 @@ function SkillCloud({ skills }: { skills: string[] }) {
       {skills.map((skill, index) => (
         <span
           key={index}
-          className="border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 rounded px-2 py-1 text-sm text-gray-900 dark:text-gray-100"
+          className="border border-gray-200 dark:border-gray-900 bg-gray-50 dark:bg-gray-800 rounded px-2 py-1 text-sm text-gray-900 dark:text-gray-100"
           style={{ whiteSpace: 'nowrap' }}
         >
           {skill}
@@ -135,7 +135,7 @@ export default function Page() {
 
       <div className="mt-12">
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">non-technical skills 🤝</h1>
-        <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded px-3 py-4 mb-8">
+        <div className="border border-gray-200 dark:border-gray-900 bg-white dark:bg-[#141414] rounded px-3 py-4 mb-8">
           <ul className="space-y-2">
             {resumeData.nonTechnicalSkills.map((skill, index) => (
               <li key={index} className="text-sm text-gray-600 dark:text-gray-400">
@@ -148,7 +148,7 @@ export default function Page() {
 
       <div className="mt-12">
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">hobbies 🎨</h1>
-        <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded px-3 py-4">
+        <div className="border border-gray-200 dark:border-gray-900 bg-white dark:bg-[#141414] rounded px-3 py-4">
           <div className="space-y-2">
             {resumeData.hobbies.map((hobby, index) => (
               <p key={index} className="text-sm text-gray-600 dark:text-gray-400">
@@ -159,10 +159,10 @@ export default function Page() {
         </div>
       </div>
 
-      <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-gray-600 dark:text-gray-200">
+      <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-gray-600 dark:text-gray-300">
         <li ref={cvLinkRef}>
           <a
-            className="flex items-center hover:text-gray-800 dark:text-gray-200 dark:hover:text-white transition-colors"
+            className="flex items-center hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition-colors"
             rel="noopener noreferrer"
             target="_blank"
             href={cvUrl}
