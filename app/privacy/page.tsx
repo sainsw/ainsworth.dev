@@ -13,7 +13,7 @@ export default function PrivacyPage() {
       </h1>
       
       <div className="prose prose-neutral dark:prose-invert">
-        <p className="text-neutral-700 dark:text-neutral-300 mb-6">
+        <p className="text-gray-700 dark:text-gray-300 mb-6">
           Last updated: {new Date().toLocaleDateString('en-GB', {
             year: 'numeric',
             month: 'long',
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
             user="privacy"
             domain="ainsworth.dev"
             label="email me"
-            className="underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
+            className="underline underline-offset-2 text-gray-900 dark:text-gray-100 hover:opacity-80"
           />
           {' '}or use the contact form.
         </p>
@@ -113,7 +113,7 @@ export default function PrivacyPage() {
             user="privacy"
             domain="ainsworth.dev"
             label="email me"
-            className="underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
+            className="underline underline-offset-2 text-gray-900 dark:text-gray-100 hover:opacity-80"
           />{' '}
           with your request.
         </p>
@@ -125,7 +125,7 @@ export default function PrivacyPage() {
             user="privacy"
             domain="ainsworth.dev"
             label="email me"
-            className="underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
+            className="underline underline-offset-2 text-gray-900 dark:text-gray-100 hover:opacity-80"
           />
           .
         </p>

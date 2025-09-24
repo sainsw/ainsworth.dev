@@ -54,6 +54,6 @@ describe('ViewCounter Component', () => {
     const { container } = render(<ViewCounter slug="test" allViews={mockViews} />)
     
     const paragraph = container.querySelector('p')
-    expect(paragraph).toHaveClass('text-neutral-600', 'dark:text-neutral-400')
+    expect(paragraph).toHaveClass('text-gray-600', 'dark:text-gray-400')
   })
 })

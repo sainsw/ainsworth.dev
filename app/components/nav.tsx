@@ -34,7 +34,7 @@ export function Navbar() {
                   key={path}
                   href={path}
                   prefetch={prefetch}
-                  className="transition-colors hover:text-neutral-800 dark:hover:text-neutral-200 flex align-middle relative py-1 px-2"
+                  className="transition-colors hover:text-gray-800 dark:hover:text-gray-200 flex align-middle relative py-1 px-2"
                 >
                   {name}
                 </Link>

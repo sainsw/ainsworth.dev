@@ -119,9 +119,9 @@ export function CookieConsent({
           // Avoid setting transform here; Tailwind translate classes need full control
         }}
       >
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg p-4 sm:p-5">
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-lg p-4 sm:p-5">
           <div className="space-y-3">
-            <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
               {description}
             </p>
             <div className="flex items-center flex-wrap gap-4 mt-4">
@@ -158,7 +158,7 @@ export function CookieConsent({
               {learnMoreHref && (
                 <a
                   href={learnMoreHref}
-                  className="ms-auto text-sm underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
+                  className="ms-auto text-sm underline underline-offset-2 text-gray-900 dark:text-gray-100 hover:opacity-80"
                   aria-label="Privacy policy"
                 >
                   Privacy policy
