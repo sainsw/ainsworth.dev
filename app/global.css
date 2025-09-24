@@ -117,8 +117,14 @@ html {
 }
 
 .prose .anchor:after {
-    @apply text-gray-300 dark:text-gray-700;
+    /* Use Tailwind v4 color variables directly to avoid @apply issues */
+    color: var(--color-neutral-300);
     content: "#";
+}
+@media (prefers-color-scheme: dark) {
+  .prose .anchor:after {
+    color: var(--color-neutral-700);
+  }
 }
 
 .prose *:hover > .anchor {
@@ -126,7 +132,7 @@ html {
 }
 
 .prose pre {
-    @apply bg-gray-50 dark:bg-gray-900 rounded-lg overflow-x-auto border border-gray-200 dark:border-gray-900;
+    @apply bg-neutral-50 dark:bg-neutral-900 rounded-lg overflow-x-auto border border-neutral-200 dark:border-neutral-900;
 }
 
 .prose code {
