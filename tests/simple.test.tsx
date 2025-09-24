@@ -13,8 +13,9 @@ describe('Frontend Testing Setup', () => {
   it('should validate package.json overrides', () => {
     const pkg = require('../package.json')
     expect(pkg.overrides).toBeDefined()
-    expect(pkg.overrides.react).toBe('^18.3.1')
-    expect(pkg.overrides['react-dom']).toBe('^18.3.1')
-    expect(pkg.overrides['react-is']).toBe('^18.0.0')
+    // Ensure overrides align on the same major React version
+    expect(pkg.overrides.react).toMatch(/^\^19\./)
+    expect(pkg.overrides['react-dom']).toMatch(/^\^19\./)
+    expect(pkg.overrides['react-is']).toMatch(/^\^19\./)
   })
 })
