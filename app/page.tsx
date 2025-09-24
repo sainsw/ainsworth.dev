@@ -14,7 +14,7 @@ function Badge(props) {
     <a
       {...props}
       target="_blank"
-      className="border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 rounded p-1 text-sm inline-flex items-center leading-4 text-gray-900 dark:text-gray-100 no-underline"
+      className="border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded p-1 text-sm inline-flex items-center leading-4 text-gray-900 dark:text-gray-100 no-underline"
     />
   );
 }

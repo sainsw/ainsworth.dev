@@ -16,7 +16,7 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
   technologies?: string[];
 }) {
   return (
-    <div className="border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4">
+    <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4">
       <div className="flex flex-col">
         <p className="prose-medium text-gray-900 dark:text-gray-100">
           {name}
@@ -135,7 +135,7 @@ export default function Page() {
 
       <div className="mt-12">
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">non-technical skills 🤝</h1>
-        <div className="border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 rounded px-3 py-4 mb-8">
+        <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded px-3 py-4 mb-8">
           <ul className="space-y-2">
             {resumeData.nonTechnicalSkills.map((skill, index) => (
               <li key={index} className="text-sm text-gray-600 dark:text-gray-400">
@@ -148,7 +148,7 @@ export default function Page() {
 
       <div className="mt-12">
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">hobbies 🎨</h1>
-        <div className="border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 rounded px-3 py-4">
+        <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded px-3 py-4">
           <div className="space-y-2">
             {resumeData.hobbies.map((hobby, index) => (
               <p key={index} className="text-sm text-gray-600 dark:text-gray-400">
