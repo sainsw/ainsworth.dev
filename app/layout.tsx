@@ -84,34 +84,12 @@ export default function RootLayout({
         <link rel="preconnect" href="https://api.resend.com" crossOrigin="" />
         <meta property="og:logo" content="https://ainsworth.dev/favicon.ico" />
         <SandpackCSS />
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            // Use media loading technique to make CSS non-render-blocking
-            (function(){
-              var cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
-              cssLinks.forEach(function(link) {
-                if (link.href.includes('_next/static/css')) {
-                  // Create async version using media attribute trick
-                  var asyncLink = document.createElement('link');
-                  asyncLink.rel = 'stylesheet';
-                  asyncLink.href = link.href;
-                  asyncLink.media = 'print'; // Non-blocking media
-                  asyncLink.onload = function() {
-                    this.media = 'all'; // Switch to blocking once loaded
-                  };
-                  // Insert async version
-                  document.head.appendChild(asyncLink);
-                  // Remove original blocking version after a small delay
-                  setTimeout(function() {
-                    if (link.parentNode) {
-                      link.parentNode.removeChild(link);
-                    }
-                  }, 50);
-                }
-              });
-            })();
-          `
-        }} />
+        {/**
+         * Avoid overriding Next.js CSS loading. A previous non-blocking
+         * CSS hack caused FOUC and cumulative layout shift, especially on
+         * content‑heavy pages like /work. Next.js already optimizes CSS
+         * delivery, so we keep default behavior to preserve layout stability.
+         */}
         <link rel="preload" href={`/images/home/avatar-${AVATAR_VERSION}.webp`} as="image" type="image/webp" />
         <link rel="preload" href="/sprite.svg" as="image" type="image/svg+xml" />
       </head>
