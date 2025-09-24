@@ -1,6 +1,11 @@
 {
   "buildCommand": "./scripts/vercel-build.sh",
   "framework": "nextjs",
+  "build": {
+    "env": {
+      "NODE_VERSION": "22"
+    }
+  },
   "functions": {
     "app/api/**": {
       "maxDuration": 30
