@@ -46,3 +46,6 @@ cv-source/*.out
 cv-source/*.fdb_latexmk
 cv-source/*.fls
 cv-source/*.synctex.gz
+
+# Ignore local screenshots accidentally dropped in repo root
+Screenshot *.png
