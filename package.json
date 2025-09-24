@@ -29,7 +29,7 @@
     "@googleapis/youtube": "^29.0.0",
     "@mdx-js/mdx": "^3.1.0",
     "@next/mdx": "^15.4.5",
-    "@tailwindcss/typography": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/mdx": "^2.0.13",
     "@types/node": "^22.0.0",
     "@types/react": "^19.1.13",
@@ -52,7 +52,7 @@
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "sugar-high": "^0.9.3",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^4.1.13",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
