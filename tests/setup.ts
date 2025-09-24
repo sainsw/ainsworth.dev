@@ -59,6 +59,7 @@ vi.mock('app/db/queries', () => ({
 
 vi.mock('app/db/actions', () => ({
   increment: vi.fn().mockResolvedValue(undefined),
+  submitContact: vi.fn().mockResolvedValue({ success: true, message: 'ok' }),
 }))
 
 vi.mock('app/db/blog', () => ({

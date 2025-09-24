@@ -1,37 +1,25 @@
 'use client';
 
-import { sendEmail } from 'app/db/actions';
-import React, { useState, FormEvent, useRef } from 'react'
+import React, { useEffect, useRef, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
+import { submitContact } from 'app/db/actions';
 
 export default function Page() {
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [error, setError] = useState<string | null>(null)
-    const [success, setSuccess] = useState<string | null>(null)
-
     const formRef = useRef<HTMLFormElement>(null);
+    const [state, formAction] = useActionState(submitContact, undefined);
+
+    useEffect(() => {
+        if (state?.success) {
+            formRef.current?.reset();
+        }
+    }, [state?.success]);
 
     return (
         <div>
-            
             <form
                 className="relative max-w-[500px]"
                 ref={formRef}
-                action={async (formData) => {
-                    setIsLoading(true);
-                    setError(null);
-                    setSuccess(null);
-                    try {
-                        let response = await sendEmail(formData);
-                        formRef.current?.reset();
-                        setSuccess("you sent me a message. nicely done!")
-                    } catch (error) {
-                        setError(error.message.toLowerCase() + ". how embarrassing.")
-                        console.error(error)
-                    } finally {
-                        setIsLoading(false);
-                    }
-                }}
+                action={formAction}
             >
                 <input
                     aria-label="Your email address"
@@ -49,8 +37,11 @@ export default function Page() {
                 />
                 <SubmitButton />
             </form>
-            {error && <p className='py-2' style={{ color: '#e02518' }}>{error}</p>}
-            {success && <p className='py-2'>{success}</p>}
+            {state?.message && (
+                <p className='py-2' style={{ color: state.success ? 'inherit' : '#e02518' }}>
+                    {state.message}
+                </p>
+            )}
         </div>
     );
 }

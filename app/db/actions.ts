@@ -101,6 +101,20 @@ export async function sendEmail(formData: FormData) {
   return response;
 }
 
+// Server action compatible with React useFormState API
+export async function submitContact(
+  _prevState: { success: boolean; message: string } | undefined,
+  formData: FormData
+) {
+  try {
+    await sendEmail(formData);
+    return { success: true, message: 'you sent me a message. nicely done!' };
+  } catch (err: any) {
+    const msg = (err?.message || 'something went wrong').toString().toLowerCase() + '. how embarrassing.';
+    return { success: false, message: msg };
+  }
+}
+
 export async function deleteGuestbookEntries(selectedEntries: string[]) {
   let session = await getSession();
   let email = session.user?.email as string;
