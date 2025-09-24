@@ -14,7 +14,7 @@ function Badge(props) {
     <a
       {...props}
       target="_blank"
-      className="border border-[hsl(var(--border))] bg-[hsl(var(--muted))] rounded p-1 text-sm inline-flex items-center leading-4 text-[hsl(var(--foreground))] no-underline"
+      className="border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded p-1 text-sm inline-flex items-center leading-4 text-gray-900 dark:text-gray-100 no-underline"
     />
   );
 }
@@ -69,10 +69,10 @@ export default function Page() {
           You'll find content that reflects my experience in leading development teams and implementing modern software practices.
         </p>
       </div>
-      <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-gray-600 dark:text-gray-200">
+      <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-gray-600 dark:text-gray-300">
         <li>
           <a
-            className="flex items-center hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
+            className="flex items-center hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition-colors"
             rel="noopener noreferrer"
             target="_blank"
             href="https://linkedin.com/in/samainsworth"
@@ -83,7 +83,7 @@ export default function Page() {
         </li>
         <li>
           <Link
-            className="flex items-center hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
+            className="flex items-center hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition-colors"
             href="/contact"
             prefetch={true}
           >

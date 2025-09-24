@@ -16,15 +16,15 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
   technologies?: string[];
 }) {
   return (
-    <div className="border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4">
+    <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4">
       <div className="flex flex-col">
-        <p className="prose-medium">
+        <p className="prose-medium text-gray-900 dark:text-gray-100">
           {name}
         </p>
-        <p className="prose-sm mt-2 italic">
+        <p className="prose-sm mt-2 italic text-gray-900 dark:text-gray-100">
           {post}
         </p>
-        <p className="prose-sm">
+        <p className="prose-sm text-gray-900 dark:text-gray-100">
           {dates}
         </p>
       </div>
@@ -43,8 +43,8 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
             <Paragraph key={index} str={desc} />
           ))}
           {technologies && technologies.length > 0 && (
-            <div className="mt-2 pt-2 border-t border-[hsl(var(--border))]">
-              <p className="prose-sm italic">
+            <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+              <p className="prose-sm text-gray-600 dark:text-gray-400 italic">
                 {technologies.join(' • ')}
               </p>  
             </div>
@@ -58,7 +58,7 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
 
 function Paragraph({ str }) {
   return (
-    <p className="prose-sm mt-2">
+    <p className="prose-sm mt-2 text-gray-900 dark:text-gray-100">
       {str}
     </p>
   );
@@ -70,7 +70,7 @@ function SkillCloud({ skills }: { skills: string[] }) {
       {skills.map((skill, index) => (
         <span
           key={index}
-          className="border border-[hsl(var(--border))] bg-[hsl(var(--muted))] rounded px-2 py-1 text-sm text-[hsl(var(--foreground))] transition-colors"
+          className="border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 rounded px-2 py-1 text-sm text-gray-900 dark:text-gray-100"
           style={{ whiteSpace: 'nowrap' }}
         >
           {skill}
@@ -135,10 +135,10 @@ export default function Page() {
 
       <div className="mt-12">
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">non-technical skills 🤝</h1>
-        <div className="border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] rounded px-3 py-4 mb-8">
+        <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded px-3 py-4 mb-8">
           <ul className="space-y-2">
             {resumeData.nonTechnicalSkills.map((skill, index) => (
-              <li key={index} className="text-sm">
+              <li key={index} className="text-sm text-gray-600 dark:text-gray-400">
                 {skill}
               </li>
             ))}
@@ -148,10 +148,10 @@ export default function Page() {
 
       <div className="mt-12">
         <h1 className="font-medium text-2xl mb-8 tracking-tighter">hobbies 🎨</h1>
-        <div className="border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] rounded px-3 py-4">
+        <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded px-3 py-4">
           <div className="space-y-2">
             {resumeData.hobbies.map((hobby, index) => (
-              <p key={index} className="text-sm">
+              <p key={index} className="text-sm text-gray-600 dark:text-gray-400">
                 {hobby}
               </p>
             ))}
