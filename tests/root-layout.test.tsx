@@ -26,8 +26,6 @@ describe('RootLayout', () => {
     // Preload links in <head>
     const spritePreload = document.querySelector('link[rel="preload"][href="/sprite.svg"]')
     expect(spritePreload).not.toBeNull()
-    const avatarPreload = Array.from(document.querySelectorAll('link[rel="preload"]'))
-      .find((l) => (l as HTMLLinkElement).href.includes('/images/home/avatar-'))
-    expect(avatarPreload).toBeDefined()
+    // Avatar preload is now scoped to the Home page only
   })
 })

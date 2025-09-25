@@ -92,7 +92,6 @@ export default function RootLayout({
          * content‑heavy pages like /work. Next.js already optimizes CSS
          * delivery, so we keep default behavior to preserve layout stability.
          */}
-        <link rel="preload" href={`/images/home/avatar-${AVATAR_VERSION}.webp`} as="image" type="image/webp" />
         <link rel="preload" href="/sprite.svg" as="image" type="image/svg+xml" />
         {/* Preload the main CSS so the browser fetches it earlier without changing render order */}
         {CSS_VERSION ? (

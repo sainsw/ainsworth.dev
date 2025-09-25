@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ViewCounter from 'app/blog/view-counter';
 import { ArrowIcon } from './components/arrow-icon';
+import { HomePreloads } from './home-preloads';
 import { PrideAvatar } from './components/pride-avatar';
 import { Icon } from '../components/icon';
 import { AVATAR_VERSION } from '../lib/version';
@@ -23,6 +24,7 @@ function Badge(props) {
 export default function Page() {
   return (
     <section>
+      <HomePreloads />
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">hello, I'm Sam 👋</h1>
       <div className="prose prose-neutral dark:prose-invert">
         <p>
