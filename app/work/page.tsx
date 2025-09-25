@@ -30,8 +30,14 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
       </div>
       <div className="flex flex-col">
         {url ? (
-          <a href={url} target="_blank" rel="noopener noreferrer" className="h-12 w-12 self-end">
-            <Icon id={iconId} size={48} className="h-12 w-12" />
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-12 w-12 self-end"
+            aria-label={`Visit ${name}`}
+          >
+            <Icon id={iconId} size={48} className="h-12 w-12" decorative />
           </a>
         ) : (
           <Icon id={iconId} size={48} className="h-12 w-12 self-end" />
@@ -91,12 +97,12 @@ export default function Page() {
     <section>
       {/* Skills Cloud Section */}
       <div className="mb-12">
-        <h1 className="font-medium text-2xl mb-8 tracking-tighter">skills & technologies 💻</h1>
+        <h2 className="font-medium text-2xl mb-8 tracking-tighter">skills & technologies 💻</h2>
         <SkillCloud skills={allSkills} />
       </div>
 
       <div className="mt-12">
-        <h1 className="font-medium text-2xl mb-8 tracking-tighter">work 👨‍💻</h1>
+        <h2 className="font-medium text-2xl mb-8 tracking-tighter">work 👨‍💻</h2>
         <ul>
           {resumeData.experience.map((job, index) => (
             <li key={index} className="group py-2">
@@ -115,7 +121,7 @@ export default function Page() {
         </ul>
       </div>
       <div>
-        <h1 className="font-medium text-2xl mb-8 mt-12 tracking-tighter">education 👨‍🎓</h1>
+        <h2 className="font-medium text-2xl mb-8 mt-12 tracking-tighter">education 👨‍🎓</h2>
         <ul>
           {resumeData.education.map((school, index) => (
             <li key={index} className="group py-2">
@@ -134,7 +140,7 @@ export default function Page() {
       </div>
 
       <div className="mt-12">
-        <h1 className="font-medium text-2xl mb-8 tracking-tighter">non-technical skills 🤝</h1>
+        <h2 className="font-medium text-2xl mb-8 tracking-tighter">non-technical skills 🤝</h2>
         <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 mb-8">
           <ul className="space-y-2">
             {resumeData.nonTechnicalSkills.map((skill, index) => (
@@ -147,7 +153,7 @@ export default function Page() {
       </div>
 
       <div className="mt-12">
-        <h1 className="font-medium text-2xl mb-8 tracking-tighter">hobbies 🎨</h1>
+        <h2 className="font-medium text-2xl mb-8 tracking-tighter">hobbies 🎨</h2>
         <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4">
           <div className="space-y-2">
             {resumeData.hobbies.map((hobby, index) => (

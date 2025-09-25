@@ -8,7 +8,6 @@ import { Suspense } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { DeferredAnalytics } from './components/deferred-analytics';
 import { CookieConsent } from './components/cookie-banner';
-import { SandpackCSS } from './blog/[slug]/sandpack';
 import { AVATAR_VERSION } from '../lib/version';
 
 // CSS_VERSION is available after build, fallback to dynamic loading
@@ -76,14 +75,17 @@ export default function RootLayout({
     >
       <head>
         <link rel="dns-prefetch" href="//ainsworth.dev" />
-        <link rel="preconnect" href="https://ainsworth.dev" crossOrigin="" />
-        <link rel="preconnect" href="https://cdn.vercel-insights.com" crossOrigin="" />
-        <link rel="preconnect" href="https://vercel.live" crossOrigin="" />
-        <link rel="preconnect" href="https://va.vercel-scripts.com" crossOrigin="" />
-        <link rel="preconnect" href="https://static.cloudflareinsights.com" crossOrigin="" />
-        <link rel="preconnect" href="https://api.resend.com" crossOrigin="" />
+        {/**
+         * Keep preconnects minimal to avoid Lighthouse warnings and unnecessary sockets.
+         * We'll rely on first-use connection establishment for third parties.
+         */}
+        {/**
+         * Avoid preconnecting to third‑party analytics or APIs globally to reduce
+         * baseline connection overhead before consent or when unused.
+         * - Cloudflare Insights is only enabled after consent via Zaraz.
+         * - Resend is only used on the contact flow; that page preconnects locally.
+         */}
         <meta property="og:logo" content="https://ainsworth.dev/favicon.ico" />
-        <SandpackCSS />
         {/**
          * Avoid overriding Next.js CSS loading. A previous non-blocking
          * CSS hack caused FOUC and cumulative layout shift, especially on
@@ -92,6 +94,15 @@ export default function RootLayout({
          */}
         <link rel="preload" href={`/images/home/avatar-${AVATAR_VERSION}.webp`} as="image" type="image/webp" />
         <link rel="preload" href="/sprite.svg" as="image" type="image/svg+xml" />
+        {/* Preload the main CSS so the browser fetches it earlier without changing render order */}
+        {CSS_VERSION ? (
+          <link
+            rel="preload"
+            as="style"
+            href={`/_next/static/css/${CSS_VERSION}.css`}
+            crossOrigin=""
+          />
+        ) : null}
       </head>
       <body className="antialiased text-black bg-white dark:text-white dark:bg-[#111010]">
         <div className="max-w-2xl mb-40 flex flex-col md:flex-row mx-4 mt-8 lg:mx-auto">

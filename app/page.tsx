@@ -3,7 +3,6 @@ import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 import Image from 'next/image';
 import ViewCounter from 'app/blog/view-counter';
-import { PreloadResources } from 'app/preload';
 import { ArrowIcon } from './components/arrow-icon';
 import { PrideAvatar } from './components/pride-avatar';
 import { Icon } from '../components/icon';

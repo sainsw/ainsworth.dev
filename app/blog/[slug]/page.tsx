@@ -8,6 +8,7 @@ import ViewCounter from '../view-counter';
 import { increment } from 'app/db/actions';
 import { unstable_noStore as noStore } from 'next/cache';
 import { ReactDebug } from 'app/components/react-debug';
+import { SandpackCSS } from './sandpack';
 
 export async function generateMetadata({
   params,
@@ -101,6 +102,8 @@ export default async function Blog({
 
   return (
     <section>
+      {/* Inject Sandpack styles only on blog posts that may use it */}
+      <SandpackCSS />
       <ReactDebug />
       <script
         type="application/ld+json"

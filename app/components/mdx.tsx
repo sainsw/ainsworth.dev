@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { TweetComponent } from "./tweet";
@@ -10,9 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { AvatarDemo } from "./avatar-demo";
-import dynamic from "next/dynamic";
-
-const MermaidClient = dynamic(() => import("./mermaid-client"), { ssr: false });
+import MermaidClient from "./mermaid-client";
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (

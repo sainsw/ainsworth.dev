@@ -3,6 +3,12 @@ set -e
 
 echo "📄 Building CV from LaTeX source..."
 
+# Allow CI or local analysis to skip CV build entirely
+if [ "$SKIP_CV" = "1" ]; then
+  echo "⏭️  SKIP_CV=1 — skipping CV build."
+  exit 0
+fi
+
 echo "🔄 Generating LaTeX from resume data..."
 node ./scripts/generate-latex.js
 
