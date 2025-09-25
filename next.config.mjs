@@ -16,8 +16,10 @@ const nextConfig = {
   trailingSlash: false, // Enforce no trailing slashes
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   experimental: {
-    // Disable CSS optimization to avoid aggressive treeshaking of global styles
+    // Keep CSS stable; Tailwind v4 + PostCSS
     optimizeCss: false,
+    // Drop transpilation/polyfills for legacy browsers to reduce "legacy JS" bytes
+    legacyBrowsers: false,
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
