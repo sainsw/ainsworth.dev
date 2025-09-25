@@ -1,0 +1,62 @@
+---
+title: 'Ship Fast With AI: React 19, Next 15.5, Tailwind 4 — In A Day'
+publishedAt: '2025-09-25'
+summary: 'A hands-on story of upgrading a modern Next.js site to React 19, Next 15.5, Tailwind 4, fixing CLS, taming Vercel builds, and keeping design intact — with Codex + GPT-5 as my pairing partner.'
+---
+
+I spent today doing the sort of “one-inch-deep, one-mile-wide” work that quietly makes a site feel faster, sturdier, and easier to evolve. The goal: modernize the stack, fix a visual jolt on the Work page, and keep the UI aesthetic intact.
+
+Along the way I leaned on Codex + GPT‑5 like a reliable pairing partner — fast at automation, steady on the guard‑rails, and surprisingly good at spotting the boring stuff I’d normally put off.
+
+### The Upgrades (and why they matter)
+
+- React 19 + Next 15.5: Unlocks the latest server action ergonomics (`useActionState`), better dev ergonomics, and compatibility with modern libraries.
+- Tailwind CSS 4: Smaller, faster CSS with a more predictable palette; requires some PostCSS and config changes.
+- TypeScript + tooling: `moduleResolution: 'bundler'` to keep type checking happy with ESM packages (e.g. Tailwind v4’s `.d.mts` types).
+- Node 22 in Vercel: Consistent runtime across local/CI/build; fewer “engine mismatch” surprises.
+- Vercel Speed Insights: Bumped to the latest (^1.2.0) and loaded cleanly.
+
+### The “oh, that’s why” moments
+
+1) CLS on the Work page was self‑inflicted. A “non‑blocking CSS” trick that flipped `media=print` was causing FOUC and layout shift. We removed it and let Next do its thing. Instant calm.
+
+2) Tailwind v4 is excellent — and opinionated. Two gotchas:
+   - `@apply` can be prickly with palette tokens in v4. Using Tailwind’s CSS variables (e.g. `var(--color-neutral-300)`) in CSS solved the handful of “unknown utility” errors while still keeping the look.
+   - Gray vs Neutral. We briefly migrated to `gray-*` across the UI, then discovered the site actually looked better and more consistent with `neutral-*`. We reverted thoughtfully to keep the original tone while retaining v4 benefits.
+
+3) Builds should be boring. We made them that way:
+   - Enforced Node 22 in `vercel.json` + `.nvmrc`.
+   - Swapped PostCSS to `@tailwindcss/postcss` for Tailwind v4.
+   - Fixed TypeScript’s type resolution for Tailwind (`moduleResolution: 'bundler'`).
+   - Kept unit tests green, adjusting a couple of assertions for React 19 and palette changes.
+
+### The refactors that paid off
+
+- Contact form: switched to React 19’s `useActionState` + server actions. No more “invalid action prop” warning, cleaner intent.
+- Theming: standardized on the site’s neutral palette and dark‑mode variables; borders, cards, and pills now read clearly in both themes.
+
+### What Codex + GPT‑5 did well
+
+Think of it like an extremely diligent junior engineer who:
+- Sweeps the repo quickly for semantic changes (e.g. all `neutral-*` vs `gray-*` classes),
+- Handles rote edits and lockfile bumps without bikeshedding,
+- Surfaces failing tests or noisy build logs you’d otherwise miss,
+- And crucially, doesn’t forget to push, ignore odd files, or align CI settings.
+
+If you’re curious about how I use AI on real projects, I wrote about the workflow in
+my post on <a href="/blog/ai-coding-tools">AI Coding Tools</a> and why I reserve human attention for the creative bits.
+
+### What I’d improve next
+
+- A small design pass on dark‑mode link contrast to make hover states feel even more intentional.
+- A Lighthouse/Speed Insights sweep to quantify the CLS and style fixes.
+- A short visual regression checklist for Tailwind v4 migrations.
+
+### Takeaways
+
+- Upgrade in thin slices, validate, and keep the look. Framework changes shouldn’t force style regressions.
+- Use AI to move the furniture — not choose it. Let tools automate the repeatable changes while you keep taste and intent.
+- Boring builds are a feature. Pin Node, fix PostCSS, keep types happy, and your pipeline becomes a non‑event.
+
+Shipping small, correct, and calm beats shipping flashy and fragile every day of the week. Today felt like the former — and that’s a good day.
+
