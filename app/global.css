@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind imports temporarily removed for debugging */
 
 ::selection {
     background-color: #47a3f3;
@@ -95,11 +93,14 @@
 
 html {
     min-width: 360px;
+    /* debug: include a global rule to verify CSS bundling */
+    /* outline: 1px solid red; */
 }
 
 .prose .anchor {
-    @apply absolute invisible no-underline;
-
+    position: absolute;
+    visibility: hidden;
+    text-decoration: none;
     margin-left: -1em;
     padding-right: 0.5em;
     width: 80%;
@@ -107,14 +108,9 @@ html {
     cursor: pointer;
 }
 
-.anchor:hover {
-    @apply visible;
-}
+.anchor:hover { visibility: visible; }
 
-.prose a {
-    /* Tailwind v4: avoid deprecated color tokens in @apply */
-    @apply transition-colors underline-offset-2 decoration-[0.1em];
-}
+.prose a { transition: color .2s ease; text-underline-offset: 0.2em; text-decoration-thickness: 0.1em; }
 
 .prose .anchor:after {
     /* Use Tailwind v4 color variables directly to avoid @apply issues */
@@ -127,9 +123,7 @@ html {
   }
 }
 
-.prose *:hover > .anchor {
-    visibility: visible;
-}
+.prose *:hover > .anchor { visibility: visible; }
 
 .prose pre {
     /* Tailwind v4: avoid @apply with color utilities that can error under PostCSS */
@@ -146,12 +140,13 @@ html {
 }
 
 .prose code {
-    @apply px-1 py-0.5 rounded-lg;
+    padding: 0.125rem 0.25rem; /* py-0.5 px-1 */
+    border-radius: 0.5rem; /* rounded-lg */
     font-family: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", monospace !important;
 }
 
 .prose pre code {
-    @apply p-0;
+    padding: 0;
     border: initial;
     line-height: 1.5;
     font-family: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", monospace !important;
@@ -161,16 +156,11 @@ html {
     font-weight: 500; /* font-medium */
 }
 
-.prose img {
-    /* Don't apply styles to next/image */
-    @apply m-0;
-}
+.prose img { margin: 0; }
 
 .prose h2,
 h3,
-h4 {
-    @apply font-medium tracking-tighter !important;
-}
+h4 { font-weight: 500 !important; letter-spacing: -0.05em !important; }
 
 .prose strong {
     font-weight: 500; /* font-medium */
@@ -221,7 +211,9 @@ table {
 
 /* Mermaid diagram styling to fix text cutoff issues */
 .mermaid-diagram {
-    @apply flex justify-center items-center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     max-width: 100%;
     margin-left: auto;

@@ -16,7 +16,8 @@ const nextConfig = {
   trailingSlash: false, // Enforce no trailing slashes
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   experimental: {
-    optimizeCss: true, // Enable CSS optimization
+    // Disable CSS optimization to avoid aggressive treeshaking of global styles
+    optimizeCss: false,
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
