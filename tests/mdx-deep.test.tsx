@@ -42,7 +42,6 @@ describe('CustomMDX deep rendering', () => {
     render(<FreshMDX source={md} />)
     const el = screen.getByTestId('mermaid')
     expect(el).toBeInTheDocument()
-    expect(el.getAttribute('chart')).toContain('graph TD')
+    expect(el.getAttribute('data-chart')).toContain('graph TD')
   })
 })
-

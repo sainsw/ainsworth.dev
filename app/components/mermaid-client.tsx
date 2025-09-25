@@ -330,8 +330,8 @@ export default function MermaidClient({
         ref={elementRef}
         className={`mermaid-diagram flex justify-center ${!isLoaded ? "hidden" : ""}`}
         data-testid="mermaid"
-        // Expose chart source as attribute for tests
-        chart={chart as any}
+        // Expose chart source as a data attribute for tests (TS-safe)
+        data-chart={chart as any}
         style={{
           width: "100%",
           padding: "12px",
