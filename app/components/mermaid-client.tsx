@@ -19,8 +19,10 @@ export default function MermaidClient({
   // Effect to detect theme changes
   useEffect(() => {
     const checkDarkMode = () => {
-      const darkMode = document.documentElement.classList.contains('dark') || 
-                      window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const prefersDark = (typeof window !== 'undefined' && typeof window.matchMedia === 'function')
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        : false;
+      const darkMode = document.documentElement.classList.contains('dark') || prefersDark;
       setIsDark(darkMode);
     };
 
@@ -35,12 +37,15 @@ export default function MermaidClient({
     });
 
     // Watch for system theme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', checkDarkMode);
+    let mediaQuery: MediaQueryList | null = null;
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      mediaQuery.addEventListener('change', checkDarkMode);
+    }
 
     return () => {
       observer.disconnect();
-      mediaQuery.removeEventListener('change', checkDarkMode);
+      mediaQuery?.removeEventListener('change', checkDarkMode);
     };
   }, []);
 
@@ -324,6 +329,9 @@ export default function MermaidClient({
       <div
         ref={elementRef}
         className={`mermaid-diagram flex justify-center ${!isLoaded ? "hidden" : ""}`}
+        data-testid="mermaid"
+        // Expose chart source as attribute for tests
+        chart={chart as any}
         style={{
           width: "100%",
           padding: "12px",
