@@ -91,15 +91,7 @@ export default function RootLayout({
          * delivery, so we keep default behavior to preserve layout stability.
          */}
         <link rel="preload" href="/sprite.svg" as="image" type="image/svg+xml" />
-        {/* Preload the main CSS so the browser fetches it earlier without changing render order */}
-        {CSS_VERSION ? (
-          <link
-            rel="preload"
-            as="style"
-            href={`/_next/static/css/${CSS_VERSION}.css`}
-            crossOrigin=""
-          />
-        ) : null}
+        {/** Removed CSS preload to avoid loading the wrong chunk; let Next manage CSS */}
       </head>
       <body className="antialiased text-black bg-white dark:text-white dark:bg-[#111010]">
         <div className="max-w-2xl mb-40 flex flex-col md:flex-row mx-4 mt-8 lg:mx-auto">
