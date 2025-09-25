@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -115,3 +116,9 @@ export default function Page() {
     </section>
   );
 }
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: 'https://ainsworth.dev',
+  },
+};

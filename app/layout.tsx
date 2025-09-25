@@ -52,9 +52,7 @@ export const metadata: Metadata = {
   verification: {
     google: 'hej0QCp4EiTc0mN34JuMNlseT8_4jOGDLO79NcEAdWw',
   },
-  alternates: {
-    canonical: 'https://ainsworth.dev',
-  },
+  // Avoid setting a site-wide canonical. Each route sets its own where needed.
 };
 
 const cx = (...classes) => classes.filter(Boolean).join(' ');

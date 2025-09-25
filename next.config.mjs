@@ -141,6 +141,11 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=()',
   },
+  // Express the site's content preferences via HTTP header instead of robots.txt
+  {
+    key: 'Content-Signals',
+    value: 'search=yes, ai-train=no',
+  },
 ];
 
 export default withMDX(nextConfig);
