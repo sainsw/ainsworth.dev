@@ -17,8 +17,9 @@ export async function Footer() {
         <footer>
             <div className="relative h-64 ">
                 <div className="absolute bottom-0 left-0 container mx-auto px-4">
-                    <div className="-mx-4 flex flex-wrap justify-end items-end">
-                        <div className="flex flex-col items-end">
+                    <div className="flex flex-col pb-5">
+                        {/* Avatar: left on mobile, centered on md+ to mimic homepage */}
+                        <div className="w-full">
                             <a
                                 className="block md:mx-auto mb-3 max-w-max"
                                 aria-label="find me on linkedin"
@@ -40,9 +41,10 @@ export async function Footer() {
                                     </picture>
                                 </PrideAvatar>
                             </a>
-                            <div className="prose prose-sm dark:prose-invert text-right">
-                                {copyrightString}
-                            </div>
+                        </div>
+                        {/* Copyright: always left aligned */}
+                        <div className="prose prose-sm dark:prose-invert">
+                            {copyrightString}
                         </div>
                     </div>
                 </div>

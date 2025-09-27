@@ -2,13 +2,11 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
-import Image from 'next/image';
 import ViewCounter from 'app/blog/view-counter';
 import { ArrowIcon } from './components/arrow-icon';
 import { HomePreloads } from './home-preloads';
-import { PrideAvatar } from './components/pride-avatar';
 import { Icon } from '../components/icon';
-import { AVATAR_VERSION } from '../lib/version';
+// Removed inline avatar; now shown globally in footer
 
 function Badge(props) {
   return (
@@ -94,25 +92,7 @@ export default function Page() {
           </Link>
         </li>
       </ul>
-      <div className="container px-4 mx-auto">
-        <div className="pt-24 pb-11 mx-auto max-w-4xl">
-          <a className="block md:mx-auto mb-5 max-w-max" aria-label="find me on linkedin" href="https://linkedin.com/in/samainsworth">
-            <PrideAvatar>
-              <picture>
-                <source srcSet={`/images/home/avatar-${AVATAR_VERSION}.webp`} type="image/webp" />
-                <img 
-                  className="bg-left-bottom h-20 w-20 rounded-full" 
-                  src={`/images/home/avatar-${AVATAR_VERSION}.jpg`} 
-                  alt="my face"
-                  width={80}
-                  height={80}
-                  loading="eager"
-                />
-              </picture>
-            </PrideAvatar>
-          </a>
-        </div>
-      </div>
+      {/** Avatar moved to global footer */}
     </section>
   );
 }
