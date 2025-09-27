@@ -16,35 +16,38 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
   technologies?: string[];
 }) {
   return (
-    <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 w-full grid grid-cols-[1fr,auto] gap-4 items-start">
-      <div className="flex flex-col">
-        <p className="prose-medium text-neutral-900 dark:text-neutral-100">
-          {name}
-        </p>
-        <p className="prose-sm mt-2 italic text-neutral-900 dark:text-neutral-100">
-          {post}
-        </p>
-        <p className="prose-sm text-neutral-900 dark:text-neutral-100">
-          {dates}
-        </p>
+    <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 w-full flex flex-col gap-4">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col">
+          <p className="prose-medium text-neutral-900 dark:text-neutral-100">
+            {name}
+          </p>
+          <p className="prose-sm mt-2 italic text-neutral-900 dark:text-neutral-100">
+            {post}
+          </p>
+          <p className="prose-sm text-neutral-900 dark:text-neutral-100">
+            {dates}
+          </p>
+        </div>
+        <div className="flex flex-col">
+          {url ? (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-12 w-12"
+              aria-label={`Visit ${name}`}
+            >
+              <Icon id={iconId} size={48} className="h-12 w-12" decorative />
+            </a>
+          ) : (
+            <Icon id={iconId} size={48} className="h-12 w-12" />
+          )}
+        </div>
       </div>
-      <div className="flex flex-col justify-start self-start justify-self-end">
-        {url ? (
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="h-12 w-12"
-            aria-label={`Visit ${name}`}
-          >
-            <Icon id={iconId} size={48} className="h-12 w-12" decorative />
-          </a>
-        ) : (
-          <Icon id={iconId} size={48} className="h-12 w-12" />
-        )}
-      </div>
+
       {description && description.length > 0 && (
-        <div className="col-span-2">
+        <div>
           {description.map((desc, index) => (
             <Paragraph key={index} str={desc} />
           ))}
