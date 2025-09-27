@@ -1,3 +1,6 @@
+import { PrideAvatar } from './pride-avatar';
+import { AVATAR_VERSION } from '../../lib/version';
+
 const year = new Date().getFullYear();
 
 const getCopyrightString = async () => {
@@ -14,10 +17,31 @@ export async function Footer() {
         <footer>
             <div className="relative h-64 ">
                 <div className="absolute bottom-0 left-0 container mx-auto px-4">
-                    <div className="-mx-4 flex flex-wrap justify-between">
-                    <div className="prose prose-sm dark:prose-invert">
-                        {copyrightString}
+                    <div className="-mx-4 flex flex-wrap justify-between items-end">
+                        <div className="prose prose-sm dark:prose-invert">
+                            {copyrightString}
                         </div>
+                        <a
+                            className="block md:mx-auto mb-5 max-w-max"
+                            aria-label="find me on linkedin"
+                            href="https://linkedin.com/in/samainsworth"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <PrideAvatar>
+                                <picture>
+                                    <source srcSet={`/images/home/avatar-${AVATAR_VERSION}.webp`} type="image/webp" />
+                                    <img
+                                        className="bg-left-bottom h-20 w-20 rounded-full"
+                                        src={`/images/home/avatar-${AVATAR_VERSION}.jpg`}
+                                        alt="my face"
+                                        width={80}
+                                        height={80}
+                                        loading="lazy"
+                                    />
+                                </picture>
+                            </PrideAvatar>
+                        </a>
                     </div>
                 </div>
             </div>
