@@ -60,3 +60,27 @@ my post on <a href="/blog/ai-coding-tools">AI Coding Tools</a> and why I reserve
 
 Shipping small, correct, and calm beats shipping flashy and fragile every day of the week. Today felt like the former — and that’s a good day.
 
+
+### Update — Tailwind 4 follow‑up (2025‑09‑27)
+
+After publishing, I finished the Tailwind v4 migration with two fixes that might save you time:
+
+- MDX typography disappeared: Headings and spacing looked “flat” on MDX pages. Under Tailwind v4, I needed to declare the Typography plugin in the CSS entry rather than relying solely on `tailwind.config`.
+
+  Add to `app/tw.css`:
+
+  ```css
+  @import "tailwindcss";
+  @plugin "@tailwindcss/typography";
+  ```
+
+  Result: `.prose` styles re‑generated, restoring sensible heading sizes and spacing. I kept a few bespoke `.prose` overrides in `app/global.css` for anchors, code blocks, and top margins.
+
+- Work page logos bottom‑aligning when no description: Some entries without a description (e.g. WHSmith, West Hill, ASFC) showed the logo hugging the bottom. The root cause was a brittle grid template value that compiled with a comma and behaved inconsistently across browsers. Rather than fight it, I simplified the layout:
+
+  - Header row: flex container with text on the left, logo on the right (`items-start` + `justify-between`).
+  - Description (when present): rendered as a second block below the header.
+
+  This guarantees the logo stays top‑right regardless of the presence of a blurb, and it reads cleaner in the DOM.
+
+Net effect: Tailwind v4 performance and DX benefits, with the original look preserved on MDX and the Work page.
