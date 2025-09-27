@@ -16,7 +16,7 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
   technologies?: string[];
 }) {
   return (
-    <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4">
+    <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 w-full grid grid-cols-[auto,1fr] gap-4 items-start">
       <div className="flex flex-col">
         <p className="prose-medium text-neutral-900 dark:text-neutral-100">
           {name}
@@ -28,19 +28,19 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
           {dates}
         </p>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col justify-start justify-self-end">
         {url ? (
           <a
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="h-12 w-12 self-end"
+            className="h-12 w-12"
             aria-label={`Visit ${name}`}
           >
             <Icon id={iconId} size={48} className="h-12 w-12" decorative />
           </a>
         ) : (
-          <Icon id={iconId} size={48} className="h-12 w-12 self-end" />
+          <Icon id={iconId} size={48} className="h-12 w-12" />
         )}
       </div>
       {description && description.length > 0 && (

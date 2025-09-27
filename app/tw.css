@@ -1,3 +1,4 @@
 /* Tailwind v4 layer */
 @import "tailwindcss";
-
+/* Enable official typography plugin so `.prose` styles generate under v4 */
+@plugin "@tailwindcss/typography";
