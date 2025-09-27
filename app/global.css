@@ -158,6 +158,12 @@ html {
 
 .prose img { margin: 0; }
 
+/* Remove Tailwind Typography's default backticks around inline code */
+.prose :where(:not(pre) > code):not(:where([class~="not-prose"], [class~="not-prose"] *))::before,
+.prose :where(:not(pre) > code):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
+    content: "" !important;
+}
+
 .prose h2,
 h3,
 h4 { font-weight: 500 !important; letter-spacing: -0.05em !important; }
