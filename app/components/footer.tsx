@@ -21,7 +21,7 @@ export async function Footer() {
                         {/* Avatar: left on mobile, centered on md+ to mimic homepage */}
                         <div className="w-full">
                             <a
-                                className="block md:mx-auto mb-5 max-w-max"
+                                className="block md:mx-auto mb-10 max-w-max"
                                 aria-label="find me on linkedin"
                                 href="https://linkedin.com/in/samainsworth"
                                 target="_blank"
