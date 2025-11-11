@@ -1,0 +1,99 @@
+---
+title: "Building Framemoji: a tiny daily emoji movie game"
+publishedAt: "2025-11-07"
+summary: "A lightweight Next.js prototype that became a polished daily game: 10 emoji clues, UTC rotation, percentile stats, keyboard‑first autocomplete, and a hybrid KV/file backend — shipped fast, refined in the details."
+---
+
+I wanted a small, joyful project I could iterate on quickly — something shippable in a day that still left room for polish. Enter Framemoji: a daily movie guessing game where you decode a film in up to ten emojis. Play it at https://framemoji.ainsworth.dev.
+
+It started simple (“one page, one API”), and then quality‑of‑life requests pushed it into a surprisingly complete product: robust matching, a histogram with popular guesses, UTC midnight rotation, a keyboard‑only flow, and production‑ready stats.
+
+### What I built
+
+- Daily game mode: everyone plays the same movie per day; it flips at 00:00 UTC.
+- Ten emoji clues: one per wrong guess; solve earlier, score higher (10 → 1).
+- Percentile stat: “You’re better than X% of players today.”
+- Histogram: bars for reveals 1–10 + a ❌ fail bucket; click a bar to see popular guesses at that step.
+- Keyboard‑only play: type, arrow‑key select, Enter to submit; top suggestion auto‑selects.
+- Autocomplete: fuzzy, accent‑insensitive, popularity‑sorted suggestions (TMDB data).
+- Answer poster: after you finish, the results panel can show the movie poster (via TMDB) if `NEXT_PUBLIC_TMDB_IMAGE_BASE` is configured.
+- Dev tools: when no secret is set, the UI shows the answer, a “Pin today’s puzzle” form for local testing, and a “clear local data” button.
+
+### Why it was fun
+
+The mechanic is familiar, but emojis force visual storytelling. Picking clues that are vague → obvious makes the “aha” satisfying — and you can feel the tension climb as the grid fills.
+
+### Technical bits that mattered
+
+1) App Router + lean client components
+   - Next.js (App Router, TS strict), a tiny client component for gameplay, and server routes for the daily selector and stats. Minimal JavaScript, maximum feedback.
+
+2) Deterministic daily selection (no spoilers)
+   - `index = HMAC(secret, YYYY-MM-DD) % N`, where `N` is the dataset length. Secret lives in `FRAMEMOJI_DAILY_SECRET` (falls back to `EMOVI_DAILY_SECRET` for compatibility) so you can’t precompute answers. Rotation is strictly UTC.
+   - To guarantee consistency across routes and cold starts, the chosen puzzle ID is “pinned” for the current day (stored in KV if configured, otherwise a local file). In dev/file mode, there’s an endpoint to pin a specific ID for testing.
+
+3) Title matching that feels human
+   - Normalized on case/diacritics/punctuation, stripped articles, and Roman→Arabic numerals — with one gotcha solved: keep a lone “I” as “i” so “monsters i” still matches “Monsters, Inc.”
+
+4) Emojis that don’t jiggle
+   - Grapheme segmentation for reveal steps (no half‑emoji), plus an `.emoji-inline` wrapper that normalizes baseline/height so flags and multi‑codepoint sequences don’t shift the row.
+   - Dynamic grid: start at 5 columns, then grow 6/7/…/10 as clues reveal so emojis are always as large as possible.
+
+5) Percentiles you can trust
+   - The “better than X%” stat counts strictly worse outcomes. Fails are worse than any solve; if you fail you’re at 0%.
+   - A UTC countdown shows time to the next game; we compute in UTC so the label is stable regardless of local timezone.
+
+### UX polish that paid off
+
+- Keyboard‑first flow: input autofocus, arrow navigation, Enter submits the highlighted suggestion, query resets selection to the top.
+- Emoji histogram labels: the x‑axis uses the actual reveal emojis (plus ❌) at a larger size.
+- Guess insights: click a bar to see the most popular guesses at that moment, rendered as horizontal bars (not raw numbers). Failures show just the fail count.
+- Copy that matches reality: “You’re better than X% of players today.”
+- Accessible by design: combobox semantics and listbox roles for suggestions, live regions for wrong‑guess feedback and clue changes, focus management on finish, and a “Skip to content” link.
+
+### Infra & data
+
+1) Hybrid stats backend
+   - Local dev: JSON files in `var/stats/YYYY-MM-DD.json` — quick, simple, diffable.
+   - Production: Vercel KV (Upstash Redis) with atomic increments:
+     - `framemoji:YYYY-MM-DD:solves` → hash fields `r1..r10`, `fail` (HINCRBY)
+     - `framemoji:YYYY-MM-DD:guesses2:rN` → hash of normalized guesses with counts (HINCRBY); top N sorted in the app
+   - Env flag `EMOVI_USE_FILE_STATS=1` forces file mode even when KV is present (useful for local debugging on prod-like builds).
+   - The API transparently uses KV when configured and falls back to file mode when not, so it’s easy to test locally.
+
+2) Autocomplete you can ship
+   - Two scripts to maintain `public/data/movies.json`:
+     - Build from TMDB export (filters: year ≥ 1950, popularity, Latin titles, cap to ~50k)
+     - Incremental updates via `/movie/changes` + per‑movie details
+   - Optional enrich step fills missing `year` values.
+   - We sort suggestions by “votes desc → popularity desc → title”, and match words at boundaries first (fallback to mid‑word only if nothing hits).
+   - Poster images: the UI resolves a poster after you finish by matching the final title against the TMDB list (prefers exact match with a poster, then word‑boundary partials; ranks by year proximity and vote_count/popularity).
+
+4) Local streaks (client‑side)
+   - UTC‑based streaks and best score tracked in `localStorage` under `framemoji:dailyStats`, with automatic migration from the old `emovi:dailyStats` key.
+
+3) Dataset for clues
+   - A JSON schema with `id, title, year, emoji_clues[10]`. We started with a curated ~100 and can scale to 1000+ over time.
+
+### A few bugs I enjoyed fixing
+
+- Emoji reveal slicing initially split ZWJ sequences in half; `Intl.Segmenter` fixed it.
+- Hydration mismatch on streaks (server 0/0 vs client localStorage): render placeholders until mount.
+- “mon” matching “demon”: tightened matching to word starts, with fallback only when zero results.
+- Histogram 10 vs ❌ confusion: fail bucket now uses a separate sentinel (0) so the tenth emoji bar isn’t conflated with failures.
+- Baseline jitters: normalized inline emoji sizing for title lines and the grid.
+
+### What I’d improve next
+
+- Serve a daily share card (OG image) showing your reveal step and an emoji strip.
+- Soft rate limiting (per IP) on guess/finish endpoints via KV tokens.
+- A tiny “today’s winner” section with a few of the most frequent wrong guesses — tasteful only.
+- Expand the dataset and add a human review pass for clue quality.
+
+### Takeaways
+
+- Crisp mechanics beat big scope. One daily, one movie, ten clues — that’s enough to feel complete.
+- The last 20% is the difference: keyboard flow, emoji sizing, baseline alignment, and copy choices made this feel delightful.
+- Build locally, deploy globally. A hybrid KV/file approach let me keep rapid local loops and safe production concurrency.
+
+If you want to play: Framemoji picks a new movie every day at 00:00 UTC. One movie. Ten emojis. Play daily at https://framemoji.ainsworth.dev.
