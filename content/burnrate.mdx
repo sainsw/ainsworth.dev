@@ -1,0 +1,111 @@
+---
+title: "BurnRate: keeping meeting costs honest in one page"
+publishedAt: "2025-11-16"
+summary: "A privacy-first meeting burn calculator built with Next.js 16, React 19, and Tailwind 4 — local-only data, a drift-free 30 fps timer, tap-friendly inputs, and shareable recaps in under 500 lines of UI."
+---
+
+I wanted a tool that shamed runaway meetings without exposing anyone’s salary spreadsheet. BurnRate became that: a single-page app that keeps every byte on-device, shows a live HH:MM:SS + cost meter, and hands you a copy-ready recap the moment you tap “Stop”. You can try it at https://burnrate.ainsworth.dev.
+
+### The product in three stages
+
+1. **Intake form** — pick participants, annual/hourly salary, and currency. It’s a tall card with plus/minus “pill” buttons sized for thumbs, number inputs that keep tabular digits, and a sliding currency selector showing the top five symbols.
+2. **Live meter** — the moment the form submits, the timer card takes over. It shows elapsed time, total spend split into major/minor digits, and cost per minute. Pause/Resume and “Stop & Recap” buttons flank the meter.
+3. **Summary** — stopping locks the stats, reveals a privacy reminder (“all calculations stayed locally”), and shows the shareable text block plus buttons for Copy/native share and “Start new session” (which wipes state immediately).
+
+All three states exist inside `src/app/page.tsx`, so there are **zero route changes**. That makes it feel like a dedicated tool rather than a website you click through.
+
+### Local-only math with Zustand stores
+
+Participants, salary, and timer state never leave the browser. Two Zustand stores run the whole thing:
+
+- `useSessionStore` tracks the current session payload and a `resetCounter` so the intake form can remount fresh when you nuke a session.
+- `useTimerStore` tracks start time, pause offsets, elapsed seconds, total cost, and a final snapshot for the recap.
+
+The formula that powers everything lives in `src/lib/session.ts`:
+
+```ts
+const WORK_HOURS_PER_YEAR = 2080;
+const SECONDS_PER_HOUR = 3600;
+
+export function buildSessionSalaryPerSecond(participants: number, inputSalary: number, unit: SalaryUnit) {
+  const hourly = unit === "annual" ? inputSalary / WORK_HOURS_PER_YEAR : inputSalary;
+  return (hourly / SECONDS_PER_HOUR) * participants;
+}
+```
+
+When you submit the form, I compute salary-per-second once, push it into the timer store, and throw everything else away until the summary stage. Hitting “Start new session” calls `resetTimer()` + `clearSession()` which immediately wipes both stores and rerenders the intake form with your locale currency default.
+
+### A drift-free 30 fps timer
+
+I didn’t want a timer that drifts by seconds over a long meeting. `useCostTicker` wraps `requestAnimationFrame` and only recomputes when we’ve crossed a 33 ms frame, using `performance.now()` so it stays accurate even if the tab was backgrounded. The store exposes pure math helpers, so the ticker hook stays tiny:
+
+```ts
+export function useCostTicker() {
+  const status = useTimerStore((state) => state.status);
+  const startTime = useTimerStore((state) => state.startTime);
+  const updateMetrics = useTimerStore((state) => state.updateMetrics);
+
+  useEffect(() => {
+    if (status !== "running" || startTime === null) return;
+    let frameId: number;
+    let lastUpdate = 0;
+
+    const tick = () => {
+      const now = performance.now();
+      if (now - lastUpdate >= FRAME_INTERVAL_MS) {
+        const elapsedSeconds = calculateElapsedSeconds(
+          now,
+          startTime,
+          useTimerStore.getState().pausedOffset,
+        );
+        updateMetrics(elapsedSeconds);
+        lastUpdate = now;
+      }
+      frameId = requestAnimationFrame(tick);
+    };
+
+    frameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameId);
+  }, [status, startTime, updateMetrics]);
+}
+```
+
+Because updates stay pure, the UI (both the 5–6 digit total and the HH:MM:SS readout) never jitters — just clean tabular numbers running at ~30 fps.
+
+### Inputs designed for real meetings
+
+- **Participants & salary** use chunky accent buttons with distinct hues, so adding a contractor mid-call feels tactile even on a phone. The participants input clamps at 1; salary clamps at 0 and switches steps (`$5k` annual, `$5` hourly).
+- **Annual vs hourly** is a segmented control that also resets the input to sane defaults ($50k / $65) when you toggle it.
+- **Currency slider** shows the top five symbols and moves a rounded highlight with CSS transforms — faster than a select input. It plugs into `useLocaleCurrency`, which sniffs `navigator.language` and preselects USD/EUR/INR/etc. with a dead-simple region map.
+
+Everything lives inside Tailwind 4 utility classes, plus a `glass-slate` helper class defined in `globals.css` to keep the cards consistent in both light and dark modes.
+
+### Recaps, copy, and native share
+
+Once you stop the timer, BurnRate builds a sentence like:
+
+> Meeting burned $1,820.00 in 00:37:45 with 8 attendees ($227.50 each). Track your next meeting with BurnRate: https://burnrate.ainsworth.dev
+
+- A `useMemo` builds the string from the final snapshot, so it never re-renders unnecessarily.
+- If `navigator.share` exists, you get both **Copy** and **Share** buttons; otherwise only Copy shows.
+- The share payload always includes per-attendee math and the site URL so it’s useful even if pasted into Slack or email.
+
+Because data never leaves memory, tapping “Start new session” is effectively an immediate wipe — no modal, no confirm dialog. Privacy is the feature.
+
+### Visual + metadata polish
+
+The layout leans on two Google Fonts via the App Router (`Space Grotesk` + `Geist Mono`), gradient backdrops, and “glass” cards to keep the single page feeling premium. A `/og` route renders a custom image on the Edge runtime with callouts for privacy, accuracy, and frame rate, while `lib/site-metadata.ts` supplies structured data and Open Graph tags. That means when people share BurnRate, the preview matches the product instantly.
+
+### Tests keep the math honest
+
+- `npm run test:unit` (Vitest) exercises salary-per-second math, frame snapping, and duration formatting so regressions show up before I open the browser.
+- `npm run test:e2e` (Playwright) runs the happy path end-to-end: fill the form, start the meter, pause/resume, stop, and assert that the copy text and “Start new session” reset behave.
+- `npm run lint` leans on Next.js’s ESLint config, so I get type-safe hooks and accessible components for free.
+
+### Takeaways
+
+- **Meetings deserve observability.** A live cost meter reframes “can we wrap?” into dollars-per-second, which is a much easier sell.
+- **Privacy is a UX feature.** By never persisting anything (and saying so in the UI), people feel safe punching in real salaries.
+- **Polish lives in the periphery.** Things like the moving currency slider, reset-aware form key, and OG card aren’t required, but they make BurnRate feel intentional — which nudges people to actually use it mid-meeting.
+
+If you run a meeting that should have been an email, BurnRate will let everyone see what that indecision costs in real time. Give it a spin at https://burnrate.ainsworth.dev.
