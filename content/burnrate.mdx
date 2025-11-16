@@ -96,11 +96,11 @@ Because data never leaves memory, tapping “Start new session” is effectively
 
 The layout leans on two Google Fonts via the App Router (`Space Grotesk` + `Geist Mono`), gradient backdrops, and “glass” cards to keep the single page feeling premium. A `/og` route renders a custom image on the Edge runtime with callouts for privacy, accuracy, and frame rate, while `lib/site-metadata.ts` supplies structured data and Open Graph tags. That means when people share BurnRate, the preview matches the product instantly.
 
-### Tests keep the math honest
+### Guardrails I rely on
 
-- `npm run test:unit` (Vitest) exercises salary-per-second math, frame snapping, and duration formatting so regressions show up before I open the browser.
-- `npm run test:e2e` (Playwright) runs the happy path end-to-end: fill the form, start the meter, pause/resume, stop, and assert that the copy text and “Start new session” reset behave.
-- `npm run lint` leans on Next.js’s ESLint config, so I get type-safe hooks and accessible components for free.
+- `npm run test:unit` (Vitest) covers the tricky math so I don’t guess. There are fixtures for annual ↔ hourly conversions, per-attendee breakdowns, and timer math (pause offsets, frame snapping, HH:MM:SS formatting). If a refactor changes the WORK_HOURS_PER_YEAR constant or breaks the paused offset math, tests fail instantly.
+- `npm run test:e2e` (Playwright) replays the actual user journey: submit the form, watch the cost climb, pause/resume, stop, copy the recap, and confirm “Start new session” wipes both stores. I run it before publishing so I know the single-page flow still feels instant.
+- `npm run lint` leans on Next.js’s ESLint preset, catching hooks misuse, accessibility mistakes, and stray unused exports long before deployment.
 
 ### Takeaways
 
