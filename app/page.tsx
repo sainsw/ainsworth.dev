@@ -2,10 +2,10 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
-import ViewCounter from 'app/blog/view-counter';
 import { ArrowIcon } from './components/arrow-icon';
 import { HomePreloads } from './home-preloads';
 import { Icon } from '../components/icon';
+import { PersonalProjects } from '../components/personal-projects';
 // Removed inline avatar; now shown globally in footer
 
 function Badge(props) {
@@ -69,6 +69,12 @@ export default function Page() {
           You'll find content that reflects my experience in leading development teams and implementing modern software practices.
         </p>
       </div>
+
+      <h2 className="font-medium text-2xl mt-8 mb-8 tracking-tighter text-neutral-900 dark:text-neutral-50">
+          personal projects 👨‍💻
+      </h2>
+      <PersonalProjects />
+
       <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-neutral-600 dark:text-neutral-300">
         <li>
           <a
