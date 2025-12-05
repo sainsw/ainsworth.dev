@@ -4,6 +4,8 @@
 
 Thanks to leerob for my starting point - Ship of Theseus under construction.
 
+- Live site: https://ainsworth.dev
+
 - **Framework**: [Next.js](https://nextjs.org/)
 - **Database**: [Postgres](https://vercel.com/postgres)
 - **Authentication**: [NextAuth.js](https://next-auth.js.org)
