@@ -18,10 +18,10 @@ export async function Footer() {
             <div className="relative h-64 ">
                 <div className="absolute bottom-0 left-0 container mx-auto px-4">
                     <div className="flex flex-col pb-5">
-                        {/* Avatar: left on mobile, centered on md+ to mimic homepage */}
+                        {/* Avatar: left on mobile, center only on xl to match layout */}
                         <div className="w-full">
                             <a
-                                className="block md:mx-auto mb-10 max-w-max"
+                                className="block mb-10 max-w-max xl:mx-auto"
                                 aria-label="find me on linkedin"
                                 href="https://linkedin.com/in/samainsworth"
                                 target="_blank"

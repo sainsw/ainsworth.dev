@@ -70,7 +70,7 @@ export default function Page() {
         </p>
       </div>
 
-      <h2 className="font-medium text-2xl mt-8 mb-8 tracking-tighter text-neutral-900 dark:text-neutral-50">
+      <h2 className="font-medium text-2xl mt-8 mb-2 tracking-tighter text-neutral-900 dark:text-neutral-50">
           personal projects 👨‍💻
       </h2>
       <PersonalProjects />
