@@ -187,6 +187,32 @@ pre {
     scrollbar-width: none; /* Firefox */
 }
 
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.bento-scroll {
+    -ms-overflow-style: none; /* IE/Edge */
+    scrollbar-width: none; /* Firefox */
+    -webkit-overflow-scrolling: touch;
+}
+
+.bento-scroll::-webkit-scrollbar {
+    display: none; /* WebKit */
+    width: 0;
+    height: 0;
+    background: transparent;
+}
+
+.bento-scroll::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
 /* Remove Safari input shadow on mobile */
 input[type="text"],
 input[type="email"] {

@@ -89,7 +89,7 @@ export function PersonalProjects() {
           >
             <div
               ref={scrollRef}
-              className={`flex flex-row flex-nowrap gap-4 px-0 sm:px-1 md:px-2 py-2 pb-2 scrollbar-hide ${
+              className={`bento-scroll flex flex-row flex-nowrap gap-4 px-0 sm:px-1 md:px-2 py-2 pb-2 scrollbar-hide ${
                 isOverflowing ? 'overflow-x-auto overflow-y-visible' : 'overflow-visible'
               }`}
             >
