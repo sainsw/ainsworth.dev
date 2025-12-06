@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { submitContact } from 'app/db/actions';
+import { Button } from '../../components/ui/button';
 
 export default function Page() {
     const formRef = useRef<HTMLFormElement>(null);
@@ -52,12 +53,12 @@ function SubmitButton() {
     const { pending } = useFormStatus();
 
     return (
-        <button
-            className="flex items-center justify-center px-3 py-2 font-medium h-9 bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded w-20 disabled:opacity-50"
+        <Button
+            className="w-20 justify-center"
             disabled={pending}
             type="submit"
         >
             {pending ? '...' : 'Send'}
-        </button>
+        </Button>
     );
 }

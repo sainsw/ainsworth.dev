@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { saveGuestbookEntry } from '../db/actions';
 import { useFormStatus } from 'react-dom';
+import { Button } from '../../components/ui/button';
 
 export default function Form() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -33,12 +34,12 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button
-      className="flex items-center justify-center absolute right-1 top-1 px-2 py-1 font-medium h-8 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded w-16"
+    <Button
+      className="absolute right-1 top-1 h-9 px-4 w-20 justify-center"
       disabled={pending}
       type="submit"
     >
       Sign
-    </button>
+    </Button>
   );
 }

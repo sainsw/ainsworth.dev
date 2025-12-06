@@ -23,7 +23,6 @@ export function CookieConsent({
   const [isOpen, setIsOpen] = useState(false)
   const [hide, setHide] = useState(false)
   const [shouldRender, setShouldRender] = useState(false)
-  const [hovered, setHovered] = useState<null | 'accept' | 'decline'>(null)
 
   const handleAccept = useCallback(() => {
     setIsOpen(false)
@@ -126,31 +125,15 @@ export function CookieConsent({
             </p>
             <div className="flex items-center flex-wrap gap-4 mt-4">
               <Button
-                variant="outline"
                 size="sm"
-                className={`rounded-full h-8 px-3 ${
-                  hovered === 'decline'
-                    ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
-                    : ''
-                }`}
                 onClick={handleDecline}
-                onMouseEnter={() => setHovered('decline')}
-                onMouseLeave={() => setHovered(null)}
                 aria-label="Decline"
               >
                 Decline
               </Button>
               <Button
-                variant="outline"
                 size="sm"
-                className={`rounded-full h-8 px-3 ${
-                  hovered === 'accept'
-                    ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
-                    : ''
-                }`}
                 onClick={handleAccept}
-                onMouseEnter={() => setHovered('accept')}
-                onMouseLeave={() => setHovered(null)}
                 aria-label="Accept"
               >
                 Accept

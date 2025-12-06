@@ -2,6 +2,7 @@
 
 import { CookieConsent } from '../components/cookie-banner'
 import { useEffect, useState } from 'react'
+import { Button } from '../../components/ui/button'
 
 export default function TestBannerPage() {
   const [cookies, setCookies] = useState('')
@@ -25,12 +26,9 @@ export default function TestBannerPage() {
       <div className="mt-8 p-4 border rounded">
         <h2 className="text-lg font-semibold mb-2">Debug Info</h2>
         <p className="mb-2">Current cookies: {cookies || 'No cookies'}</p>
-        <button 
-          onClick={clearConsent}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-        >
+        <Button type="button" onClick={clearConsent}>
           Clear Cookie Consent & Reload
-        </button>
+        </Button>
       </div>
       
       <CookieConsent variant="mini" learnMoreHref="/privacy" />

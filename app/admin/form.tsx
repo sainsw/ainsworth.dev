@@ -3,6 +3,8 @@
 import { useFormStatus } from 'react-dom';
 import { useState, useEffect } from 'react';
 import { deleteGuestbookEntries } from 'app/db/actions';
+import { Button } from '../../components/ui/button';
+import { cn } from '../../lib/utils';
 
 export default function Form({ entries }) {
   const [selectedInputs, setSelectedInputs] = useState<string[]>([]);
@@ -136,23 +138,21 @@ function GuestbookEntry({ entry, children }) {
   );
 }
 
-const cx = (...classes) => classes.filter(Boolean).join(' ');
-
 function DeleteButton({ isActive }) {
   const { pending } = useFormStatus();
 
   return (
-    <button
-      className={cx(
-        'px-3 py-2 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded p-1 text-sm inline-flex items-center leading-4 text-neutral-900 dark:text-neutral-100 mb-8 transition-colors',
-        {
-          'bg-red-300/50 dark:bg-red-700/50': isActive,
-        }
+    <Button
+      className={cn(
+        'mb-8',
+        isActive
+          ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
+          : ''
       )}
       disabled={pending}
       type="submit"
     >
       Delete Entries
-    </button>
+    </Button>
   );
 }
