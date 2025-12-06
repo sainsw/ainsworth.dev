@@ -75,3 +75,13 @@ vi.mock('app/db/blog', () => ({
     },
   ]),
 }))
+
+// jsdom lacks ResizeObserver; provide a lightweight mock for layout-dependent components
+class MockResizeObserver {
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+}
+
+// @ts-expect-error - attach to global for tests
+global.ResizeObserver = MockResizeObserver

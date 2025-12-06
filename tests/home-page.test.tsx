@@ -7,7 +7,7 @@ describe('Home Page', () => {
     render(<HomePage />)
     expect(screen.getByRole('heading', { name: /hello, i'm sam/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /get in touch/i })).toHaveAttribute('href', '/contact')
-    expect(screen.getByRole('link', { name: /work/i })).toHaveAttribute('href', '/work')
+    const workLink = screen.getAllByRole('link', { name: /work/i }).find((link) => link.getAttribute('href') === '/work')
+    expect(workLink).toBeTruthy()
   })
 })
-
