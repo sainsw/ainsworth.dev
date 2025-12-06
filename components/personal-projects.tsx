@@ -24,7 +24,7 @@ const projects: PersonalProject[] = [
   },
   {
     title: 'BurnRate',
-    emoji: '🔥',
+    emoji: '💸',
     description:
       'Privacy-first meeting cost tracker with a precise live timer, on-device math, and shareable recaps.',
     href: 'https://burnrate.ainsworth.dev',
