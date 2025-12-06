@@ -42,7 +42,8 @@ function CustomLink(props) {
     return <a {...props} />;
   }
 
-  return <a target="_blank" rel="noopener noreferrer" {...props} />;
+  // External links: open in the same tab to keep navigation consistent
+  return <a {...props} />;
 }
 
 function RoundedImage(props) {
