@@ -1,0 +1,54 @@
+---
+title: "Shipping my first npm package: avatar-fetcher"
+publishedAt: "2025-12-06"
+summary: "Packaging the GitHub avatar pipeline into a reusable module and CLI for all my projects."
+---
+
+I finally packaged my GitHub avatar pipeline into a reusable npm module: [`avatar-fetcher`](https://www.npmjs.com/package/avatar-fetcher). It started as a build script for ainsworth.dev, then spread to BurnRate, Invoicer, and Framemoji. Now it’s a published package and a small CLI so every repo can stay in sync with a single dependency.
+
+## What it does
+
+- Fetches a GitHub user’s avatar (`/users/{username}`) at a requested size.
+- Hashes the raw bytes so filenames are cache-friendly and stable (`avatar-<hash>.*`).
+- Generates optimised outputs (WebP + JPEG by default) via Sharp.
+- Exposes both a Node API and a CLI so you can wire it into CI/build or run it ad hoc.
+
+## How to use it
+
+**CLI**
+
+```bash
+npx avatar-fetcher --user sainsw --out ./public/images --outputs webp:200:85,jpeg:200:90
+```
+
+**Node**
+
+```ts
+import { fetchAndProcessAvatar, writeOutputs } from "avatar-fetcher";
+
+const result = await fetchAndProcessAvatar({
+  username: "sainsw",
+  size: 400,
+  outputs: [
+    { format: "webp", width: 200, height: 200, quality: 85 },
+    { format: "jpeg", width: 200, height: 200, quality: 90 },
+  ],
+  baseName: "avatar",
+});
+
+await writeOutputs(result.outputs, "./public/images");
+// update your version file with result.hash if you want cache-busting filenames
+```
+
+Repo link: [github.com/sainsw/avatar-fetcher](https://github.com/sainsw/avatar-fetcher)
+
+## Why bother?
+
+I was maintaining near-identical scripts across four projects. Moving the core into an npm package means:
+- One place to fix bugs or add formats/sizes.
+- Consistent filename/version hashing for every site.
+- A tiny CLI for one-off runs without copying code.
+
+## Related reading
+
+I first documented this pipeline in [Automating My GitHub Avatar Sync](/github-image-sync). This package is the cleaned-up version of that work—ready for any repo that needs a reliable avatar fetch + optimise step.
