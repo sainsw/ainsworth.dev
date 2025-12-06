@@ -70,41 +70,24 @@ describe('CookieConsent', () => {
     mockDispatchEvent.mockRestore()
   })
 
-  it('applies hover styles on Accept button via mouse events', () => {
+  it('includes hover styles on Accept and Decline buttons', () => {
     render(<CookieConsent variant="mini" />)
 
     const acceptButton = screen.getByRole('button', { name: /accept/i })
-    // Initially not hovered
-    expect(acceptButton).not.toHaveClass('bg-black')
-    expect(acceptButton).not.toHaveClass('text-white')
-
-    // Simulate hover
-    fireEvent.mouseEnter(acceptButton)
-    expect(acceptButton).toHaveClass('bg-black')
-    expect(acceptButton).toHaveClass('text-white')
-
-    // Simulate leaving hover
-    fireEvent.mouseLeave(acceptButton)
-    expect(acceptButton).not.toHaveClass('bg-black')
-    expect(acceptButton).not.toHaveClass('text-white')
-  })
-
-  it('applies hover styles on Decline button via mouse events', () => {
-    render(<CookieConsent variant="mini" />)
-
     const declineButton = screen.getByRole('button', { name: /decline/i })
-    // Initially not hovered
-    expect(declineButton).not.toHaveClass('bg-black')
-    expect(declineButton).not.toHaveClass('text-white')
 
-    // Simulate hover
-    fireEvent.mouseEnter(declineButton)
-    expect(declineButton).toHaveClass('bg-black')
-    expect(declineButton).toHaveClass('text-white')
+    const hoverClasses = [
+      'hover:bg-black',
+      'hover:text-white',
+      'hover:border-black',
+      'dark:hover:bg-white',
+      'dark:hover:text-black',
+      'dark:hover:border-white',
+    ]
 
-    // Simulate leaving hover
-    fireEvent.mouseLeave(declineButton)
-    expect(declineButton).not.toHaveClass('bg-black')
-    expect(declineButton).not.toHaveClass('text-white')
+    hoverClasses.forEach(cls => {
+      expect(acceptButton.className).toContain(cls)
+      expect(declineButton.className).toContain(cls)
+    })
   })
 })
