@@ -11,14 +11,9 @@ export default function ContactLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <head>
-        <link rel="preconnect" href="https://api.resend.com" />
-      </head>
-      <div>
-        <h1 className="font-medium text-2xl mb-8 tracking-tighter">get in touch 👋</h1>
-        {children}
-      </div>
-    </>
+    <div>
+      <h1 className="font-medium text-2xl mb-8 tracking-tighter">get in touch 👋</h1>
+      {children}
+    </div>
   );
 }
