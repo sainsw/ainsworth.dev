@@ -15,13 +15,11 @@ const withMDX = createMDX({
 const nextConfig = {
   trailingSlash: false, // Enforce no trailing slashes
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
+  // Opt into typed routes for safer navigation APIs
+  typedRoutes: true,
   experimental: {
     // Keep CSS stable; Tailwind v4 + PostCSS
     optimizeCss: false,
-    // Drop transpilation/polyfills for legacy browsers to reduce "legacy JS" bytes
-    legacyBrowsers: false,
-    // Opt into typed routes for safer navigation APIs
-    typedRoutes: true,
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',

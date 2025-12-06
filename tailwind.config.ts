@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import colors from 'tailwindcss/colors';
 import typography from '@tailwindcss/typography';
 
 export default {
@@ -8,6 +9,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        ...colors,
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

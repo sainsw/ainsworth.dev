@@ -1,23 +1,28 @@
 import Link from 'next/link';
+import type { Route } from 'next';
 
-const navItems = {
-  '/': {
+const navItems: Array<{ path: Route; name: string; prefetch: boolean }> = [
+  {
+    path: '/',
     name: 'home',
     prefetch: false, // already on home
   },
-  '/work': {
+  {
+    path: '/work',
     name: 'work',
     prefetch: true, // high priority content
   },
-  '/blog': {
+  {
+    path: '/blog',
     name: 'blog',
     prefetch: true, // high priority content
   },
-  '/guestbook': {
+  {
+    path: '/guestbook',
     name: 'guestbook',
     prefetch: false, // lower priority
   },
-};
+];
 
 export function Navbar() {
   return (
@@ -28,7 +33,7 @@ export function Navbar() {
           id="nav"
         >
           <div className="flex flex-row space-x-0 pr-10">
-            {Object.entries(navItems).map(([path, { name, prefetch }]) => {
+            {navItems.map(({ path, name, prefetch }) => {
               return (
                 <Link
                   key={path}
