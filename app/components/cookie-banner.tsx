@@ -118,9 +118,9 @@ export function CookieConsent({
           // Avoid setting transform here; Tailwind translate classes need full control
         }}
       >
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg p-4 sm:p-5">
+        <div className="bg-[#f0eee9] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg p-4 sm:p-5">
           <div className="space-y-3">
-            <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
+            <p className="text-sm text-neutral-800 dark:text-neutral-300 leading-relaxed">
               {description}
             </p>
             <div className="flex items-center flex-wrap gap-4 mt-4">

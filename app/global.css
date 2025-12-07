@@ -6,7 +6,7 @@
 }
 
 :root {
-    --background: 0 0% 100%;
+    --background: 43 19% 93%;
     --foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -39,25 +39,25 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
+        --background: 0 3% 6%;
+        --foreground: 42.86 18.92% 92.75%;
         --muted: 217.2 32.6% 17.5%;
         --muted-foreground: 215 20.2% 65.1%;
-        --popover: 222.2 84% 4.9%;
-        --popover-foreground: 210 40% 98%;
-        --card: 222.2 84% 4.9%;
-        --card-foreground: 210 40% 98%;
-        --border: 217.2 32.6% 17.5%;
+        --popover: 0 3% 6%;
+        --popover-foreground: 42.86 18.92% 92.75%;
+        --card: 0 3% 6%;
+        --card-foreground: 42.86 18.92% 92.75%;
+        --border: 42.86 18.92% 92.75%;
         --input: 217.2 32.6% 17.5%;
         --primary: 210 40% 98%;
         --primary-foreground: 222.2 47.4% 11.2%;
         --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
+        --secondary-foreground: 42.86 18.92% 92.75%;
         --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
+        --accent-foreground: 42.86 18.92% 92.75%;
         --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
-        --ring: 217.2 32.6% 17.5%;
+        --destructive-foreground: 42.86 18.92% 92.75%;
+        --ring: 42.86 18.92% 92.75%;
         --sh-class: #4c97f8;
         --sh-identifier: white;
         --sh-keyword: #f47067;
@@ -70,31 +70,39 @@
 
 /* Enable shadcn theme when using class-based dark mode */
 .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 0 3% 6%;
+    --foreground: 42.86 18.92% 92.75%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
+    --popover: 0 3% 6%;
+    --popover-foreground: 42.86 18.92% 92.75%;
+    --card: 0 3% 6%;
+    --card-foreground: 42.86 18.92% 92.75%;
+    --border: 42.86 18.92% 92.75%;
     --input: 217.2 32.6% 17.5%;
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary-foreground: 42.86 18.92% 92.75%;
     --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent-foreground: 42.86 18.92% 92.75%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --ring: 217.2 32.6% 17.5%;
+    --destructive-foreground: 42.86 18.92% 92.75%;
+    --ring: 42.86 18.92% 92.75%;
 }
 
 html {
     min-width: 360px;
+    /* Ensure background/foreground apply even if Tailwind classes are bypassed */
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     /* debug: include a global rule to verify CSS bundling */
     /* outline: 1px solid red; */
+}
+
+body {
+    background-color: inherit;
+    color: inherit;
 }
 
 .prose .anchor {
@@ -127,8 +135,8 @@ html {
 
 .prose pre {
     /* Tailwind v4: avoid @apply with color utilities that can error under PostCSS */
-    background-color: var(--color-neutral-50);
-    border: 1px solid var(--color-neutral-200);
+    background-color: hsl(43 19% 90%);
+    border: 1px solid hsl(43 19% 82%);
     border-radius: 0.5rem; /* rounded-lg */
     overflow-x: auto;
 }

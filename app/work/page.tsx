@@ -16,7 +16,7 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
   technologies?: string[];
 }) {
   return (
-    <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 w-full flex flex-col gap-4">
+    <div className="border border-neutral-200 dark:border-neutral-800 bg-[hsl(43,19%,90%)] dark:bg-neutral-900 rounded px-3 py-4 w-full flex flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col">
           <p className="prose-medium text-neutral-900 dark:text-neutral-100">
@@ -79,7 +79,7 @@ function SkillCloud({ skills }: { skills: string[] }) {
       {skills.map((skill, index) => (
         <span
           key={index}
-          className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-900 dark:text-neutral-100"
+          className="border border-neutral-200 dark:border-neutral-700 bg-[hsl(43,19%,90%)] dark:bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-900 dark:text-neutral-100"
           style={{ whiteSpace: 'nowrap' }}
         >
           {skill}
@@ -144,7 +144,7 @@ export default function Page() {
 
       <div className="mt-12">
         <h2 className="font-medium text-2xl mb-8 tracking-tighter">non-technical skills 🤝</h2>
-        <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4 mb-8">
+        <div className="border border-neutral-200 dark:border-neutral-800 bg-[hsl(43,19%,90%)] dark:bg-neutral-900 rounded px-3 py-4 mb-8">
           <ul className="space-y-2">
             {resumeData.nonTechnicalSkills.map((skill, index) => (
               <li key={index} className="text-sm text-neutral-600 dark:text-neutral-400">
@@ -157,7 +157,7 @@ export default function Page() {
 
       <div className="mt-12">
         <h2 className="font-medium text-2xl mb-8 tracking-tighter">hobbies 🎨</h2>
-        <div className="border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 rounded px-3 py-4">
+        <div className="border border-neutral-200 dark:border-neutral-800 bg-[hsl(43,19%,90%)] dark:bg-neutral-900 rounded px-3 py-4">
           <div className="space-y-2">
             {resumeData.hobbies.map((hobby, index) => (
               <p key={index} className="text-sm text-neutral-600 dark:text-neutral-400">

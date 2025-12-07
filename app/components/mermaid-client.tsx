@@ -144,22 +144,22 @@ export default function MermaidClient({
           themeVariables: {
             fontFamily: "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace",
             fontSize: "13px",
-            // Base colours
+            // Base colours tuned to match site palette
             background: 'transparent',
-            primaryColor: isDark ? '#111827' : '#ffffff',
-            primaryTextColor: isDark ? '#e5e7eb' : '#111827',
-            primaryBorderColor: isDark ? '#374151' : '#d1d5db',
-            secondaryColor: isDark ? '#1f2937' : '#f9fafb',
-            secondaryTextColor: isDark ? '#e5e7eb' : '#111827',
-            tertiaryColor: isDark ? '#374151' : '#e5e7eb',
-            tertiaryTextColor: isDark ? '#e5e7eb' : '#111827',
-            lineColor: isDark ? '#6b7280' : '#9ca3af',
-            textColor: isDark ? '#e5e7eb' : '#111827',
+            primaryColor: isDark ? '#111827' : '#e7e1d8', // hsl(43,19%,90%)
+            primaryTextColor: isDark ? '#e5e7eb' : '#181512',
+            primaryBorderColor: isDark ? '#374151' : '#d8d0c4',
+            secondaryColor: isDark ? '#1f2937' : '#ece6de',
+            secondaryTextColor: isDark ? '#e5e7eb' : '#181512',
+            tertiaryColor: isDark ? '#374151' : '#f1ebe3',
+            tertiaryTextColor: isDark ? '#e5e7eb' : '#181512',
+            lineColor: isDark ? '#6b7280' : '#b7aa9a',
+            textColor: isDark ? '#e5e7eb' : '#181512',
             // Cluster and label styling
-            clusterBkg: isDark ? '#0b1220' : '#ffffff',
-            clusterBorder: isDark ? '#374151' : '#d1d5db',
-            noteBkgColor: isDark ? '#0f172a' : '#f9fafb',
-            noteTextColor: isDark ? '#e5e7eb' : '#111827',
+            clusterBkg: isDark ? '#0b1220' : '#ece6de',
+            clusterBorder: isDark ? '#374151' : '#d8d0c4',
+            noteBkgColor: isDark ? '#0f172a' : '#f1ebe3',
+            noteTextColor: isDark ? '#e5e7eb' : '#181512',
             edgeLabelBackground: 'transparent',
           },
         });

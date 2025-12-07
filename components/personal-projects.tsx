@@ -124,13 +124,13 @@ export function PersonalProjects() {
             </div>
             <div
               aria-hidden="true"
-              className={`pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white via-white/90 to-transparent transition-opacity duration-500 ease-out dark:from-[#111010]/80 dark:via-[#111010]/55 ${
+              className={`pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[#f0eee9] via-[#f0eee9]/90 to-transparent transition-opacity duration-500 ease-out dark:from-[#111010]/80 dark:via-[#111010]/55 ${
                 showLeftFade ? 'opacity-90' : 'opacity-0'
               }`}
             />
             <div
               aria-hidden="true"
-              className={`pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white via-white/90 to-transparent transition-opacity duration-500 ease-out dark:from-[#111010]/80 dark:via-[#111010]/55 ${
+              className={`pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[#f0eee9] via-[#f0eee9]/90 to-transparent transition-opacity duration-500 ease-out dark:from-[#111010]/80 dark:via-[#111010]/55 ${
                 showRightFade ? 'opacity-90' : 'opacity-0'
               }`}
             />
