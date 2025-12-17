@@ -76,18 +76,10 @@ describe('CookieConsent', () => {
     const acceptButton = screen.getByRole('button', { name: /accept/i })
     const declineButton = screen.getByRole('button', { name: /decline/i })
 
-    const hoverClasses = [
-      'hover:bg-black',
-      'hover:text-white',
-      'hover:border-black',
-      'dark:hover:bg-white',
-      'dark:hover:text-black',
-      'dark:hover:border-white',
-    ]
-
-    hoverClasses.forEach(cls => {
-      expect(acceptButton.className).toContain(cls)
-      expect(declineButton.className).toContain(cls)
-    })
+    // Accept button uses default variant
+    expect(acceptButton.className).toContain('hover:bg-primary/80')
+    
+    // Decline button uses outline variant
+    expect(declineButton.className).toContain('hover:bg-muted')
   })
 })

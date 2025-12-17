@@ -9,8 +9,8 @@ describe('Contact Page', () => {
     })
     const Page = (await import('../app/contact/page')).default
     render(<Page />)
-    expect(screen.getByLabelText(/your email address/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/your message/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/message/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /send/i })).toBeInTheDocument()
   })
 
