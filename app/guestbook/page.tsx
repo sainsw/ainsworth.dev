@@ -30,10 +30,10 @@ async function GuestbookForm() {
     <>
       <Form />
       <div className="flex items-center mt-4 mb-6">
-        <span className="text-xs text-neutral-600 dark:text-neutral-400">
-          Signed in as: <span className="font-medium text-neutral-900 dark:text-neutral-100">{session.user.name || session.user.email}</span>
+        <span className="text-sm text-muted-foreground">
+          Signed in as: <span className="font-medium text-foreground">{session.user.name || session.user.email}</span>
         </span>
-        <span className="text-xs text-neutral-400 dark:text-neutral-500">&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+        <span className="text-sm text-muted-foreground">&nbsp;&nbsp;•&nbsp;&nbsp;</span>
         <SignOut />
       </div>
     </>
@@ -52,10 +52,10 @@ async function GuestbookEntries() {
   return entries.map((entry) => (
     <div key={entry.id} className="flex flex-col space-y-1 mb-4">
       <div className="w-full text-sm break-words">
-        <span className="text-neutral-600 dark:text-neutral-400 mr-1">
+        <span className="text-muted-foreground mr-1">
           {entry.created_by}:
         </span>
-        {entry.body}
+        <span className="text-foreground">{entry.body}</span>
       </div>
     </div>
   ));

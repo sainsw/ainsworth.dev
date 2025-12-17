@@ -56,12 +56,12 @@ function CustomLink(props) {
 }
 
 function RoundedImage(props) {
-  return <Image alt={props.alt} className="rounded-lg" {...props} />;
+  return <Image alt={props.alt} {...props} />;
 }
 
 function Callout(props) {
   return (
-    <div className="px-4 py-3 border border-neutral-200 dark:border-neutral-700 bg-[hsl(43,19%,90%)] dark:bg-neutral-800 rounded p-1 text-sm flex items-center text-neutral-900 dark:text-neutral-100 mb-8">
+    <div className="px-4 py-3 border border-border bg-secondary text-sm flex items-center text-foreground mb-8">
       <div className="flex items-center w-4 mr-4">{props.emoji}</div>
       <div className="w-full callout">{props.children}</div>
     </div>
@@ -70,7 +70,7 @@ function Callout(props) {
 
 function ProsCard({ title, pros }) {
   return (
-    <div className="border border-emerald-200 dark:border-emerald-900 bg-[hsl(43,19%,90%)] dark:bg-neutral-900 rounded-xl p-6 my-4 w-full">
+    <div className="border border-border bg-secondary p-6 my-4 w-full">
       <span>{`You might use ${title} if...`}</span>
       <div className="mt-4">
         {pros.map((pro) => (
@@ -99,7 +99,7 @@ function ProsCard({ title, pros }) {
 
 function ConsCard({ title, cons }) {
   return (
-    <div className="border border-red-200 dark:border-red-900 bg-[hsl(43,19%,90%)] dark:bg-neutral-900 rounded-xl p-6 my-6 w-full">
+    <div className="border border-destructive/30 bg-destructive/5 p-6 my-6 w-full">
       <span>{`You might not use ${title} if...`}</span>
       <div className="mt-4">
         {cons.map((con) => (
@@ -109,7 +109,7 @@ function ConsCard({ title, cons }) {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
-                className="h-4 w-4 text-red-500"
+                className="h-4 w-4 text-destructive"
               >
                 <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
               </svg>

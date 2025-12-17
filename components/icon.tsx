@@ -5,10 +5,15 @@ interface IconProps extends React.SVGProps<SVGSVGElement> {
 }
 
 // Logos that should use PNG/WebP files instead of sprite
-const PNG_LOGOS = new Set(["westhill", "whsmith", "asfc"]);
+const PNG_LOGOS = new Set(["westhill", "whsmith"]);
 
 // Logos that should use SVG files with theme support instead of sprite
-const SVG_THEME_LOGOS = new Set(["uol"]);
+const THEME_SVG_LOGOS: Record<string, { light: string; dark: string }> = {
+  uol: {
+    light: "/images/logos/uol_light_mode.svg",
+    dark: "/images/logos/uol_dark_mode.svg",
+  },
+};
 
 // Logos that should use image files with brand colours instead of sprite
 const BRAND_COLOR_LOGOS = new Set(["dotnet", "azure"]);
@@ -32,38 +37,9 @@ export function Icon({
   const heightAttr = heightProp !== undefined ? heightProp : widthProp !== undefined ? undefined : size;
 
   const altText = decorative ? "" : `${id} logo`;
+  const svgClassName = className;
   // Use PNG/WebP fallback for certain logos
   if (PNG_LOGOS.has(id)) {
-    // Special handling for ASFC logo with theme support
-    if (id === "asfc") {
-      return (
-        <picture>
-          <source
-            srcSet="/images/logos/asfc_white.webp"
-            media="(prefers-color-scheme: dark)"
-            type="image/webp"
-          />
-          <source
-            srcSet="/images/logos/asfc_black.webp"
-            media="(prefers-color-scheme: light)"
-            type="image/webp"
-          />
-          <source
-            srcSet="/images/logos/asfc_white.png"
-            media="(prefers-color-scheme: dark)"
-          />
-          <img
-            src="/images/logos/asfc_black.png"
-            alt={altText}
-            width={widthAttr}
-            height={heightAttr}
-            className={className}
-            style={{ objectFit: "contain" }}
-          />
-        </picture>
-      );
-    }
-
     return (
       <picture>
         <source
@@ -83,20 +59,32 @@ export function Icon({
   }
 
   // Use SVG files with theme support for certain logos
-  if (SVG_THEME_LOGOS.has(id)) {
+  const themeLogo = THEME_SVG_LOGOS[id];
+  if (themeLogo) {
+    const targetHeight = heightProp ?? widthProp ?? size;
+    const targetWidth = widthProp ?? heightProp ?? size;
+    const roundedHeight =
+      typeof targetHeight === "number" ? Math.round(targetHeight) : targetHeight;
+    const roundedWidth =
+      typeof targetWidth === "number" ? Math.round(targetWidth) : targetWidth;
+
     return (
       <picture>
         <source
-          srcSet={`/images/logos/${id}_white.svg`}
+          srcSet={themeLogo.dark}
           media="(prefers-color-scheme: dark)"
         />
         <img
-          src={`/images/logos/${id}_colour.svg`}
+          src={themeLogo.light}
           alt={altText}
-          width={widthAttr}
-          height={heightAttr}
+          width={roundedWidth}
+          height={roundedHeight}
           className={className}
-          style={{ objectFit: "contain" }}
+          style={{
+            objectFit: "contain",
+            width: roundedWidth,
+            height: roundedHeight,
+          }}
         />
       </picture>
     );
@@ -138,7 +126,7 @@ export function Icon({
     <svg
       width={svgWidth}
       height={svgHeight}
-      className={className}
+      className={svgClassName}
       aria-label={decorative ? undefined : altText}
       role={decorative ? "presentation" : "img"}
       {...(restProps as React.SVGProps<SVGSVGElement>)}
@@ -168,8 +156,6 @@ function getLogoFilename(id: string): string {
       return "wh";
     case "whsmith":
       return "whs";
-    case "asfc":
-      return "asfc_black";
     default:
       return id;
   }

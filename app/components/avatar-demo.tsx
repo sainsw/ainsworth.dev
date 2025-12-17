@@ -30,7 +30,7 @@ export function AvatarDemo({ className = "" }: AvatarDemoProps) {
         </div>
         <div className="text-center">
           <p className="font-medium text-sm">Normal Border</p>
-          <p className="text-xs text-gray-600 dark:text-gray-400">
+          <p className="text-xs text-muted-foreground">
             Most of the year
           </p>
         </div>
@@ -69,7 +69,7 @@ export function AvatarDemo({ className = "" }: AvatarDemoProps) {
         </div>
         <div className="text-center">
           <p className="font-medium text-sm">Pride Border 🏳️‍🌈</p>
-          <p className="text-xs text-gray-600 dark:text-gray-400">
+          <p className="text-xs text-muted-foreground">
             June & Manchester Pride week
           </p>
         </div>

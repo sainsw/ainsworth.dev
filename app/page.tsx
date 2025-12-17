@@ -6,63 +6,65 @@ import { ArrowIcon } from './components/arrow-icon';
 import { HomePreloads } from './home-preloads';
 import { Icon } from '../components/icon';
 import { PersonalProjects } from '../components/personal-projects';
-// Removed inline avatar; now shown globally in footer
 
-function Badge(props) {
+// Inline tech badge - more spacious for use within prose
+function TechBadge({ href, children, ...props }: { href: string; children: React.ReactNode } & React.AnchorHTMLAttributes<HTMLAnchorElement>) {
   return (
     <a
-      {...props}
+      href={href}
       target="_blank"
-      className="border border-[hsl(43,19%,80%)] dark:border-neutral-700 bg-[hsl(43,19%,90%)] dark:bg-neutral-800 rounded p-1 text-sm inline-flex items-center leading-4 text-neutral-900 dark:text-neutral-100 no-underline"
-    />
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1.5 border border-border bg-card ring-1 ring-foreground/10 px-2 py-1 min-h-[28px] text-sm text-foreground no-underline transition-colors hover:bg-accent"
+      {...props}
+    >
+      {children}
+    </a>
   );
 }
-
-
 
 export default function Page() {
   return (
     <section>
       <HomePreloads />
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">hello, I'm Sam 👋</h1>
-      <div className="prose prose-neutral dark:prose-invert">
+      <div className="prose dark:prose-invert">
         <p>
           I like to keep things simple and practical.
         </p>
       </div>
-      <p className="prose prose-neutral dark:prose-invert">
+      <p className="prose dark:prose-invert">
         {`I'm a Senior Full Stack Engineer with 8+ years of experience in full-stack development and cloud solutions. I currently `}
         <Link href="/work" prefetch={true}>work</Link>
         {` at `}
         <span className="not-prose">
-          <Badge href="https://www.ibm.com" aria-label="IBM">
-            <Icon id="ibm" height={14} className="!mr-0" decorative={true} />
-          </Badge>
+          <TechBadge href="https://www.ibm.com" aria-label="IBM">
+            <Icon id="ibm" height={14} className="shrink-0" decorative={true} />
+          </TechBadge>
         </span>
         {` in Manchester, where I focus on enterprise software development and cloud architecture with `}
         <span className="not-prose">
-          <Badge href="https://react.dev">
-            <Icon id="react" size={14} className="!mr-1" decorative={true} />
+          <TechBadge href="https://react.dev">
+            <Icon id="react" size={14} className="shrink-0" decorative={true} />
             React
-          </Badge>
+          </TechBadge>
         </span>
         {`, `}
         <span className="not-prose">
-          <Badge href="https://dotnet.microsoft.com">
-            <Icon id="dotnet" size={14} className="!mr-1" decorative={true} />
+          <TechBadge href="https://dotnet.microsoft.com">
+            <Icon id="dotnet" size={14} className="shrink-0" decorative={true} />
             .NET
-          </Badge>
+          </TechBadge>
         </span>
         {`, and `}
         <span className="not-prose">
-          <Badge href="https://azure.microsoft.com/en-gb">
-            <Icon id="azure" size={14} className="!mr-1" decorative={true} />
+          <TechBadge href="https://azure.microsoft.com/en-gb">
+            <Icon id="azure" size={14} className="shrink-0" decorative={true} />
             Azure
-          </Badge>
+          </TechBadge>
         </span>
         .
       </p>
-      <div className="prose prose-neutral dark:prose-invert">
+      <div className="prose dark:prose-invert">
         <p>
           I'm passionate about enterprise design thinking and building scalable, reliable software solutions. 
           On my <Link href="/blog" prefetch={true}>blog</Link>, I share insights about software development, cloud technologies, .NET, Azure, and the latest in enterprise software architecture.
@@ -70,15 +72,15 @@ export default function Page() {
         </p>
       </div>
 
-      <h2 className="font-medium text-2xl mt-8 mb-2 tracking-tighter text-neutral-900 dark:text-neutral-50">
+      <h2 className="font-medium text-2xl mt-8 mb-2 tracking-tighter text-foreground">
           personal projects 👨‍💻
       </h2>
       <PersonalProjects />
 
-      <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-neutral-600 dark:text-neutral-300">
+      <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-muted-foreground">
         <li>
           <a
-            className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-colors"
+            className="flex items-center hover:text-foreground transition-colors"
             rel="noopener noreferrer"
             target="_blank"
             href="https://linkedin.com/in/samainsworth"
@@ -89,7 +91,7 @@ export default function Page() {
         </li>
         <li>
           <Link
-            className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-colors"
+            className="flex items-center hover:text-foreground transition-colors"
             href="/contact"
             prefetch={true}
           >
@@ -98,7 +100,6 @@ export default function Page() {
           </Link>
         </li>
       </ul>
-      {/** Avatar moved to global footer */}
     </section>
   );
 }

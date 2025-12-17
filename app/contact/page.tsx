@@ -4,6 +4,10 @@ import React, { useEffect, useRef, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { submitContact } from 'app/db/actions';
 import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
+import { Label } from '../../components/ui/label';
+import { cn } from '../../lib/utils';
 
 export default function Page() {
     const formRef = useRef<HTMLFormElement>(null);
@@ -18,30 +22,35 @@ export default function Page() {
     return (
         <div>
             <form
-                className="max-w-[500px] space-y-3"
+                className="max-w-[500px] space-y-4"
                 ref={formRef}
                 action={formAction}
             >
-                <input
-                    aria-label="Your email address"
-                    placeholder="email address (if you want a response)"
-                    type="email"
-                    name="email"
-                    className="pl-4 pr-4 py-2 focus:ring-blue-500 focus:border-blue-500 block w-full border-neutral-300 rounded-md bg-gray-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
-                />
-                <textarea
-                    aria-label="Your message"
-                    placeholder="your message..."
-                    name="message"
-                    required
-                    className="h-64 pl-4 pr-4 py-2 focus:ring-blue-500 focus:border-blue-500 block w-full border-neutral-300 rounded-md bg-gray-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
-                />
+                <div className="space-y-2">
+                    <Label htmlFor="email">Email (optional)</Label>
+                    <Input
+                        id="email"
+                        placeholder="email address (if you want a response)"
+                        type="email"
+                        name="email"
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="message">Message</Label>
+                    <Textarea
+                        id="message"
+                        placeholder="your message..."
+                        name="message"
+                        required
+                        className="min-h-64"
+                    />
+                </div>
                 <div className="flex justify-end pt-1">
                     <SubmitButton />
                 </div>
             </form>
             {state?.message && (
-                <p className='py-2' style={{ color: state.success ? 'inherit' : '#e02518' }}>
+                <p className={cn('py-2 text-sm', state.success ? 'text-foreground' : 'text-destructive')}>
                     {state.message}
                 </p>
             )}

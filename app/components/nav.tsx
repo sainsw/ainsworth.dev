@@ -39,7 +39,7 @@ export function Navbar() {
                   key={path}
                   href={path}
                   prefetch={prefetch}
-                  className="transition-colors hover:text-neutral-800 dark:hover:text-neutral-200 flex align-middle relative py-1 px-2"
+                  className="transition-colors hover:text-foreground text-muted-foreground flex align-middle relative py-1 px-2 text-sm"
                 >
                   {name}
                 </Link>

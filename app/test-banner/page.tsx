@@ -23,7 +23,7 @@ export default function TestBannerPage() {
       <p className="mb-4">This page tests the cookie banner component.</p>
       <p className="mb-4">Check the bottom-left corner for the cookie banner.</p>
       
-      <div className="mt-8 p-4 border rounded">
+      <div className="mt-8 p-4 border border-border">
         <h2 className="text-lg font-semibold mb-2">Debug Info</h2>
         <p className="mb-2">Current cookies: {cookies || 'No cookies'}</p>
         <Button type="button" onClick={clearConsent}>

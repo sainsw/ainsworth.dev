@@ -28,7 +28,7 @@ class ErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="px-4 py-3 border border-red-700 bg-red-200 rounded p-1 text-sm flex items-center text-red-900 mb-8">
+        <div className="px-4 py-3 border border-destructive/50 bg-destructive/10 text-sm flex items-center text-destructive mb-8">
           <div className="w-full callout">{this.props.fallback}</div>
         </div>
       );

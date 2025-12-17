@@ -299,16 +299,16 @@ export default function MermaidClient({
   if (error) {
     return (
       <div
-        className={`p-4 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 rounded-lg ${className}`}
+        className={`p-4 border border-destructive/30 bg-destructive/10 ${className}`}
       >
-        <p className="text-red-600 dark:text-red-400 text-sm">
+        <p className="text-destructive text-sm">
           Failed to render diagram: {error}
         </p>
         <details className="mt-2">
-          <summary className="text-xs text-red-500 cursor-pointer">
+          <summary className="text-xs text-destructive/80 cursor-pointer">
             Show source
           </summary>
-          <pre className="mt-2 text-xs text-red-400 overflow-auto">
+          <pre className="mt-2 text-xs text-destructive/70 overflow-auto">
             <code>{chart}</code>
           </pre>
         </details>
@@ -319,9 +319,9 @@ export default function MermaidClient({
   return (
     <div className={`my-6 ${className}`}>
       {!isLoaded && (
-        <div className="flex items-center justify-center p-8 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
-            <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
+        <div className="flex items-center justify-center p-8 border border-border">
+          <div className="flex items-center space-x-2 text-muted-foreground">
+            <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent"></div>
             <span className="text-sm">Rendering diagram...</span>
           </div>
         </div>

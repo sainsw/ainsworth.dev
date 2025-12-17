@@ -43,7 +43,7 @@ export async function Footer() {
                             </a>
                         </div>
                         {/* Copyright: always left aligned */}
-                        <div className="prose prose-sm dark:prose-invert">
+                        <div className="text-sm text-muted-foreground">
                             {copyrightString}
                         </div>
                     </div>

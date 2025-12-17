@@ -115,17 +115,17 @@ export function CookieConsent({
           willChange: 'transform, opacity',
           WebkitBackfaceVisibility: 'hidden',
           backfaceVisibility: 'hidden',
-          // Avoid setting transform here; Tailwind translate classes need full control
         }}
       >
-        <div className="bg-[#f0eee9] dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg p-4 sm:p-5">
+        <div className="bg-card border border-border rounded-none ring-1 ring-foreground/10 p-4 sm:p-5">
           <div className="space-y-3">
-            <p className="text-sm text-neutral-800 dark:text-neutral-300 leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               {description}
             </p>
-            <div className="flex items-center flex-wrap gap-4 mt-4">
+            <div className="flex items-center flex-wrap gap-3 mt-4">
               <Button
                 size="sm"
+                variant="outline"
                 onClick={handleDecline}
                 aria-label="Decline"
               >
@@ -141,7 +141,7 @@ export function CookieConsent({
               {learnMoreHref && (
                 <a
                   href={learnMoreHref}
-                  className="ms-auto text-sm underline underline-offset-2 text-neutral-900 dark:text-neutral-100 hover:opacity-80"
+                  className="ms-auto text-xs underline underline-offset-2 text-foreground hover:text-muted-foreground transition-colors"
                   aria-label="Privacy policy"
                 >
                   Privacy policy

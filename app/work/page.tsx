@@ -16,26 +16,26 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
   technologies?: string[];
 }) {
   return (
-    <div className="border border-neutral-200 dark:border-neutral-800 bg-[hsl(43,19%,90%)] dark:bg-neutral-900 rounded px-3 py-4 w-full flex flex-col gap-4">
+    <div className="border border-border bg-card ring-1 ring-foreground/10 px-4 py-5 w-full flex flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
-        <div className="flex flex-col">
-          <p className="prose-medium text-neutral-900 dark:text-neutral-100">
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-medium text-foreground">
             {name}
           </p>
-          <p className="prose-sm mt-2 italic text-neutral-900 dark:text-neutral-100">
+          <p className="text-sm italic text-muted-foreground">
             {post}
           </p>
-          <p className="prose-sm text-neutral-900 dark:text-neutral-100">
+          <p className="text-xs text-muted-foreground">
             {dates}
           </p>
         </div>
-        <div className="flex flex-col">
+        <div className="flex-shrink-0">
           {url ? (
             <a
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="h-12 w-12"
+              className="block h-12 w-12"
               aria-label={`Visit ${name}`}
             >
               <Icon id={iconId} size={48} className="h-12 w-12" decorative />
@@ -46,14 +46,14 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
         </div>
       </div>
 
-      {description && description.length > 0 && (
-        <div>
+      {(description && description.length > 0) && (
+        <div className="space-y-2">
           {description.map((desc, index) => (
-            <Paragraph key={index} str={desc} />
+            <p key={index} className="text-sm text-foreground leading-relaxed">{desc}</p>
           ))}
           {technologies && technologies.length > 0 && (
-            <div className="mt-2 pt-2 border-t border-neutral-200 dark:border-neutral-700">
-              <p className="prose-sm text-neutral-600 dark:text-neutral-400 italic">
+            <div className="mt-3 pt-3 border-t border-border">
+              <p className="text-xs text-muted-foreground italic">
                 {technologies.join(' • ')}
               </p>  
             </div>
@@ -64,26 +64,19 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
   );
 }
 
-
-function Paragraph({ str }) {
+function SkillTag({ children }: { children: React.ReactNode }) {
   return (
-    <p className="prose-sm mt-2 text-neutral-900 dark:text-neutral-100">
-      {str}
-    </p>
+    <span className="inline-flex border border-border bg-card ring-1 ring-foreground/10 px-2.5 py-1 text-sm text-foreground whitespace-nowrap">
+      {children}
+    </span>
   );
 }
 
 function SkillCloud({ skills }: { skills: string[] }) {
   return (
-    <div className="flex flex-wrap gap-4 p-2">
+    <div className="flex flex-wrap gap-2">
       {skills.map((skill, index) => (
-        <span
-          key={index}
-          className="border border-neutral-200 dark:border-neutral-700 bg-[hsl(43,19%,90%)] dark:bg-neutral-800 rounded px-2 py-1 text-sm text-neutral-900 dark:text-neutral-100"
-          style={{ whiteSpace: 'nowrap' }}
-        >
-          {skill}
-        </span>
+        <SkillTag key={index}>{skill}</SkillTag>
       ))}
     </div>
   );
@@ -100,15 +93,14 @@ export default function Page() {
     <section>
       {/* Skills Cloud Section */}
       <div className="mb-12">
-        <h2 className="font-medium text-2xl mb-8 tracking-tighter">skills & technologies 💻</h2>
+        <h2 className="font-medium text-2xl mb-6 tracking-tighter">skills & technologies 💻</h2>
         <SkillCloud skills={allSkills} />
       </div>
 
       <div className="mt-12">
-        <h2 className="font-medium text-2xl mb-8 tracking-tighter">work 👨‍💻</h2>
-        <ul>
+        <h2 className="font-medium text-2xl mb-6 tracking-tighter">work 👨‍💻</h2>
+        <div className="flex flex-col gap-4">
           {resumeData.experience.map((job, index) => (
-            <li key={index} className="group py-2">
             <ExperienceCard
               key={index}
               name={job.company}
@@ -119,15 +111,14 @@ export default function Page() {
               url={job.url}
               technologies={job.technologies}
             />
-            </li>
           ))}
-        </ul>
+        </div>
       </div>
-      <div>
-        <h2 className="font-medium text-2xl mb-8 mt-12 tracking-tighter">education 👨‍🎓</h2>
-        <ul>
+
+      <div className="mt-12">
+        <h2 className="font-medium text-2xl mb-6 tracking-tighter">education 👨‍🎓</h2>
+        <div className="flex flex-col gap-4">
           {resumeData.education.map((school, index) => (
-            <li key={index} className="group py-2">
             <ExperienceCard
               key={index}
               name={school.institution}
@@ -137,17 +128,16 @@ export default function Page() {
               iconId={school.iconId}
               url={school.url}
             />
-            </li>
           ))}
-        </ul>
+        </div>
       </div>
 
       <div className="mt-12">
-        <h2 className="font-medium text-2xl mb-8 tracking-tighter">non-technical skills 🤝</h2>
-        <div className="border border-neutral-200 dark:border-neutral-800 bg-[hsl(43,19%,90%)] dark:bg-neutral-900 rounded px-3 py-4 mb-8">
+        <h2 className="font-medium text-2xl mb-6 tracking-tighter">non-technical skills 🤝</h2>
+        <div className="border border-border bg-card ring-1 ring-foreground/10 px-4 py-5">
           <ul className="space-y-2">
             {resumeData.nonTechnicalSkills.map((skill, index) => (
-              <li key={index} className="text-sm text-neutral-600 dark:text-neutral-400">
+              <li key={index} className="text-sm text-muted-foreground">
                 {skill}
               </li>
             ))}
@@ -156,11 +146,11 @@ export default function Page() {
       </div>
 
       <div className="mt-12">
-        <h2 className="font-medium text-2xl mb-8 tracking-tighter">hobbies 🎨</h2>
-        <div className="border border-neutral-200 dark:border-neutral-800 bg-[hsl(43,19%,90%)] dark:bg-neutral-900 rounded px-3 py-4">
+        <h2 className="font-medium text-2xl mb-6 tracking-tighter">hobbies 🎨</h2>
+        <div className="border border-border bg-card ring-1 ring-foreground/10 px-4 py-5">
           <div className="space-y-2">
             {resumeData.hobbies.map((hobby, index) => (
-              <p key={index} className="text-sm text-neutral-600 dark:text-neutral-400">
+              <p key={index} className="text-sm text-muted-foreground">
                 {hobby}
               </p>
             ))}
@@ -168,10 +158,10 @@ export default function Page() {
         </div>
       </div>
 
-      <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-neutral-600 dark:text-neutral-300">
+      <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-muted-foreground">
         <li ref={cvLinkRef}>
           <a
-            className="flex items-center hover:text-neutral-800 dark:hover:text-neutral-100 transition-colors"
+            className="flex items-center hover:text-foreground transition-colors"
             rel="noopener noreferrer"
             target="_blank"
             href={cvUrl}

@@ -10,19 +10,21 @@ describe('Icon component', () => {
     expect(img.src).toContain('/images/logos/wh.png')
   })
 
-  it('renders ASFC themed PNG with picture sources', () => {
+  it('renders ASFC via sprite', () => {
     const { container } = render(<Icon id="asfc" size={20} />)
-    const picture = container.querySelector('picture')
-    expect(picture).toBeInTheDocument()
-    const img = screen.getByRole('img', { name: /asfc logo/i }) as HTMLImageElement
-    expect(img.src).toContain('/images/logos/asfc_black.png')
+    const svg = container.querySelector('svg')!
+    expect(svg).toBeInTheDocument()
+    const use = svg.querySelector('use')!
+    const href = use.getAttribute('href') || use.getAttribute('xlink:href')
+    expect(href).toMatch(/\/sprite\.svg\?v=.*#asfc/)
   })
 
-  it('renders SVG theme logo (uol) with color/dark variants', () => {
+  it('renders UoL via themed SVG files', () => {
     const { container } = render(<Icon id="uol" size={18} />)
-    const img = container.querySelector('img') as HTMLImageElement
-    expect(img).toBeInTheDocument()
-    expect(img.src).toContain('/images/logos/uol_colour.svg')
+    const img = screen.getByRole('img', { name: /uol logo/i }) as HTMLImageElement
+    expect(img.src).toContain('/images/logos/uol_light_mode.svg')
+    const source = container.querySelector('source')
+    expect(source?.getAttribute('srcset')).toContain('/images/logos/uol_dark_mode.svg')
   })
 
   it('renders brand colour logos (azure and dotnet)', () => {
@@ -52,4 +54,3 @@ describe('Icon component', () => {
     expect(svg.getAttribute('height')).toBe('23')
   })
 })
-
