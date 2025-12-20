@@ -15,19 +15,19 @@ export default function Page() {
     const turnstileRef = useRef<TurnstileRef>(null);
     const [state, formAction] = useActionState(submitContact, undefined);
     const [isVerifying, setIsVerifying] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [clientMessage, setClientMessage] = useState<{ text: string; isError: boolean } | null>(null);
 
     const handleSubmit = useCallback(
         async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            setError(null);
+            setClientMessage(null);
             setIsVerifying(true);
 
             try {
                 // Trigger invisible Turnstile verification
                 const token = await turnstileRef.current?.execute();
                 if (!token) {
-                    setError('Verification failed. Please try again.');
+                    setClientMessage({ text: 'Verification failed. Please try again.', isError: true });
                     setIsVerifying(false);
                     return;
                 }
@@ -39,7 +39,7 @@ export default function Page() {
                 // Submit via server action
                 formAction(formData);
             } catch (err) {
-                setError('Verification failed. Please try again.');
+                setClientMessage({ text: 'Verification failed. Please try again.', isError: true });
                 turnstileRef.current?.reset();
             } finally {
                 setIsVerifying(false);
@@ -48,20 +48,21 @@ export default function Page() {
         [formAction]
     );
 
+    // Sync server state to client message
     useEffect(() => {
+        if (state?.message) {
+            setClientMessage({ text: state.message, isError: !state.success });
+        }
         if (state?.success) {
             formRef.current?.reset();
             turnstileRef.current?.reset();
         }
-    }, [state?.success]);
-
-    const displayMessage = error || state?.message;
-    const isError = error || (state && !state.success);
+    }, [state]);
 
     return (
-        <div>
+        <div className="max-w-[500px]">
             <form
-                className="max-w-[500px] space-y-4"
+                className="space-y-4"
                 ref={formRef}
                 onSubmit={handleSubmit}
             >
@@ -84,16 +85,18 @@ export default function Page() {
                         className="min-h-64"
                     />
                 </div>
-                <div className="flex items-center justify-end gap-4 pt-1">
+                <div className="flex items-center justify-between gap-4 pt-1">
                     <Turnstile ref={turnstileRef} invisible />
-                    <SubmitButton isVerifying={isVerifying} />
+                    <div className="flex items-center gap-4">
+                        {clientMessage && (
+                            <p className={cn('text-sm', clientMessage.isError ? 'text-destructive' : 'text-foreground')}>
+                                {clientMessage.text}
+                            </p>
+                        )}
+                        <SubmitButton isVerifying={isVerifying} />
+                    </div>
                 </div>
             </form>
-            {displayMessage && (
-                <p className={cn('py-2 text-sm', isError ? 'text-destructive' : 'text-foreground')}>
-                    {displayMessage}
-                </p>
-            )}
         </div>
     );
 }
