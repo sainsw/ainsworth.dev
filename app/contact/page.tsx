@@ -84,8 +84,8 @@ export default function Page() {
                         className="min-h-64"
                     />
                 </div>
-                <Turnstile ref={turnstileRef} invisible />
-                <div className="flex justify-end pt-1">
+                <div className="flex items-center justify-end gap-4 pt-1">
+                    <Turnstile ref={turnstileRef} invisible />
                     <SubmitButton isVerifying={isVerifying} />
                 </div>
             </form>

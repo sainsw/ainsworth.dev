@@ -250,6 +250,11 @@ input[type="email"] {
     appearance: none;
 }
 
+/* Cloudflare Turnstile widget styling */
+.cf-turnstile {
+    flex-shrink: 0;
+}
+
 .prose .tweet a {
     text-decoration: inherit;
     font-weight: 500;

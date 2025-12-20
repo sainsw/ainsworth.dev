@@ -13,7 +13,7 @@ declare global {
           'expired-callback'?: () => void;
           'error-callback'?: () => void;
           theme?: 'light' | 'dark' | 'auto';
-          size?: 'normal' | 'compact' | 'invisible';
+          size?: 'normal' | 'compact' | 'flexible';
           execution?: 'render' | 'execute';
         }
       ) => string;
@@ -85,7 +85,8 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
         'expired-callback': onExpire,
         'error-callback': onError,
         theme,
-        size: invisible ? 'invisible' : 'normal',
+        // Note: "invisible" mode is determined by the sitekey type in Cloudflare dashboard,
+        // not by size parameter. Use execution: 'execute' for on-demand triggering.
         execution: invisible ? 'execute' : 'render',
       });
     }, [handleVerify, onExpire, onError, theme, invisible]);
