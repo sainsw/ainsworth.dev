@@ -15,8 +15,8 @@ describe('Navbar', () => {
     const blog = screen.getByRole('link', { name: /blog/i }) as HTMLAnchorElement
     expect(blog).toHaveAttribute('href', '/blog')
 
-    const guestbook = screen.getByRole('link', { name: /guestbook/i }) as HTMLAnchorElement
-    expect(guestbook).toHaveAttribute('href', '/guestbook')
+    const contact = screen.getByRole('link', { name: /contact/i }) as HTMLAnchorElement
+    expect(contact).toHaveAttribute('href', '/contact')
     // prefetch is a Next.js prop and isn’t observable in DOM here
   })
 })
