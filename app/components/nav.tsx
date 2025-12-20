@@ -18,8 +18,8 @@ const navItems: Array<{ path: Route; name: string; prefetch: boolean }> = [
     prefetch: true, // high priority content
   },
   {
-    path: '/guestbook',
-    name: 'guestbook',
+    path: '/contact',
+    name: 'contact',
     prefetch: false, // lower priority
   },
 ];
@@ -39,7 +39,7 @@ export function Navbar() {
                   key={path}
                   href={path}
                   prefetch={prefetch}
-                  className="transition-colors hover:text-foreground text-muted-foreground flex align-middle relative py-1 px-2 text-sm"
+                  className="transition-colors hover:text-foreground text-muted-foreground flex align-middle relative py-1 px-2 text-base"
                 >
                   {name}
                 </Link>

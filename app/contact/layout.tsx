@@ -12,7 +12,7 @@ export default function ContactLayout({
 }) {
   return (
     <div>
-      <h1 className="font-medium text-2xl mb-8 tracking-tighter">get in touch 👋</h1>
+      <h1 className="font-medium text-2xl mb-8 tracking-tighter">get in touch 📮</h1>
       {children}
     </div>
   );
