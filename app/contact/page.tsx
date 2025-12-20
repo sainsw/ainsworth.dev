@@ -7,35 +7,63 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { Label } from '../../components/ui/label';
-import { Turnstile } from '../components/turnstile';
+import { Turnstile, TurnstileRef } from '../components/turnstile';
 import { cn } from '../../lib/utils';
 
 export default function Page() {
     const formRef = useRef<HTMLFormElement>(null);
+    const turnstileRef = useRef<TurnstileRef>(null);
     const [state, formAction] = useActionState(submitContact, undefined);
-    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleTurnstileVerify = useCallback((token: string) => {
-        setTurnstileToken(token);
-    }, []);
+    const handleSubmit = useCallback(
+        async (e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            setError(null);
+            setIsVerifying(true);
 
-    const handleTurnstileExpire = useCallback(() => {
-        setTurnstileToken(null);
-    }, []);
+            try {
+                // Trigger invisible Turnstile verification
+                const token = await turnstileRef.current?.execute();
+                if (!token) {
+                    setError('Verification failed. Please try again.');
+                    setIsVerifying(false);
+                    return;
+                }
+
+                // Create form data with the token
+                const formData = new FormData(formRef.current!);
+                formData.set('cf-turnstile-response', token);
+
+                // Submit via server action
+                formAction(formData);
+            } catch (err) {
+                setError('Verification failed. Please try again.');
+                turnstileRef.current?.reset();
+            } finally {
+                setIsVerifying(false);
+            }
+        },
+        [formAction]
+    );
 
     useEffect(() => {
         if (state?.success) {
             formRef.current?.reset();
-            setTurnstileToken(null);
+            turnstileRef.current?.reset();
         }
     }, [state?.success]);
+
+    const displayMessage = error || state?.message;
+    const isError = error || (state && !state.success);
 
     return (
         <div>
             <form
                 className="max-w-[500px] space-y-4"
                 ref={formRef}
-                action={formAction}
+                onSubmit={handleSubmit}
             >
                 <div className="space-y-2">
                     <Label htmlFor="email">Email (optional)</Label>
@@ -56,35 +84,31 @@ export default function Page() {
                         className="min-h-64"
                     />
                 </div>
-                <input type="hidden" name="cf-turnstile-response" value={turnstileToken || ''} />
-                <Turnstile
-                    onVerify={handleTurnstileVerify}
-                    onExpire={handleTurnstileExpire}
-                    onError={handleTurnstileExpire}
-                />
+                <Turnstile ref={turnstileRef} invisible />
                 <div className="flex justify-end pt-1">
-                    <SubmitButton disabled={!turnstileToken} />
+                    <SubmitButton isVerifying={isVerifying} />
                 </div>
             </form>
-            {state?.message && (
-                <p className={cn('py-2 text-sm', state.success ? 'text-foreground' : 'text-destructive')}>
-                    {state.message}
+            {displayMessage && (
+                <p className={cn('py-2 text-sm', isError ? 'text-destructive' : 'text-foreground')}>
+                    {displayMessage}
                 </p>
             )}
         </div>
     );
 }
 
-function SubmitButton({ disabled }: { disabled?: boolean }) {
+function SubmitButton({ isVerifying }: { isVerifying?: boolean }) {
     const { pending } = useFormStatus();
+    const isLoading = pending || isVerifying;
 
     return (
         <Button
             className="w-20 justify-center"
-            disabled={pending || disabled}
+            disabled={isLoading}
             type="submit"
         >
-            {pending ? '...' : 'Send'}
+            {isLoading ? '...' : 'Send'}
         </Button>
     );
 }
