@@ -50,6 +50,8 @@ if (fs.existsSync(examplePath)) {
       case 'OAUTH_CLIENT_KEY':
       case 'OAUTH_CLIENT_SECRET':
       case 'RESEND_SECRET':
+      case 'NEXT_PUBLIC_TURNSTILE_SITE_KEY':
+      case 'TURNSTILE_SECRET_KEY':
         out += `${key}=""\n`;
         break;
       default:
@@ -64,7 +66,10 @@ if (fs.existsSync(examplePath)) {
         `DATABASE_URL=""\n` +
         `DATABASE_URL_NON_POOLING=""\n` +
         `NEXT_PUBLIC_GET_IN_TOUCH=""\n` +
-        `RESEND_SECRET=""\n`;
+        `RESEND_SECRET=""\n` +
+        `# Cloudflare Turnstile (contact form protection)\n` +
+        `NEXT_PUBLIC_TURNSTILE_SITE_KEY=""\n` +
+        `TURNSTILE_SECRET_KEY=""\n`;
 }
 
 fs.writeFileSync(envLocalPath, out, 'utf8');

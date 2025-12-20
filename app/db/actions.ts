@@ -101,12 +101,53 @@ export async function sendEmail(formData: FormData) {
   return response;
 }
 
+async function verifyTurnstileToken(token: string): Promise<boolean> {
+  const secretKey = process.env.TURNSTILE_SECRET_KEY;
+  if (!secretKey) {
+    console.error('Turnstile secret key not configured');
+    return false;
+  }
+
+  try {
+    const response = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          secret: secretKey,
+          response: token,
+        }),
+      }
+    );
+
+    const data = await response.json();
+    return data.success === true;
+  } catch (error) {
+    console.error('Turnstile verification failed:', error);
+    return false;
+  }
+}
+
 // Server action compatible with React useFormState API
 export async function submitContact(
   _prevState: { success: boolean; message: string } | undefined,
   formData: FormData
 ) {
   try {
+    // Verify Turnstile token
+    const turnstileToken = formData.get('cf-turnstile-response')?.toString();
+    if (!turnstileToken) {
+      return { success: false, message: 'please complete the verification challenge.' };
+    }
+
+    const isValid = await verifyTurnstileToken(turnstileToken);
+    if (!isValid) {
+      return { success: false, message: 'verification failed. please try again.' };
+    }
+
     await sendEmail(formData);
     return { success: true, message: 'you sent me a message. nicely done!' };
   } catch (err: any) {
