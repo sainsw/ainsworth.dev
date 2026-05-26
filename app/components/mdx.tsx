@@ -5,6 +5,7 @@ import { highlight } from "sugar-high";
 import React from "react";
 import { useMDXComponents } from "../../mdx-components";
 import ReactMarkdown from "react-markdown";
+import type { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
@@ -201,28 +202,29 @@ export function CustomMDX({
     "\n\n<avatar-demo></avatar-demo>\n\n",
   );
 
+  const markdownComponents: Components = {
+    ...mdxComponents,
+    code: ({ className, children, ...props }: any) => {
+      const match = /language-(\w+)/.exec(className || "");
+      const language = match ? match[1] : "";
+
+      if (language === "mermaid") {
+        return <MermaidClient chart={String(children).replace(/\n$/, "")} />;
+      }
+
+      return <Code {...props}>{children}</Code>;
+    },
+  };
+
+  (markdownComponents as Record<string, any>)["avatar-demo"] = () => {
+    return <AvatarDemo />;
+  };
+
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeRaw, [rehypeSanitize, markdownSanitizeSchema]]}
-      components={{
-        ...mdxComponents,
-        code: ({ className, children, ...props }: any) => {
-          const match = /language-(\w+)/.exec(className || "");
-          const language = match ? match[1] : "";
-
-          if (language === "mermaid") {
-            return (
-              <MermaidClient chart={String(children).replace(/\n$/, "")} />
-            );
-          }
-
-          return <Code {...props}>{children}</Code>;
-        },
-        "avatar-demo": () => {
-          return <AvatarDemo />;
-        },
-      }}
+      components={markdownComponents}
     >
       {processedContent}
     </ReactMarkdown>
