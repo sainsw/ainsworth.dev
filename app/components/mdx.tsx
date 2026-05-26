@@ -7,8 +7,14 @@ import { useMDXComponents } from "../../mdx-components";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { AvatarDemo } from "./avatar-demo";
 import MermaidClient from "./mermaid-client";
+
+const markdownSanitizeSchema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), "avatar-demo"],
+};
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -192,13 +198,13 @@ export function CustomMDX({
   // Replace [AVATAR_DEMO] with a special placeholder that we can process
   const processedContent = content.replace(
     /\[AVATAR_DEMO\]/g,
-    '<div data-component="avatar-demo"></div>',
+    "\n\n<avatar-demo></avatar-demo>\n\n",
   );
 
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeRaw]}
+      rehypePlugins={[rehypeRaw, [rehypeSanitize, markdownSanitizeSchema]]}
       components={{
         ...mdxComponents,
         code: ({ className, children, ...props }: any) => {
@@ -213,11 +219,8 @@ export function CustomMDX({
 
           return <Code {...props}>{children}</Code>;
         },
-        div: ({ ...props }: any) => {
-          if (props["data-component"] === "avatar-demo") {
-            return <AvatarDemo />;
-          }
-          return <div {...props} />;
+        "avatar-demo": () => {
+          return <AvatarDemo />;
         },
       }}
     >

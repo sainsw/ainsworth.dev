@@ -104,9 +104,11 @@ const nextConfig = {
   },
 };
 
+const unsafeEvalSource = process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : '';
+
 const ContentSecurityPolicy = `
     default-src 'self' vercel.live;
-    script-src 'self' 'unsafe-eval' 'unsafe-inline' cdn.vercel-insights.com vercel.live va.vercel-scripts.com static.cloudflareinsights.com challenges.cloudflare.com;
+    script-src 'self'${unsafeEvalSource} 'unsafe-inline' cdn.vercel-insights.com vercel.live va.vercel-scripts.com static.cloudflareinsights.com challenges.cloudflare.com;
     style-src 'self' 'unsafe-inline';
     img-src * blob: data:;
     media-src 'none';
