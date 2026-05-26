@@ -13,8 +13,8 @@ export default function ViewCounter({
   const number = new Number(viewsForSlug?.count || 0);
 
   return (
-    <p className="text-muted-foreground">
+    <span className="text-muted-foreground">
       {`${number.toLocaleString()} views`}
-    </p>
+    </span>
   );
 }

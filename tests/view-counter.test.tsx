@@ -53,7 +53,7 @@ describe('ViewCounter Component', () => {
     
     const { container } = render(<ViewCounter slug="test" allViews={mockViews} />)
     
-    const paragraph = container.querySelector('p')
-    expect(paragraph).toHaveClass('text-muted-foreground')
+    const text = container.querySelector('span')
+    expect(text).toHaveClass('text-muted-foreground')
   })
 })

@@ -9,6 +9,7 @@ import { increment } from 'app/db/actions';
 import { unstable_noStore as noStore } from 'next/cache';
 import { ReactDebug } from 'app/components/react-debug';
 import { SandpackCSS } from './sandpack';
+import { formatRelativeDate } from '@/lib/date';
 
 export async function generateMetadata({
   params,
@@ -60,27 +61,8 @@ export async function generateMetadata({
 
 function formatDate(date: string) {
   noStore();
-  let currentDate = new Date();
-  if (!date.includes('T')) {
-    date = `${date}T00:00:00`;
-  }
-  let targetDate = new Date(date);
-
-  let yearsAgo = currentDate.getFullYear() - targetDate.getFullYear();
-  let monthsAgo = currentDate.getMonth() - targetDate.getMonth();
-  let daysAgo = currentDate.getDate() - targetDate.getDate();
-
-  let formattedDate = '';
-
-  if (yearsAgo > 0) {
-    formattedDate = `${yearsAgo}y ago`;
-  } else if (monthsAgo > 0) {
-    formattedDate = `${monthsAgo}mo ago`;
-  } else if (daysAgo > 0) {
-    formattedDate = `${daysAgo}d ago`;
-  } else {
-    formattedDate = 'Today';
-  }
+  let targetDate = new Date(date.includes('T') ? date : `${date}T00:00:00`);
+  const formattedDate = formatRelativeDate(date);
 
   let fullDate = targetDate.toLocaleString('en-us', {
     month: 'long',

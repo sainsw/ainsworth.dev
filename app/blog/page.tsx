@@ -3,6 +3,8 @@ import { Suspense } from 'react';
 import ViewCounter from './view-counter';
 import { getViewsCount } from 'app/db/queries';
 import { getBlogPosts } from 'app/db/blog';
+import { unstable_noStore as noStore } from 'next/cache';
+import { formatRelativeDate } from '@/lib/date';
 
 export const metadata = {
   title: 'Blog',
@@ -10,6 +12,7 @@ export const metadata = {
 };
 
 export default function BlogPage() {
+  noStore();
   let allBlogs = getBlogPosts().sort((a, b) => {
     if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
       return -1;
@@ -38,7 +41,7 @@ function BlogRow({
   post,
   allViews,
 }: {
-  post: { slug: string; metadata: { title: string } };
+  post: { slug: string; metadata: { title: string; publishedAt: string } };
   allViews?: { slug: string; count: number }[];
 }) {
   return (
@@ -52,7 +55,10 @@ function BlogRow({
           {post.metadata.title}
         </p>
         {allViews ? (
-          <ViewCounter allViews={allViews} slug={post.slug} />
+          <p className="text-muted-foreground">
+            <em>{formatRelativeDate(post.metadata.publishedAt)}</em> &mdash;{' '}
+            <ViewCounter allViews={allViews} slug={post.slug} />
+          </p>
         ) : (
           <p className="h-6" data-testid="views-fallback" />
         )}
@@ -64,7 +70,7 @@ function BlogRow({
 async function BlogListWithViews({
   allBlogs,
 }: {
-  allBlogs: { slug: string; metadata: { title: string } }[];
+  allBlogs: { slug: string; metadata: { title: string; publishedAt: string } }[];
 }) {
   try {
     let views = await getViewsCount();
