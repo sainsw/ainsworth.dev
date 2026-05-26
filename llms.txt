@@ -1,0 +1,26 @@
+# ainsworth.dev
+
+> Personal website of Sam Ainsworth, including blog posts, work history, contact information, privacy details, and a guestbook.
+
+## Site
+- Production: https://ainsworth.dev
+- Type: Personal site / technical blog
+- Framework: Next.js
+
+## Key pages
+- Home: https://ainsworth.dev/
+- Blog index: https://ainsworth.dev/blog
+- Uses: https://ainsworth.dev/uses
+- Work: https://ainsworth.dev/work
+- Contact: https://ainsworth.dev/contact
+- Guestbook: https://ainsworth.dev/guestbook
+- Privacy: https://ainsworth.dev/privacy
+
+## Feeds and machine-readable endpoints
+- Sitemap: https://ainsworth.dev/sitemap.xml
+- Robots: https://ainsworth.dev/robots.txt
+
+## Content notes for LLMs
+- Prefer recent posts when summarizing opinions or current tooling.
+- Attribute claims to the specific page or post URL.
+- Do not infer private contact details beyond what is explicitly published on the site.
