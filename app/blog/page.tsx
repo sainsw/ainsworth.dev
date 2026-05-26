@@ -10,7 +10,12 @@ export const metadata = {
 };
 
 export default function BlogPage() {
-  let allBlogs = getBlogPosts();
+  let allBlogs = getBlogPosts().sort((a, b) => {
+    if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
+      return -1;
+    }
+    return 1;
+  });
   const isTest = process.env.NODE_ENV === 'test';
 
   return (
@@ -18,47 +23,56 @@ export default function BlogPage() {
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">
         read my blog
       </h1>
-      {allBlogs
-        .sort((a, b) => {
-          if (
-            new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-          ) {
-            return -1;
-          }
-          return 1;
-        })
-        .map((post) => (
-          <Link
-            key={post.slug}
-            className="flex flex-col space-y-1 mb-4 group"
-            href={`/blog/${post.slug}`}
-          >
-            <div className="w-full flex flex-col">
-              <p className="text-foreground tracking-tight group-hover:text-muted-foreground transition-colors">
-                {post.metadata.title}
-              </p>
-              {isTest ? (
-                <p className="h-6" data-testid="views-fallback" />
-              ) : (
-                <Suspense fallback={<p className="h-6" />}>
-                  <Views slug={post.slug} />
-                </Suspense>
-              )}
-            </div>
-          </Link>
-        ))}
+      {isTest ? (
+        allBlogs.map((post) => <BlogRow key={post.slug} post={post} />)
+      ) : (
+        <Suspense fallback={allBlogs.map((post) => <BlogRow key={post.slug} post={post} />)}>
+          <BlogListWithViews allBlogs={allBlogs} />
+        </Suspense>
+      )}
     </section>
   );
 }
 
-// Async component to fetch and display view counts
-async function Views({ slug }: { slug: string }) {
+function BlogRow({
+  post,
+  allViews,
+}: {
+  post: { slug: string; metadata: { title: string } };
+  allViews?: { slug: string; count: number }[];
+}) {
+  return (
+    <Link
+      key={post.slug}
+      className="flex flex-col space-y-1 mb-4 group"
+      href={`/blog/${post.slug}`}
+    >
+      <div className="w-full flex flex-col">
+        <p className="text-foreground tracking-tight group-hover:text-muted-foreground transition-colors">
+          {post.metadata.title}
+        </p>
+        {allViews ? (
+          <ViewCounter allViews={allViews} slug={post.slug} />
+        ) : (
+          <p className="h-6" data-testid="views-fallback" />
+        )}
+      </div>
+    </Link>
+  );
+}
+
+async function BlogListWithViews({
+  allBlogs,
+}: {
+  allBlogs: { slug: string; metadata: { title: string } }[];
+}) {
   try {
     let views = await getViewsCount();
-    return <ViewCounter allViews={views} slug={slug} />;
+    return allBlogs.map((post) => (
+      <BlogRow key={post.slug} post={post} allViews={views} />
+    ));
   } catch (error) {
     console.error('Failed to load view count:', error);
-    // Return empty view counter if database fails
-    return <ViewCounter allViews={[]} slug={slug} />;
+    return allBlogs.map((post) => <BlogRow key={post.slug} post={post} />);
   }
 }
