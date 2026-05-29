@@ -6,7 +6,7 @@ import { getViewsCount } from 'app/db/queries';
 import { getBlogPosts } from 'app/db/blog';
 import ViewCounter from '../view-counter';
 import { increment } from 'app/db/actions';
-import { unstable_noStore as noStore } from 'next/cache';
+import { connection } from 'next/server';
 import { ReactDebug } from 'app/components/react-debug';
 import { SandpackCSS } from './sandpack';
 import { formatRelativeDate } from '@/lib/date';
@@ -59,8 +59,8 @@ export async function generateMetadata({
   };
 }
 
-function formatDate(date: string) {
-  noStore();
+async function formatDate(date: string) {
+  await connection();
   let targetDate = new Date(date.includes('T') ? date : `${date}T00:00:00`);
   const formattedDate = formatRelativeDate(date);
 
@@ -71,6 +71,14 @@ function formatDate(date: string) {
   });
 
   return `${fullDate} (${formattedDate})`;
+}
+
+async function FormattedDate({ date }: { date: string }) {
+  return (
+    <p className="text-sm text-muted-foreground">
+      {await formatDate(date)}
+    </p>
+  );
 }
 
 export default async function Blog({
@@ -117,9 +125,7 @@ export default async function Blog({
       </h1>
       <div className="flex justify-between items-center mt-2 mb-8 text-sm max-w-[650px]">
         <Suspense fallback={<p className="h-5" />}>
-          <p className="text-sm text-muted-foreground">
-            {formatDate(post.metadata.publishedAt)}
-          </p>
+          <FormattedDate date={post.metadata.publishedAt} />
         </Suspense>
         <Suspense fallback={<p className="h-5" />}>
           <Views slug={post.slug} />

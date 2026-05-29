@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 import ViewCounter from './view-counter';
 import { getViewsCount } from 'app/db/queries';
 import { getBlogPosts } from 'app/db/blog';
-import { unstable_noStore as noStore } from 'next/cache';
 import { formatRelativeDate } from '@/lib/date';
 
 export const metadata = {
@@ -12,7 +11,6 @@ export const metadata = {
 };
 
 export default function BlogPage() {
-  noStore();
   let allBlogs = getBlogPosts().sort((a, b) => {
     if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
       return -1;

@@ -31,7 +31,8 @@ describe('db/actions increment', () => {
     process.env.DATABASE_URL = 'postgres://test'
     const sql = vi.fn(async () => { throw new Error('db down') })
     vi.doMock('app/db/postgres', () => ({ sql }))
-    vi.doMock('next/cache', () => ({ unstable_noStore: () => {}, revalidatePath: vi.fn() }))
+    vi.doMock('next/cache', () => ({ revalidatePath: vi.fn() }))
+    vi.doMock('next/server', () => ({ connection: async () => {} }))
     const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.doMock('app/auth', () => ({ auth: vi.fn(async () => ({ user: { email: 'stub' } })) }))
     vi.doMock('../app/db/actions', async (importOriginal) => {
@@ -61,7 +62,8 @@ describe('db/actions saveGuestbookEntry', () => {
     process.env.RESEND_SECRET = 'x'
     vi.doMock('app/auth', () => ({ auth: vi.fn(async () => ({ user: { email: 'a@b.c', name: 'Alice' } })) }))
     vi.doMock('app/db/postgres', () => ({ sql: vi.fn(async () => {}) }))
-    vi.doMock('next/cache', () => ({ unstable_noStore: () => {}, revalidatePath: vi.fn() }))
+    vi.doMock('next/cache', () => ({ revalidatePath: vi.fn() }))
+    vi.doMock('next/server', () => ({ connection: async () => {} }))
     vi.spyOn(global, 'fetch').mockResolvedValue({ json: async () => ({ statusCode: 0, id: 'ok' }) } as any)
 
     vi.doMock('../app/db/actions', async (importOriginal) => {
@@ -119,7 +121,8 @@ describe('db/actions deleteGuestbookEntries', () => {
     const sql = vi.fn(async () => {})
     vi.doMock('app/db/postgres', () => ({ sql }))
     const revalidatePath = vi.fn()
-    vi.doMock('next/cache', () => ({ unstable_noStore: () => {}, revalidatePath }))
+    vi.doMock('next/cache', () => ({ revalidatePath }))
+    vi.doMock('next/server', () => ({ connection: async () => {} }))
     vi.doMock('../app/db/actions', async (importOriginal) => {
       const actual = await importOriginal<any>()
       return { ...actual }

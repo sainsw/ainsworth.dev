@@ -2,10 +2,8 @@
 
 import { auth, youtube } from '@googleapis/youtube';
 import { sql } from './postgres';
-import {
-  unstable_cache as cache,
-  unstable_noStore as noStore,
-} from 'next/cache';
+import { unstable_cache as cache } from 'next/cache';
+import { connection } from 'next/server';
 
 let googleAuth = new auth.GoogleAuth({
   credentials: {
@@ -25,7 +23,7 @@ export async function getBlogViews() {
     return [];
   }
 
-  noStore();
+  await connection();
   let views = await sql`
     SELECT count
     FROM views
@@ -41,7 +39,7 @@ export async function getViewsCount(): Promise<
     return [];
   }
 
-  noStore();
+  await connection();
   return sql`
     SELECT slug, count
     FROM views
@@ -85,7 +83,7 @@ export async function getGuestbookEntries() {
     return [];
   }
 
-  noStore();
+  await connection();
   return sql`
     SELECT id, body, created_by, updated_at
     FROM guestbook
