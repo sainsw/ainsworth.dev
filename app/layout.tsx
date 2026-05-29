@@ -11,15 +11,6 @@ import { DeferredAnalytics } from './components/deferred-analytics';
 import { CookieConsent } from './components/cookie-banner';
 import { AVATAR_VERSION } from '../lib/version';
 
-// CSS_VERSION is available after build, fallback to dynamic loading
-let CSS_VERSION = '';
-try {
-  const version = require('../lib/version');
-  CSS_VERSION = version.CSS_VERSION || '';
-} catch (e) {
-  // CSS_VERSION not available yet
-}
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://ainsworth.dev'),
   title: {
@@ -85,14 +76,7 @@ export default function RootLayout({
          * - Resend is only used on the contact flow; that page preconnects locally.
          */}
         <meta property="og:logo" content="https://ainsworth.dev/favicon.ico" />
-        {/**
-         * Avoid overriding Next.js CSS loading. A previous non-blocking
-         * CSS hack caused FOUC and cumulative layout shift, especially on
-         * content‑heavy pages like /work. Next.js already optimizes CSS
-         * delivery, so we keep default behavior to preserve layout stability.
-         */}
         <link rel="preload" href="/sprite.svg" as="image" type="image/svg+xml" />
-        {/** Removed CSS preload to avoid loading the wrong chunk; let Next manage CSS */}
       </head>
       <body className="antialiased font-sans text-foreground bg-background">
         <div className="max-w-2xl mb-40 flex flex-col md:flex-row mx-4 mt-8 lg:mx-auto">

@@ -10,8 +10,7 @@ const nextConfig = {
   // Opt into typed routes for safer navigation APIs
   typedRoutes: true,
   experimental: {
-    // Keep CSS stable; Tailwind v4 + PostCSS
-    optimizeCss: false,
+    inlineCss: true,
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
