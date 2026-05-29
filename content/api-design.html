@@ -1,0 +1,273 @@
+---
+title: 'API Specification Design Guide with OpenAPI, Stoplight & Postman'
+publishedAt: '2024-02-25'
+summary: 'A practical, opinionated playbook for design-first APIs: OpenAPI 3.1, error envelopes, pagination, idempotency, async jobs, versioning, security, and testable contracts with Stoplight and Postman.'
+---
+
+
+
+<p>This isn't a "click here to sign up" tutorial. It's the <strong>practical API design playbook</strong> I wish every team started with: design-first using <strong>OpenAPI 3.1</strong>, model the hard edges early (errors, pagination, idempotency), and use <strong>Stoplight</strong> to author/spec-review and <strong>Postman</strong> to test/enforce the contract.</p>
+<h2>Why design-first?</h2>
+<ul>
+<li><strong>Cheaper changes</strong>: it's easier to fix a schema than to unpick a shipped endpoint.</li>
+<li><strong>Parallel work</strong>: product, back-end, and front-end can move together using mocks.</li>
+<li><strong>Living contract</strong>: the spec is the source of truth for code, docs, and tests.</li>
+</ul>
+<p><strong>Tooling roles</strong></p>
+<ul>
+<li><strong>Stoplight (or your preferred OpenAPI editor)</strong>: author the spec, validate, mock, and publish docs.</li>
+<li><strong>Postman</strong>: import the spec as a collection, write test assertions, run in CI to keep the implementation honest.</li>
+</ul>
+<h2>OpenAPI foundation (3.1)</h2>
+<p>Start with <strong>OpenAPI 3.1</strong> (JSON Schema compliant). Keep the structure predictable:</p>
+<pre><code class="language-yaml">openapi: 3.1.0
+info:
+  title: Example API
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://auth.example.com/oauth/token
+          scopes:
+            read: Read access
+            write: Write access
+  parameters:
+    CorrelationId:
+      in: header
+      name: X-Correlation-ID
+      schema: { type: string, format: uuid }
+      required: false
+  responses:
+    Error:
+      description: Error envelope
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string, example: 'validation_error' }
+            message: { type: string }
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field: { type: string }
+                  issue: { type: string }
+
+paths:
+  /v1/things:
+    get:
+      summary: List things (cursor pagination)
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: cursor
+          in: query
+          schema: { type: string, nullable: true }
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: A page of things
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Thing'
+                  next_cursor:
+                    type: string
+                    nullable: true
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '429': { $ref: '#/components/responses/Error' }
+    post:
+      summary: Create a thing (idempotent)
+      security: [{ OAuth2: [write] }]
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string, description: 'Client-generated unique key per create attempt' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ThingCreate' }
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema: { type: string, format: uri }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '400': { $ref: '#/components/responses/Error' }
+</code></pre>
+<h3>Key ideas baked in</h3>
+<ul>
+<li><strong>Error envelope</strong>: one, consistent shape for all errors (code, message, optional details[]).</li>
+<li><strong>Correlation ID</strong>: echo X-Correlation-ID in logs; include it in error responses.</li>
+<li><strong>Cursor pagination</strong>: stable iteration, better than page=N for large datasets.</li>
+<li><strong>Idempotency</strong>: Idempotency-Key header on creates to make retries safe.</li>
+<li><strong>Version in the path</strong>: /v1/... (simple and explicit).</li>
+</ul>
+<hr>
+<h2>Error taxonomy (make failures boring)</h2>
+<p>Keep errors predictable for clients:</p>
+<pre><code class="language-json">{
+  "error": {
+    "code": "validation_error",
+    "message": "name is required",
+    "details": [{ "field": "name", "issue": "required" }]
+  }
+}
+</code></pre>
+<h3>Suggested codes</h3>
+<ul>
+<li><strong>validation_error</strong> (400)</li>
+<li><strong>authentication_failed</strong> (401)</li>
+<li><strong>authorization_failed</strong> (403)</li>
+<li><strong>resource_not_found</strong> (404)</li>
+<li><strong>conflict</strong> (409)</li>
+<li><strong>rate_limited</strong> (429)</li>
+<li><strong>internal_error</strong> (500)</li>
+</ul>
+<p>Return 409 for genuine conflicts (e.g., duplicate unique key), not for validation failures (422).</p>
+<hr>
+<h2>Pagination that won't bite you later</h2>
+<p>Prefer cursor pagination:</p>
+<ul>
+<li><strong>Request</strong>: GET /v1/things?limit=50&#x26;cursor={token}</li>
+<li><strong>Response</strong>: include next_cursor (or null).</li>
+</ul>
+<p>Cursors should be opaque (base64 data you can change server-side later). If you must support sorting/filters, treat them as part of the cursor calculation so pagination remains stable.</p>
+<hr>
+<h2>Idempotency (safe retries)</h2>
+<p>Clients will retry. Make POST safe with an Idempotency-Key:</p>
+<ul>
+<li>Store (key, request hash) → response mapping for a window (e.g., 24h).</li>
+<li>If the same key arrives with the same request, replay the original response (201/200).</li>
+<li>If the same key arrives with a different request body, return 409 conflict.</li>
+</ul>
+<p>This enables aggressive client-side retry without fear.</p>
+<hr>
+<h2>Long-running work (async jobs)</h2>
+<p>For heavy operations, respond 202 Accepted and let the client poll a job resource (or use webhooks).</p>
+<pre><code class="language-mermaid">sequenceDiagram
+  participant Client
+  participant API
+  Client->>API: POST /v1/reports
+  API-->>Client: 202 Accepted + Operation-Location: /v1/operations/{id}
+  Client->>API: GET /v1/operations/{id}
+  API-->>Client: 200 { status: 'running' | 'succeeded' | 'failed' }
+  Client->>API: GET /v1/operations/{id}
+  API-->>Client: 303 See Other (Location: /v1/reports/{reportId}) OR 200 { status:'failed', error:{...} }
+</code></pre>
+<ul>
+<li><strong>Use Operation-Location (or Location) to point at a status resource.</strong></li>
+<li><strong>When done, 303 See Other to the final resource, or return a terminal failure with the error envelope.</strong></li>
+</ul>
+<p>If your consumers can accept callbacks, consider webhooks:</p>
+<pre><code class="language-mermaid">flowchart TD
+  A[Client registers webhook] --> B["POST /v1/webhooks {url, secret}"]
+  B --> C[POST /v1/reports]
+  C --> D[API completes job]
+  D --> E["API POSTs event to webhook URL (HMAC signed)"]
+  E --> F[Client acknowledges 2xx]
+</code></pre>
+<p>Document retries, signing (HMAC), event schema, and backoff.</p>
+<hr>
+<h2>Filtering, sorting, and sparse fields</h2>
+<ul>
+<li><strong>Filters</strong>: explicit query params (?status=active&#x26;created_after=2025-01-01).</li>
+<li><strong>Sorting</strong>: ?sort=created_at or ?sort=-created_at (descending with -).</li>
+<li><strong>Sparse fields</strong>: ?fields=thing:id,name,status to keep payloads small.</li>
+</ul>
+<p>Write these into the spec so code and docs stay aligned.</p>
+<hr>
+<h2>Versioning &#x26; deprecation</h2>
+<ul>
+<li><strong>Major versions via the path</strong>: /v1, /v2.</li>
+<li><strong>Within a major version, changes must be backwards compatible.</strong></li>
+<li><strong>Deprecate with Deprecation and Sunset headers and a Link: <url>; rel="deprecation" to the migration guide. Set clear dates.</strong></li>
+</ul>
+<hr>
+<h2>Security: OAuth 2.0 (client credentials) + scopes</h2>
+<p>Model scopes in the spec and put them on operations:</p>
+<pre><code class="language-yaml">security:
+  - OAuth2: [read]
+</code></pre>
+<p>Return 403 with a clear authorization_failed code if the token lacks scope.</p>
+<p>Also model rate limits:</p>
+<ul>
+<li><strong>Response headers</strong>: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After.</li>
+<li><strong>Exhausted? Return 429 with rate_limited.</strong></li>
+</ul>
+<hr>
+<h2>Stoplight + Postman workflow (enforce the contract)</h2>
+<h3>In Stoplight</h3>
+<ol>
+<li>Author endpoints and schemas.</li>
+<li>Validate with built-in rules (lint for naming, descriptions, examples).</li>
+<li>Publish preview docs for review.</li>
+<li>Use mock server to unblock front-end.</li>
+</ol>
+<h3>In Postman</h3>
+<ol>
+<li>Import the OpenAPI spec → collection.</li>
+<li>Add tests (assert status codes, schema matches, error shapes, headers like X-Correlation-ID).</li>
+<li>Run in CI on every PR: if tests fail, the implementation doesn't match the spec.</li>
+</ol>
+<p>Example Postman test (JSON schema + headers):</p>
+<pre><code class="language-javascript">pm.test("has correlation id", () => {
+  pm.expect(pm.response.headers.has("X-Correlation-ID")).to.be.true;
+});
+pm.test("error envelope shape", () => {
+  if (pm.response.code >= 400) {
+    const body = pm.response.json();
+    pm.expect(body).to.have.property("error");
+    pm.expect(body.error).to.have.keys(["code","message"]);
+  }
+});
+</code></pre>
+<hr>
+<h2>Naming &#x26; consistency (the boring bits that matter)</h2>
+<ul>
+<li><strong>Nouns for resources, verbs for actions</strong> (/v1/users, not /v1/getUsers).</li>
+<li><strong>Plural collections, singular items</strong> (/v1/things vs /v1/things/{id}).</li>
+<li><strong>snake_case in JSON, kebab-case in URLs, and PascalCase only in code</strong> – pick a style and stick to it.</li>
+<li><strong>Keep timestamps UTC in RFC 3339.</strong></li>
+</ul>
+<hr>
+<h2>Ship it: a small checklist</h2>
+<ul>
+<li>Every path has summary, description, examples.</li>
+<li>Error envelope is consistent across all 4xx/5xx.</li>
+<li>Pagination is cursor-based for large lists.</li>
+<li>Idempotency on POST creates.</li>
+<li>Long-running operations are 202 + status resource (or webhooks).</li>
+<li>OAuth scopes and rate limits modeled.</li>
+<li>Postman tests run in CI against the spec.</li>
+<li>Deprecation and versioning policy documented.</li>
+</ul>
+<hr>
+<p>Good APIs make success easy and failure predictable. Start with a spec you can test, model the "unhappy paths" early, and let Stoplight + Postman keep your implementation honest.</p>

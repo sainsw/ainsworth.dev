@@ -1,0 +1,87 @@
+---
+title: 'Ship Fast With AI: React 19, Next 15.5, Tailwind 4 — In A Day'
+publishedAt: '2025-09-25'
+summary: 'A hands-on story of upgrading a modern Next.js site to React 19, Next 15.5, Tailwind 4, fixing CLS, taming Vercel builds, and keeping design intact — with Codex + GPT-5 as my pairing partner.'
+---
+
+<p>I spent today doing the sort of “one-inch-deep, one-mile-wide” work that quietly makes a site feel faster, sturdier, and easier to evolve. The goal: modernize the stack, fix a visual jolt on the Work page, and keep the UI aesthetic intact.</p>
+<p>Along the way I leaned on Codex + GPT‑5 like a reliable pairing partner — fast at automation, steady on the guard‑rails, and surprisingly good at spotting the boring stuff I’d normally put off.</p>
+<h3>The Upgrades (and why they matter)</h3>
+<ul>
+<li>React 19 + Next 15.5: Unlocks the latest server action ergonomics (<code>useActionState</code>), better dev ergonomics, and compatibility with modern libraries.</li>
+<li>Tailwind CSS 4: Smaller, faster CSS with a more predictable palette; requires some PostCSS and config changes.</li>
+<li>TypeScript + tooling: <code>moduleResolution: 'bundler'</code> to keep type checking happy with ESM packages (e.g. Tailwind v4’s <code>.d.mts</code> types).</li>
+<li>Node 22 in Vercel: Consistent runtime across local/CI/build; fewer “engine mismatch” surprises.</li>
+<li>Vercel Speed Insights: Bumped to the latest (^1.2.0) and loaded cleanly.</li>
+</ul>
+<h3>The “oh, that’s why” moments</h3>
+<ol>
+<li>
+<p>CLS on the Work page was self‑inflicted. A “non‑blocking CSS” trick that flipped <code>media=print</code> was causing FOUC and layout shift. We removed it and let Next do its thing. Instant calm.</p>
+</li>
+<li>
+<p>Tailwind v4 is excellent — and opinionated. Two gotchas:</p>
+<ul>
+<li><code>@apply</code> can be prickly with palette tokens in v4. Using Tailwind’s CSS variables (e.g. <code>var(--color-neutral-300)</code>) in CSS solved the handful of “unknown utility” errors while still keeping the look.</li>
+<li>Gray vs Neutral. We briefly migrated to <code>gray-*</code> across the UI, then discovered the site actually looked better and more consistent with <code>neutral-*</code>. We reverted thoughtfully to keep the original tone while retaining v4 benefits.</li>
+</ul>
+</li>
+<li>
+<p>Builds should be boring. We made them that way:</p>
+<ul>
+<li>Enforced Node 22 in <code>vercel.json</code> + <code>.nvmrc</code>.</li>
+<li>Swapped PostCSS to <code>@tailwindcss/postcss</code> for Tailwind v4.</li>
+<li>Fixed TypeScript’s type resolution for Tailwind (<code>moduleResolution: 'bundler'</code>).</li>
+<li>Kept unit tests green, adjusting a couple of assertions for React 19 and palette changes.</li>
+</ul>
+</li>
+</ol>
+<h3>The refactors that paid off</h3>
+<ul>
+<li>Contact form: switched to React 19’s <code>useActionState</code> + server actions. No more “invalid action prop” warning, cleaner intent.</li>
+<li>Theming: standardized on the site’s neutral palette and dark‑mode variables; borders, cards, and pills now read clearly in both themes.</li>
+</ul>
+<h3>What Codex + GPT‑5 did well</h3>
+<p>Think of it like an extremely diligent junior engineer who:</p>
+<ul>
+<li>Sweeps the repo quickly for semantic changes (e.g. all <code>neutral-*</code> vs <code>gray-*</code> classes),</li>
+<li>Handles rote edits and lockfile bumps without bikeshedding,</li>
+<li>Surfaces failing tests or noisy build logs you’d otherwise miss,</li>
+<li>And crucially, doesn’t forget to push, ignore odd files, or align CI settings.</li>
+</ul>
+<p>If you’re curious about how I use AI on real projects, I wrote about the workflow in
+my post on <a href="/blog/ai-coding-tools">AI Coding Tools</a> and why I reserve human attention for the creative bits.</p>
+<h3>What I’d improve next</h3>
+<ul>
+<li>A small design pass on dark‑mode link contrast to make hover states feel even more intentional.</li>
+<li>A Lighthouse/Speed Insights sweep to quantify the CLS and style fixes.</li>
+<li>A short visual regression checklist for Tailwind v4 migrations.</li>
+</ul>
+<h3>Takeaways</h3>
+<ul>
+<li>Upgrade in thin slices, validate, and keep the look. Framework changes shouldn’t force style regressions.</li>
+<li>Use AI to move the furniture — not choose it. Let tools automate the repeatable changes while you keep taste and intent.</li>
+<li>Boring builds are a feature. Pin Node, fix PostCSS, keep types happy, and your pipeline becomes a non‑event.</li>
+</ul>
+<p>Shipping small, correct, and calm beats shipping flashy and fragile every day of the week. Today felt like the former — and that’s a good day.</p>
+<h3>Update — Tailwind 4 follow‑up (2025‑09‑27)</h3>
+<p>After publishing, I finished the Tailwind v4 migration with two fixes that might save you time:</p>
+<ul>
+<li>
+<p>MDX typography disappeared: Headings and spacing looked “flat” on MDX pages. Under Tailwind v4, I needed to declare the Typography plugin in the CSS entry rather than relying solely on <code>tailwind.config</code>.</p>
+<p>Add to <code>app/tw.css</code>:</p>
+<pre><code class="language-css">@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+</code></pre>
+<p>Result: <code>.prose</code> styles re‑generated, restoring sensible heading sizes and spacing. I kept a few bespoke <code>.prose</code> overrides in <code>app/global.css</code> for anchors, code blocks, and top margins.</p>
+</li>
+<li>
+<p>Work page logos bottom‑aligning when no description: Some entries without a description (e.g. WHSmith, West Hill, ASFC) showed the logo hugging the bottom. The root cause was a brittle grid template value that compiled with a comma and behaved inconsistently across browsers. Rather than fight it, I simplified the layout:</p>
+<ul>
+<li>Header row: flex container with text on the left, logo on the right (<code>items-start</code> + <code>justify-between</code>).</li>
+<li>Description (when present): rendered as a second block below the header.</li>
+</ul>
+<p>This guarantees the logo stays top‑right regardless of the presence of a blurb, and it reads cleaner in the DOM.</p>
+</li>
+</ul>
+<p>Net effect: Tailwind v4 performance and DX benefits, with the original look preserved on MDX and the Work page.</p>

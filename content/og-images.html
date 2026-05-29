@@ -1,0 +1,138 @@
+---
+title: "Zero-Click Social Cards: Automatic OG images from MDX frontmatter"
+publishedAt: "2025-08-11"
+summary: "No more hand-made link previews. Generate on-brand OG images from your MDX frontmatter with one tiny endpoint."
+---
+
+<p>I was either shipping posts with bland link previews or hand-designing images I didn't have time for. The data I needed was already there — <strong>title, summary, date</strong> — sitting in MDX frontmatter. The fix: a tiny endpoint that turns that frontmatter into a good-looking OG image automatically.</p>
+<p><strong>Result:</strong> push a post → deploy → share the link → solid preview every time. No Figma. No copy/paste.</p>
+<hr>
+<h2>How it works (tiny)</h2>
+<ol>
+<li><strong>Expose post data</strong> (slug → title, summary, publishedAt).</li>
+<li><strong>Add a small <code>/api/og/[slug]</code> route</strong> to render a 1200×630 image on demand.</li>
+<li><strong>Point <code>og:image</code></strong> to that route in your post page <code>&#x3C;head></code>.</li>
+</ol>
+<p>That's it. Here's the minimal code.</p>
+<h3>1) Post index (whatever you already have)</h3>
+<pre><code class="language-ts">// app/db/blog.ts
+export type Metadata = {
+  title: string;
+  publishedAt: string;
+  summary: string;
+  image?: string;
+};
+
+export function getBlogPosts() {
+  return getMDXData(path.join(process.cwd(), 'content'));
+}
+</code></pre>
+<h3>2) The image route</h3>
+<pre><code class="language-tsx">// app/api/og/[slug]/route.ts
+import { ImageResponse } from "next/server";
+import { getBlogPosts } from "@/app/db/blog";
+
+// Edge runtime = fast cold starts for tiny images
+export const runtime = "edge";
+
+export async function GET(_: Request, { params }: { params: { slug: string } }) {
+  const posts = getBlogPosts();
+  const post = posts.find(p => p.slug === params.slug);
+  
+  if (!post) return new Response("Not found", { status: 404 });
+
+  const { metadata } = post;
+
+  return new ImageResponse(
+    (
+      &#x3C;div
+        style={{
+          width: 1200,
+          height: 630,
+          display: "flex",
+          flexDirection: "column",
+          background: "#0b1220",
+          color: "#e5e7eb",
+          padding: 64,
+          gap: 28
+        }}
+      >
+        &#x3C;div style={{ fontSize: 56, lineHeight: 1.05, letterSpacing: -0.5 }}>
+          {metadata.title}
+        &#x3C;/div>
+        &#x3C;div style={{ fontSize: 28, opacity: 0.9, maxWidth: 960 }}>
+          {metadata.summary}
+        &#x3C;/div>
+        &#x3C;div style={{ marginTop: "auto", fontSize: 24, opacity: 0.8 }}>
+          {new Date(metadata.publishedAt).toLocaleDateString("en-GB", { 
+            day: "2-digit", 
+            month: "short", 
+            year: "numeric" 
+          })}
+        &#x3C;/div>
+      &#x3C;/div>
+    ),
+    { width: 1200, height: 630 }
+  );
+}
+</code></pre>
+<p><strong>Tip:</strong> If you want branded typography, embed a font: fetch the <code>.ttf</code>, pass it in <code>fonts: [{ name, data, weight }]</code>.</p>
+<h3>3) Wire it into <code>&#x3C;head></code></h3>
+<pre><code class="language-tsx">// app/blog/[slug]/page.tsx (using Next.js 13+ Metadata API)
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise&#x3C;{ slug: string }>
+}): Promise&#x3C;Metadata | undefined> {
+  const { slug } = await params;
+  let post = getBlogPosts().find((post) => post.slug === slug);
+  if (!post) {
+    return;
+  }
+
+  let {
+    title,
+    publishedAt: publishedTime,
+    summary: description,
+    image,
+  } = post.metadata;
+  let ogImage = image
+    ? `https://ainsworth.dev${image}`
+    : `https://ainsworth.dev/api/og/${post.slug}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      publishedTime,
+      url: `https://ainsworth.dev/blog/${post.slug}`,
+      images: [{ url: ogImage }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
+</code></pre>
+<hr>
+<h2>Design tips that make it look "done"</h2>
+<ul>
+<li><strong>Big title, small summary.</strong> Titles wrap; summaries don't dominate.</li>
+<li><strong>One color, not a rainbow.</strong> A dark background with light text is consistent and legible.</li>
+<li><strong>Clamp long titles.</strong> If you write essay-length titles, reduce font-size slightly after ~70 chars.</li>
+<li><strong>Emoji are fine.</strong> If they look off, switch to Twemoji SVGs.</li>
+</ul>
+<hr>
+<h2>Your turn (5 minutes)</h2>
+<ul>
+<li><strong>Add the route</strong>, render a plain card, and point <code>og:image</code> at it.</li>
+<li><strong>Share a post</strong> to Slack/Twitter — you should see a clean preview.</li>
+<li><strong>If you like it</strong>, add a brand font and logo dot next.</li>
+</ul>
+<p>In an enterprise production environment I would pre-generate PNGs at build or set a long cache header — but you don't need either to get great previews today.</p>

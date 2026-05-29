@@ -9,15 +9,14 @@ describe('Integration Tests', () => {
   it('should load real blog posts from content directory', () => {
     const posts = getBlogPosts()
     
-    // Should find actual MDX files
+    // Should find actual HTML files
     expect(posts.length).toBeGreaterThan(0)
-    
+
     // Check structure of first post
     const firstPost = posts[0]
     expect(firstPost).toHaveProperty('metadata')
     expect(firstPost).toHaveProperty('slug')
     expect(firstPost).toHaveProperty('content')
-    expect(firstPost).toHaveProperty('tweetIds')
     
     // Metadata should have required fields
     expect(firstPost.metadata).toHaveProperty('title')

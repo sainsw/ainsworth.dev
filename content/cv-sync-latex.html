@@ -1,0 +1,127 @@
+---
+title: 'Typeset-Perfect CV: JSON → LaTeX → PDF (without fighting CI)'
+publishedAt: '2025-08-10'
+summary: 'Proper typography with LaTeX, fast web with React. I generate a hashed CV PDF locally via pdflatex, keep older versions, and link to the current file using a build-time CV_VERSION.'
+---
+
+<p>For years my CV lived in two worlds: a web page people browse on phones, and a PDF recruiters print or feed into ATS systems. I tried “one file to rule them all” with print CSS and browser exports, but it was constant whack-a-mole: hyphenation off, widows/orphans, fonts shifting between machines, A4 vs Letter page breaks, and the web/PDF drifting out of sync. I wanted the web version fast, accessible, and SEO-friendly—and the PDF to look like a grown-up typesetter touched it. Most of my updates are tiny anyway: tweak the text of my current role or add a new role when I change jobs.</p>
+<p>So I split the job by purpose:</p>
+<ul>
+<li><strong>Web</strong>: a normal /cv (React/MDX), accessible and easy to update.</li>
+<li><strong>Print</strong>: a LaTeX PDF with real control over typography (hyphenation, ligatures, predictable breaks).</li>
+<li><strong>Build reality</strong>: Vercel’s CI doesn’t include a LaTeX toolchain, so I run pdflatex locally (or Overleaf for theme changes), commit the hashed PDF under /public/files, and Vercel just reads a build-time CV_VERSION to link the current file.</li>
+</ul>
+<h2>Architecture</h2>
+<pre><code class="language-mermaid">flowchart TB
+  %% no parens, top-down, theme-friendly fills that your MermaidClient maps for dark mode
+
+  %% Change type
+  D{"What changed?"}
+
+  %% Minor change path
+  A["Edit resume.json"] --> G["generate-latex.js builds main.tex"]
+  D -- "Minor content or layout" --> A
+
+  %% Theme overhaul path
+  O["Draft in Overleaf – new or updated template"] --> O2["Export main.tex back to repo"] --> G
+  D -- "Theme overhaul" --> O
+
+  %% Build PDF locally
+  G --> P["pdflatex local outputs public/files/cv-CV_VERSION.pdf"]
+  P --> K["Keep old PDFs in public/files"]
+  P --> U["git add, commit and push"]
+
+  %% Vercel side
+  subgraph VercelBuild["Vercel build - no LaTeX"]
+    direction TB
+    V1["Install dependencies"] --> V2["Skip LaTeX build"]
+    V2 --> V3["generate-version.js computes CV_VERSION from main.tex and class file"]
+    V3 --> V4["Next build links to /files/cv-CV_VERSION.pdf"]
+  end
+
+  U --> V1
+  V4 --> S["Users download latest PDF - cache busted by filename"]
+
+  %% Theme-aware fills (these hexes are auto-mapped by your MermaidClient in dark mode)
+  style D fill:#fff3e0
+  style A fill:#e1f5fe
+  style G fill:#e1f5fe
+  style O fill:#f3e5f5
+  style O2 fill:#e1f5fe
+  style P fill:#ff69b4
+  style K fill:#e8f5e8
+  style U fill:#e8f5e8
+  style V1 fill:#e1f5fe
+  style V2 fill:#e1f5fe
+  style V3 fill:#e1f5fe
+  style V4 fill:#e1f5fe
+  style S fill:#e8f5e8
+</code></pre>
+<ul>
+<li><strong>Hashed artifacts kept</strong>: old PDFs remain in /public/files (cv-<hash>.pdf history).</li>
+<li><strong>Linking</strong>: the site imports CV_VERSION and links directly to /files/cv-${CV_VERSION}.pdf (no query param).</li>
+<li><strong>No LaTeX in CI</strong>: Vercel skips TeX completely; the PDF is already in the repo.</li>
+</ul>
+<h2>Source of truth &#x26; drafting</h2>
+<ul>
+<li><strong>Day to day, content lives in resume.json</strong>; generate-latex.js turns it into cv-source/main.tex with proper escaping and section stitching.</li>
+</ul>
+<pre><code class="language-json">{
+  "company": "NewCo",
+  "position": "Senior Software Engineer",
+  "dates": "2025 – present",
+  "location": "Manchester",
+  "description": [
+    "Led X to deliver Y.",
+    "Improved Z by N% via A/B testing."
+  ],
+  "technologies": ["C#", ".NET", "Azure"],
+  "iconId": "newco",
+  "url": "https://newco.example"
+}
+</code></pre>
+<ul>
+<li><strong>For small layout tweaks, I'll export cv-source/main.tex to Overleaf</strong>, experiment, then pull the updated TeX back and keep generating from JSON.</li>
+<li><strong>For big theme changes, I start from a new Overleaf template</strong>, paste in JSON content manually, then adjust the generator/JSON schema so future edits are back to "change JSON → regenerate."</li>
+</ul>
+<h2>Build flow (local → commit → deploy)</h2>
+<ul>
+<li><strong>Local</strong>: npm run update-cv (or equivalent) which:
+<ol>
+<li>regenerates main.tex from JSON,</li>
+<li>runs pdflatex to produce public/files/cv-<hash>.pdf,</li>
+<li>optionally cleans aux files.</li>
+</ol>
+</li>
+<li><strong>Commit the PDF(s) and push.</strong></li>
+<li><strong>Vercel build runs generate-version.js</strong> which hashes cv-source/main.tex (and the class file) and writes CV_VERSION to lib/version.js. The front end reads that constant.</li>
+</ul>
+<pre><code class="language-tsx">// /app/cv/page.tsx (excerpt)
+import { CV_VERSION } from '@/lib/version';
+const cvUrl = `/files/cv-${CV_VERSION}.pdf`;
+// ...
+&#x3C;a href={cvUrl} target="_blank" rel="noopener noreferrer">Open PDF Version&#x3C;/a>
+</code></pre>
+<h2>Why this approach won</h2>
+<ul>
+<li><strong>Print quality you can feel</strong>: LaTeX handles line breaks, spacing, ligatures, and avoids orphan/widow lines. Your class file centralises the rules.</li>
+<li><strong>Deterministic builds</strong>: pdflatex runs on your machine, so the PDF you proof is the PDF you ship.</li>
+<li><strong>Zero CI pain</strong>: no TeX in Vercel; builds stay fast.</li>
+<li><strong>Instant cache correctness</strong>: the filename carries the content hash; the link updates as soon as CV_VERSION changes.</li>
+</ul>
+<h2>Notes from the trenches</h2>
+<ul>
+<li><strong>Escaping</strong>: generating TeX from JSON means escaping _ % &#x26; # everywhere. The generator handles this—extend it when adding new fields.</li>
+<li><strong>Don't edit TeX post-gen</strong>: if you hand-tweak main.tex, your hash and data will drift. Fix the generator or JSON instead.</li>
+<li><strong>Template evolution</strong>: it's fine to treat Overleaf as an R&#x26;D lab. For small tweaks, round-trip the single file; for big theme overhauls, adopt the new template, then bring the generator back into the loop.</li>
+</ul>
+<h2>Future niceties (on the backlog)</h2>
+<ul>
+<li><strong>Pre-push guard</strong>: fail the push if cv-source changed but the committed PDF didn't.</li>
+<li><strong>One-shot "rebuild CV" action</strong>: a local script that opens Overleaf export, drops it into cv-source, regenerates, builds, and stages everything.</li>
+</ul>
+<h2>Related posts</h2>
+<ul>
+<li><a href="/blog/vibe-coding">Vibe Coding</a> — how I iterate quickly on small, high-leverage changes.</li>
+<li><a href="/blog/github-image-sync">Automating My GitHub Avatar Sync</a> — same "one source of truth → pipeline handles the rest" pattern, applied to images.</li>
+</ul>

@@ -1,0 +1,116 @@
+---
+title: 'Seasonal Avatar Borders: Runtime Pride Rings'
+publishedAt: '2025-08-07'
+summary: 'Client‑side date logic adds a Pride ring in June and during Manchester Pride week, using layered CSS box‑shadows. Here’s how it works, why it’s lightweight, and how to make it more robust.'
+---
+
+
+
+<p>I wanted my site to feel alive without adding another manual chore. This component adds a <strong>rainbow ring</strong> to my avatar automatically during <strong>Pride Month (June)</strong> and <strong>Manchester Pride week</strong> — all <strong>at runtime</strong> in the browser based on client date/time.</p>
+<h2>Architecture (Runtime, Not Build)</h2>
+<pre><code class="language-mermaid">flowchart TD
+    A[Page Load] --> B[Check Current Date]
+    B --> C{Month == 6?}
+    C -->|Yes| D["Pride Month!
+    🏳️‍🌈 Rainbow Border"]
+    C -->|No| E{Month == 8?}
+    E -->|No| F[Normal Border]
+    E -->|Yes| G[Calculate Bank Holiday]
+    G --> H[Find Last Monday of August]
+    H --> I[Pride Week = 7 Days Before]
+    I --> J{"Current Date in
+    Pride Week?"}
+    J -->|Yes| D
+    J -->|No| F
+    
+    style D fill:#ff69b4
+    style F fill:#e1f5fe
+</code></pre>
+<h2>Core Logic (TypeScript, client-side)</h2>
+<pre><code class="language-tsx">"use client";
+
+import { useEffect, useState } from "react";
+
+export function PrideAvatar({ children, className = "" }: { children: React.ReactNode; className?: string; }) {
+  const [isPrideTime, setIsPrideTime] = useState(false);
+
+  useEffect(() => {
+    const checkPrideTime = () => {
+      const now = new Date();
+      const month = now.getMonth() + 1; // 1..12
+      const date = now.getDate();
+
+      // Pride Month: entire June
+      if (month === 6) return setIsPrideTime(true);
+
+      // Manchester Pride: week running up to UK August bank holiday (last Monday)
+      if (month === 8) {
+        const year = now.getFullYear();
+        const lastDay = new Date(year, 8, 0).getDate();   // 31
+        const lastDow = new Date(year, 7, lastDay).getDay(); // 0=Sun..1=Mon..
+        const lastMonday = lastDow === 1 ? lastDay : lastDay - ((lastDow + 6) % 7);
+        const start = Math.max(1, lastMonday - 7);        // handle spill into July
+        if (date >= start &#x26;&#x26; date &#x3C;= lastMonday) return setIsPrideTime(true);
+      }
+
+      setIsPrideTime(false);
+    };
+
+    checkPrideTime();
+    const interval = setInterval(checkPrideTime, 24 * 60 * 60 * 1000); // daily
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!isPrideTime) return &#x3C;div className={`ring-2 ring-black dark:ring-white rounded-full ${className}`}>{children}&#x3C;/div>;
+
+  return (
+    &#x3C;div className={`relative ${className}`}>
+      &#x3C;div
+        className="rounded-full"
+        style={{ boxShadow: `
+          0 0 0 3px rgb(239 68 68),   /* red   */
+          0 0 0 6px rgb(249 115 22),  /* orange*/
+          0 0 0 9px rgb(250 204 21),  /* yellow*/
+          0 0 0 12px rgb(34 197 94),  /* green */
+          0 0 0 15px rgb(59 130 246), /* blue  */
+          0 0 0 18px rgb(147 51 234)  /* purple*/
+        `}}
+      >
+        {children}
+      &#x3C;/div>
+    &#x3C;/div>
+  );
+}
+</code></pre>
+<h2>Why this approach works</h2>
+<ul>
+<li><strong>Zero deployment coupling.</strong> No build‑time flags or server toggles; the ring appears as soon as the calendar flips.</li>
+<li><strong>Lightweight.</strong> Six hard‑edged <code>box-shadow</code> layers around a small avatar are cheap to paint on modern GPUs.</li>
+<li><strong>Predictable behaviour.</strong> Manchester Pride is derived from the <strong>UK August bank holiday</strong>: the <strong>last Monday of August</strong>, with the ring enabled from the <strong>previous Tuesday</strong> through that Monday.</li>
+</ul>
+<h2>Gotchas &#x26; Improvements</h2>
+<ul>
+<li><strong>Timezone nuance.</strong> It currently uses the <strong>user’s local time</strong>. If you want UK‑accurate behaviour worldwide, compute dates with <code>Europe/London</code> using <code>Intl.DateTimeFormat</code> or a small helper, then compare.</li>
+<li><strong>Midnight drift.</strong> <code>setInterval(24h)</code> isn’t aligned to midnight and can drift. Optionally schedule the <strong>next run at local midnight</strong> via <code>setTimeout(nextMidnight - now)</code> and then re‑arm.</li>
+<li><strong>Testing/preview.</strong> Add a query flag or env override to force a state for screenshots: e.g., <code>?pride=1</code> or <code>NEXT_PUBLIC_FORCE_PRIDE=true</code>.</li>
+<li><strong>Accessibility.</strong> Provide a fallback ring (already in place), and ensure the avatar’s content remains distinguishable on both light/dark themes. If you animate the ring in future, guard with <code>@media (prefers-reduced-motion)</code>.</li>
+</ul>
+<h2>Usage</h2>
+<pre><code class="language-tsx">import Image from "next/image";
+import { PrideAvatar } from "@/components/pride-avatar";
+
+export default function ProfilePic() {
+  return (
+    &#x3C;PrideAvatar className="w-24 h-24 overflow-hidden">
+      &#x3C;Image src="/me.webp" alt="Sam Ainsworth" width={96} height={96} />
+    &#x3C;/PrideAvatar>
+  );
+}
+</code></pre>
+<h2>Demo</h2>
+<p><avatar-demo></avatar-demo></p>
+<h2>Related posts</h2>
+<ul>
+<li><a href="/blog/github-image-sync">Automating My GitHub Avatar Sync</a> — my avatar image is kept in sync with GitHub automatically.</li>
+<li><a href="/blog/ai-coding-tools">AI Coding Tools: My Journey From Frustration to Flow</a> — how I decide what to automate and why.</li>
+</ul>

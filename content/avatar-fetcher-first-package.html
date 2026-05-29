@@ -1,0 +1,44 @@
+---
+title: "Shipping my first npm package: avatar-fetcher"
+publishedAt: "2025-12-06"
+summary: "Packaging the GitHub avatar pipeline into a reusable module and CLI for all my projects."
+---
+
+<p>I finally packaged my GitHub avatar pipeline into a reusable npm module: <a href="https://www.npmjs.com/package/avatar-fetcher"><code>avatar-fetcher</code></a>. It started as a build script for ainsworth.dev, then spread to BurnRate, Invoicer, and Framemoji. Now it’s a published package and a small CLI so every repo can stay in sync with a single dependency.</p>
+<h2>What it does</h2>
+<ul>
+<li>Fetches a GitHub user’s avatar (<code>/users/{username}</code>) at a requested size.</li>
+<li>Hashes the raw bytes so filenames are cache-friendly and stable (<code>avatar-&#x3C;hash>.*</code>).</li>
+<li>Generates optimised outputs (WebP + JPEG by default) via Sharp.</li>
+<li>Exposes both a Node API and a CLI so you can wire it into CI/build or run it ad hoc.</li>
+</ul>
+<h2>How to use it</h2>
+<p><strong>CLI</strong></p>
+<pre><code class="language-bash">npx avatar-fetcher --user sainsw --out ./public/images --outputs webp:200:85,jpeg:200:90
+</code></pre>
+<p><strong>Node</strong></p>
+<pre><code class="language-ts">import { fetchAndProcessAvatar, writeOutputs } from "avatar-fetcher";
+
+const result = await fetchAndProcessAvatar({
+  username: "sainsw",
+  size: 400,
+  outputs: [
+    { format: "webp", width: 200, height: 200, quality: 85 },
+    { format: "jpeg", width: 200, height: 200, quality: 90 },
+  ],
+  baseName: "avatar",
+});
+
+await writeOutputs(result.outputs, "./public/images");
+// update your version file with result.hash if you want cache-busting filenames
+</code></pre>
+<p>Repo link: <a href="https://github.com/sainsw/avatar-fetcher">github.com/sainsw/avatar-fetcher</a></p>
+<h2>Why bother?</h2>
+<p>I was maintaining near-identical scripts across four projects. Moving the core into an npm package means:</p>
+<ul>
+<li>One place to fix bugs or add formats/sizes.</li>
+<li>Consistent filename/version hashing for every site.</li>
+<li>A tiny CLI for one-off runs without copying code.</li>
+</ul>
+<h2>Related reading</h2>
+<p>I first documented this pipeline in <a href="/blog/github-image-sync">Automating My GitHub Avatar Sync</a>. This package is the cleaned-up version of that work—ready for any repo that needs a reliable avatar fetch + optimise step.</p>

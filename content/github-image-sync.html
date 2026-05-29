@@ -1,0 +1,128 @@
+---
+title: 'Automating My GitHub Avatar Sync'
+publishedAt: '2025-08-06'
+summary: 'Turn GitHub into the source of truth for your website avatar. A Node + Vercel pipeline fetches, optimises (Sharp), hashes, and deploys your image with smart cache-busting.'
+---
+
+<blockquote>
+<p><strong>Update (2025-12-06):</strong> I packaged this pipeline as an npm module, <a href="/blog/avatar-fetcher-first-package"><code>avatar-fetcher</code></a>.</p>
+</blockquote>
+<p>The slow part wasn’t updating my GitHub avatar — that’s quick thanks to GitHub’s built-in cropping. The real time-sink was <strong>keeping my website avatar in sync</strong>: converting to WebP, resizing for the circle mask, and pushing updates to the repo. I automated the whole thing by making <strong>GitHub the source of truth</strong> and letting my build pipeline do the rest.</p>
+<h2>Architecture at a Glance</h2>
+<pre><code class="language-mermaid">graph TD
+    A[GitHub API] --> B[Download Avatar]
+    B --> C{Sharp Available?}
+    C -->|Yes| D[Sharp Processing]
+    C -->|No| E[Copy Original]
+    D --> F[Generate WebP]
+    D --> G[Generate JPG]
+    E --> G
+    F --> H[Content Hash]
+    G --> H
+    H --> I["Versioned Files
+    avatar-{hash}.webp
+    avatar-{hash}.jpg"]
+    I --> J["Update Version File
+    lib/version.js"]
+    J --> K[Next.js Build]
+    K --> L[Preload Resources]
+    K --> M[Picture Elements]
+    
+    N[Build Failure] --> O[Use Existing Files]
+    O --> P[Generate Fallback Hash]
+    P --> J
+    
+    B -.->|Network Error| N
+    D -.->|Sharp Error| N
+    
+    style A fill:#e1f5fe
+    style I fill:#e8f5e8
+    style J fill:#fff3e0
+    style L fill:#f3e5f5
+    style M fill:#f3e5f5
+</code></pre>
+<h2>How It Works</h2>
+<ul>
+<li><strong>Source of truth</strong>: I update my avatar through GitHub's UI (which already has a great circular crop).</li>
+<li><strong>Trigger</strong>: A push to main kicks off a Vercel build.</li>
+<li><strong>Fetch</strong>: A small Node.js script downloads the current GitHub avatar over HTTPS.</li>
+<li><strong>Optimise</strong>: Another Node.js script uses Sharp to resize, convert to WebP, and strip excess metadata.</li>
+<li><strong>Cache-smart deploy</strong>: The build computes a content hash. If the image bytes didn't change, the filename stays the same (cache hits). If it did change, the filename changes immediately (cache busts) so Cloudflare, Vercel, and browsers serve the new file right away.</li>
+<li><strong>Publish</strong>: The optimised asset is written to the site's assets folder and deployed.</li>
+</ul>
+<p>Credit: the content-hashing approach came from Claude Sonnet 3.7 and has been rock-solid.</p>
+<h2>The Code: GitHub API Integration</h2>
+<p>Here's the core function that fetches the avatar from GitHub's API:</p>
+<pre><code class="language-javascript">async function fetchGitHubAvatar() {
+  try {
+    console.log(`📡 Fetching GitHub user data for: ${GITHUB_USERNAME}`);
+
+    // Fetch user data from GitHub API
+    const userData = await new Promise((resolve, reject) => {
+      const options = {
+        hostname: "api.github.com",
+        path: `/users/${GITHUB_USERNAME}`,
+        headers: {
+          "User-Agent": "ainsworth.dev-avatar-fetcher",
+        },
+      };
+
+      https
+        .get(options, (res) => {
+          if (res.statusCode !== 200) {
+            reject(new Error(`GitHub API returned ${res.statusCode}`));
+            return;
+          }
+
+          let data = "";
+          res.on("data", (chunk) => (data += chunk));
+          res.on("end", () => {
+            try {
+              resolve(JSON.parse(data));
+            } catch (e) {
+              reject(new Error("Invalid JSON response"));
+            }
+          });
+        })
+        .on("error", reject);
+    });
+
+    if (!userData.avatar_url) {
+      throw new Error("No avatar_url in response");
+    }
+
+    const avatarUrl = `${userData.avatar_url}&#x26;s=${AVATAR_SIZE}`;
+    console.log(`📥 Downloading from: ${avatarUrl}`);
+
+    // Download to temp file
+    await downloadImage(avatarUrl, TEMP_PATH);
+    
+    // ... rest of processing
+  } catch (error) {
+    console.log("ℹ️  Avatar fetch failed, using existing files");
+    console.log(`   Reason: ${error.message}`);
+  }
+}
+</code></pre>
+<p>The key insight is using GitHub's public user API (<code>/users/{username}</code>) which doesn't require authentication and provides the current <code>avatar_url</code>. By appending <code>&#x26;s={size}</code> to the URL, we can request the exact dimensions we need.</p>
+<p>For more details, see the <a href="https://docs.github.com/en/rest/users/users#get-a-user">GitHub REST API documentation</a>.</p>
+<h2>Why Node, Not Bash?</h2>
+<p>This pipeline started life in shell scripts but quickly moved to Node for reliability and portability:</p>
+<ul>
+<li><strong>HTTP fetching with retries and proper error handling</strong> is simpler in Node.</li>
+<li><strong>Sharp gives consistent, high-quality image processing</strong> without external system deps.</li>
+<li><strong>Cross-platform behaviour</strong> (local dev, CI, Vercel) is predictable.</li>
+</ul>
+<h2>Lessons Learned</h2>
+<ul>
+<li><strong>Designate a source of truth</strong>. Don't crop/convert in two places — let GitHub's avatar UI handle that job.</li>
+<li><strong>Hash the bytes, not the idea</strong>. Human "this looks the same" isn't good enough; content hashing makes cache behaviour deterministic.</li>
+<li><strong>Automate the boring parts</strong>. Image chores (resize/convert) are perfect for scripts; use your human time on design and writing.</li>
+</ul>
+<h2>Related Reading</h2>
+<ul>
+<li><a href="/blog/ai-coding-tools">AI Coding Tools: My Journey From Frustration to Flow</a> — how I decide what work to hand to automation.</li>
+<li><a href="/blog/seasonal-avatar-borders">Seasonal Avatar Borders</a> — another small automation that keeps the site feeling alive.</li>
+</ul>
+<h2>Closing Thoughts</h2>
+<p>The best developer ergonomics often come from removing the micro-chores you’ve normalised. By treating GitHub as the master copy and letting Vercel + Node handle the rest, my site stays fresh without me opening an image editor.</p>

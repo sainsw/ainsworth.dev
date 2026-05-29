@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense, cache } from 'react';
 import { notFound } from 'next/navigation';
-import { CustomMDX } from 'app/components/mdx';
+import { BlogContent } from 'app/components/blog-content';
 import { getViewsCount } from 'app/db/queries';
 import { getBlogPosts } from 'app/db/blog';
 import ViewCounter from '../view-counter';
@@ -126,7 +126,7 @@ export default async function Blog({
         </Suspense>
       </div>
       <article className="prose prose-quoteless dark:prose-invert">
-        <CustomMDX source={post.content} />
+        <BlogContent source={post.content} />
       </article>
     </section>
   );

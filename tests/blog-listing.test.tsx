@@ -13,7 +13,6 @@ vi.mock('../app/db/blog', () => ({
         summary: 'First post summary',
       },
       content: 'First post content',
-      tweetIds: [],
     },
     {
       slug: 'second-post', 
@@ -23,7 +22,6 @@ vi.mock('../app/db/blog', () => ({
         summary: 'Second post summary',
       },
       content: 'Second post content',
-      tweetIds: [],
     },
     {
       slug: 'third-post',
@@ -33,7 +31,6 @@ vi.mock('../app/db/blog', () => ({
         summary: 'Third post summary',
       },
       content: 'Third post content',
-      tweetIds: [],
     },
   ])
 }))

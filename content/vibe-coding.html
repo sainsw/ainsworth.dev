@@ -1,0 +1,121 @@
+---
+title: 'Vibe Coding: Shipping Faster Without Shipping Garbage'
+publishedAt: '2025-08-05'
+summary: 'How I iteratively polished my personal site using AI help: spot an issue, prompt, push, measure in prod. Biggest win: image optimisation. Hardest part: Mermaid visuals. Guardrails: unit tests and intent-driven prompts.'
+---
+
+<p>This wasn't a sprint or a grand plan. I browsed my site like a visitor, found rough spots (CV out of date, blog light on content, slow pages, Lighthouse a11y warnings, weak SEO), and polished them one by one. Think <strong>detailing a car</strong>: fix a scuff, step back, spot the next one.</p>
+<p>The twist: I used an AI assistant to handle the <strong>gruntwork</strong>, while I kept ownership of <strong>intent and review</strong>.</p>
+<h2>What actually moved the needle</h2>
+<h3>1) Images — the highest ROI</h3>
+<ul>
+<li>Converted PNG/JPEG assets to <strong>WebP</strong>, added <code>&#x3C;picture></code> fallbacks.</li>
+<li>Set explicit <strong>width/height</strong> to kill layout shift; <code>loading="lazy"</code> and <code>decoding="async"</code> where safe.</li>
+<li>Right-sized oversized art and logos; kept photos less aggressively compressed to protect quality.</li>
+<li>Result: drastically smaller payloads and snappier LCP — with almost no creative risk.</li>
+</ul>
+<pre><code class="language-tsx">// Example shape used across components
+export function BrandLogo() {
+  return (
+    &#x3C;picture>
+      &#x3C;source srcSet="/images/logo.webp" type="image/webp" />
+      &#x3C;img
+        src="/images/logo.png"
+        width="160"
+        height="48"
+        alt="Brand"
+        loading="lazy"
+        decoding="async"
+      />
+    &#x3C;/picture>
+  );
+}
+</code></pre>
+<h3>2) Loading &#x26; CSS</h3>
+<ul>
+<li>Removed render-blocking CSS; inlined only critical styles and deferred the rest.</li>
+<li>Tightened preconnect/preload hints to match real assets.</li>
+<li>Swapped "transition-all" for targeted transitions to reduce forced reflows.</li>
+</ul>
+<h3>3) Content &#x26; pipeline hygiene</h3>
+<ul>
+<li>Hardened the MDX/blog pipeline so content renders the same locally and in prod.</li>
+<li>Kept CV page and CV PDF in lockstep (a small build step prevents drift).</li>
+<li>Added lightweight checks so broken links/image paths don't slip through.</li>
+</ul>
+<h3>4) Accessibility &#x26; SEO</h3>
+<ul>
+<li>Wrote meaningful alt text and clarified semantics.</li>
+<li>Cleaned up titles/descriptions/canonicals; avoided duplicated headings.</li>
+<li>Small changes, but Lighthouse and search previews improved fast.</li>
+</ul>
+<h2>Hardest problem: Mermaid visuals</h2>
+<p>Front-end visuals were where AI struggled most — especially Mermaid styling, sizing, and theme. What worked:</p>
+<ul>
+<li>Treat diagrams as responsive components (container-width, not fixed px).</li>
+<li>Use Mermaid's built-in theming for dark mode instead of ad-hoc CSS.</li>
+<li>Ensure fonts load predictably so label sizes don't jump between devices.</li>
+<li>Avoid position: absolute hacks; give diagrams a real layout context.</li>
+</ul>
+<pre><code class="language-tsx">// components/Mermaid.tsx
+'use client';
+import { useEffect } from 'react';
+import mermaid from 'mermaid';
+
+export default function Mermaid({ chart }: { chart: string }) {
+  useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      securityLevel: 'loose',
+      fontFamily: 'ui-sans-serif, system-ui',
+    });
+  }, []);
+  return &#x3C;div className="mermaid max-w-full overflow-auto">{chart}&#x3C;/div>;
+}
+</code></pre>
+<h2>My real loop (because it's a personal site)</h2>
+<p>I ran an extreme programming cycle that I would not use in enterprise apps: prompt → push to main → test in prod. It kept momentum high and the feedback real (because prod is the only truth that matters for a personal site).</p>
+<pre><code class="language-mermaid">flowchart TD
+  A[Spot issue on site] --> B[Write intent + constraints as a prompt]
+  B --> C[AI proposes a patch]
+  C --> D[Push to main]
+  D --> E[Prod deploy]
+  E --> F[Measure: Lighthouse/UX check]
+  F --> G{Good?}
+  G -- No --> H[Revise prompt with concrete diffs/errors]
+  H --> C
+  G -- Yes --> I[Keep moving]
+</code></pre>
+<p>If I were doing this at work, I'd use a safer loop (local run, tests, preview deployments) — but for a personal site, this speed was fun and productive.</p>
+<h2>Guardrails that actually helped</h2>
+<ul>
+<li>Unit tests as "intent beacons". I add or update tests around the area I'm changing, so the AI has a target and I have a safety net.</li>
+<li>Do-not-touch zones. Config/secrets/infra are off-limits unless I explicitly say otherwise.</li>
+<li>Small diffs with measurable outcomes. If I can't write a one-line "why" in the commit, it's probably too big.</li>
+</ul>
+<pre><code class="language-tsx">// Example: make CLS improvements explicit
+import { render } from '@testing-library/react';
+import Home from '@/app/page';
+
+it('renders hero image with fixed dimensions to avoid layout shift', () => {
+  const { getByAltText } = render(&#x3C;Home />);
+  const img = getByAltText(/hero/i) as HTMLImageElement;
+  expect(img.width).toBeGreaterThan(0);
+  expect(img.height).toBeGreaterThan(0);
+  expect(img.getAttribute('loading')).toBe('lazy');
+});
+</code></pre>
+<h2>One big "aha"</h2>
+<p>If you're stuck in a prompt loop, it's almost always one of two things:</p>
+<ol>
+<li><strong>Context</strong>. You haven't given enough specific code, constraints, or failure output.</li>
+<li><strong>Model</strong>. You gave everything you can; it's time to switch tools (e.g., try a different model).</li>
+</ol>
+<p>Swapping the model broke several deadlocks for me. When context is maxed out, try a different brain.</p>
+<h2>Related posts</h2>
+<ul>
+<li><a href="/blog/github-image-sync">Automating My GitHub Avatar Sync</a> — small automation, big ROI.</li>
+<li><a href="/blog/seasonal-avatar-borders">Seasonal Avatar Borders</a> — runtime flair via simple date logic.</li>
+<li><a href="/blog/ai-coding-tools">AI Coding Tools: My Journey From Frustration to Flow</a> — what I hand to automation and why.</li>
+</ul>

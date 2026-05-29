@@ -15,7 +15,6 @@ describe('OG Image Route', () => {
         slug: 'hello',
         metadata: { title: 'Hello', summary: 'World', publishedAt: '2024-08-01' },
         content: '',
-        tweetIds: [],
       }]),
     }))
 
