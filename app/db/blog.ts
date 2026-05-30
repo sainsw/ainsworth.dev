@@ -15,7 +15,7 @@ function parseHtmlMetadata(fileContent: string) {
   let metadata: Partial<Metadata> = {};
 
   if (template) {
-    for (let meta of template.content.querySelectorAll('meta[name]')) {
+    for (let meta of Array.from(template.querySelectorAll('meta[name]'))) {
       let name = meta.getAttribute('name') as keyof Metadata;
       let value = meta.getAttribute('content') ?? '';
       metadata[name] = value;
