@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@codesandbox/sandpack-react": "^2.20.0",
-    "@googleapis/youtube": "^29.0.0",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^22.0.0",
     "@types/react": "^19.2.0",

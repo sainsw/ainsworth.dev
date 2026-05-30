@@ -4,10 +4,15 @@ export const sql = postgres(process.env.DATABASE_URL, {
   ssl: 'allow',
 });
 
+let withBundleAnalyzer = (config) => config;
+if (process.env.ANALYZE === 'true') {
+  const { default: bundleAnalyzer } = await import('@next/bundle-analyzer');
+  withBundleAnalyzer = bundleAnalyzer({ enabled: true });
+}
+
 const nextConfig = {
-  trailingSlash: false, // Enforce no trailing slashes
+  trailingSlash: false,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  // Opt into typed routes for safer navigation APIs
   typedRoutes: true,
   experimental: {
     inlineCss: true,
@@ -132,4 +137,4 @@ const securityHeaders = [
   },
 ];
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
