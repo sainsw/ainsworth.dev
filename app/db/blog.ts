@@ -8,21 +8,21 @@ type Metadata = {
   image?: string;
 };
 
-function parseFrontmatter(fileContent: string) {
-  let frontmatterRegex = /---\s*([\s\S]*?)\s*---/;
-  let match = frontmatterRegex.exec(fileContent);
-  let frontMatterBlock = match![1];
-  let content = fileContent.replace(frontmatterRegex, '').trim();
-  let frontMatterLines = frontMatterBlock.trim().split('\n');
+function parseHtmlMetadata(fileContent: string) {
+  let templateRegex = /<template data-metadata>\s*([\s\S]*?)\s*<\/template>/;
+  let match = templateRegex.exec(fileContent);
   let metadata: Partial<Metadata> = {};
 
-  frontMatterLines.forEach((line) => {
-    let [key, ...valueArr] = line.split(': ');
-    let value = valueArr.join(': ').trim();
-    value = value.replace(/^['"](.*)['"]$/, '$1'); // Remove quotes
-    metadata[key.trim() as keyof Metadata] = value;
-  });
+  if (match) {
+    let metaBlock = match[1];
+    let metaTagRegex = /<meta\s+name="([^"]+)"\s+content="([^"]*)"[^>]*>/g;
+    let metaMatch;
+    while ((metaMatch = metaTagRegex.exec(metaBlock)) !== null) {
+      metadata[metaMatch[1] as keyof Metadata] = metaMatch[2];
+    }
+  }
 
+  let content = fileContent.replace(templateRegex, '').trim();
   return { metadata: metadata as Metadata, content };
 }
 
@@ -32,7 +32,7 @@ function getContentFiles(dir: string) {
 
 function readContentFile(filePath: string) {
   let rawContent = fs.readFileSync(filePath, 'utf-8');
-  return parseFrontmatter(rawContent);
+  return parseHtmlMetadata(rawContent);
 }
 
 function getContentData(dir: string) {

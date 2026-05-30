@@ -1,8 +1,8 @@
----
-title: 'Typeset-Perfect CV: JSON → LaTeX → PDF (without fighting CI)'
-publishedAt: '2025-08-10'
-summary: 'Proper typography with LaTeX, fast web with React. I generate a hashed CV PDF locally via pdflatex, keep older versions, and link to the current file using a build-time CV_VERSION.'
----
+<template data-metadata>
+  <meta name="title" content="Typeset-Perfect CV: JSON → LaTeX → PDF (without fighting CI)">
+  <meta name="publishedAt" content="2025-08-10">
+  <meta name="summary" content="Proper typography with LaTeX, fast web with React. I generate a hashed CV PDF locally via pdflatex, keep older versions, and link to the current file using a build-time CV_VERSION.">
+</template>
 
 <p>For years my CV lived in two worlds: a web page people browse on phones, and a PDF recruiters print or feed into ATS systems. I tried “one file to rule them all” with print CSS and browser exports, but it was constant whack-a-mole: hyphenation off, widows/orphans, fonts shifting between machines, A4 vs Letter page breaks, and the web/PDF drifting out of sync. I wanted the web version fast, accessible, and SEO-friendly—and the PDF to look like a grown-up typesetter touched it. Most of my updates are tiny anyway: tweak the text of my current role or add a new role when I change jobs.</p>
 <p>So I split the job by purpose:</p>
