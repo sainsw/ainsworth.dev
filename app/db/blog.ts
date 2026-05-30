@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { parseHTML } from 'linkedom';
 
 type Metadata = {
   title: string;
@@ -9,20 +10,19 @@ type Metadata = {
 };
 
 function parseHtmlMetadata(fileContent: string) {
-  let templateRegex = /<template data-metadata>\s*([\s\S]*?)\s*<\/template>/;
-  let match = templateRegex.exec(fileContent);
+  let { document } = parseHTML(fileContent);
+  let template = document.querySelector('template[data-metadata]');
   let metadata: Partial<Metadata> = {};
 
-  if (match) {
-    let metaBlock = match[1];
-    let metaTagRegex = /<meta\s+name="([^"]+)"\s+content="([^"]*)"[^>]*>/g;
-    let metaMatch;
-    while ((metaMatch = metaTagRegex.exec(metaBlock)) !== null) {
-      metadata[metaMatch[1] as keyof Metadata] = metaMatch[2];
+  if (template) {
+    for (let meta of template.content.querySelectorAll('meta[name]')) {
+      let name = meta.getAttribute('name') as keyof Metadata;
+      let value = meta.getAttribute('content') ?? '';
+      metadata[name] = value;
     }
   }
 
-  let content = fileContent.replace(templateRegex, '').trim();
+  let content = fileContent.replace(/<template data-metadata>[\s\S]*?<\/template>\s*/, '').trim();
   return { metadata: metadata as Metadata, content };
 }
 
