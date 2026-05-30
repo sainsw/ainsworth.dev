@@ -19,13 +19,13 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
     <div className="border border-border bg-card ring-1 ring-foreground/10 px-4 py-5 w-full flex flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium text-foreground">
+          <p className="text-lg font-medium text-foreground tracking-tight">
             {name}
           </p>
-          <p className="text-sm italic text-muted-foreground">
+          <p className="text-base italic text-muted-foreground">
             {post}
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {dates}
           </p>
         </div>
@@ -49,7 +49,7 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
       {(description && description.length > 0) && (
         <div className="space-y-2">
           {description.map((desc, index) => (
-            <p key={index} className="text-sm text-foreground leading-relaxed">{desc}</p>
+            <p key={index} className="text-base text-foreground leading-relaxed">{desc}</p>
           ))}
           {technologies && technologies.length > 0 && (
             <div className="mt-3 pt-3 border-t border-border">
@@ -137,7 +137,7 @@ export default function Page() {
         <div className="border border-border bg-card ring-1 ring-foreground/10 px-4 py-5">
           <ul className="space-y-2">
             {resumeData.nonTechnicalSkills.map((skill, index) => (
-              <li key={index} className="text-sm text-muted-foreground">
+              <li key={index} className="text-base text-foreground leading-relaxed">
                 {skill}
               </li>
             ))}
@@ -150,7 +150,7 @@ export default function Page() {
         <div className="border border-border bg-card ring-1 ring-foreground/10 px-4 py-5">
           <div className="space-y-2">
             {resumeData.hobbies.map((hobby, index) => (
-              <p key={index} className="text-sm text-muted-foreground">
+              <p key={index} className="text-base text-foreground leading-relaxed">
                 {hobby}
               </p>
             ))}

@@ -45,7 +45,7 @@ export function PersonalProjects() {
             href={project.href}
             target="_blank"
             rel="noreferrer"
-            className="group relative flex items-start gap-4 border-t border-border py-6 transition-colors hover:bg-secondary first:border-t-0"
+            className="group relative flex items-start gap-4 border-t border-border px-4 py-6 transition-colors hover:bg-secondary first:border-t-0 -mx-4"
           >
             {/* Number */}
             <span className="font-mono text-xs text-muted-foreground tabular-nums">
@@ -55,12 +55,12 @@ export function PersonalProjects() {
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline gap-2">
-                <h3 className="text-base font-medium tracking-tight text-foreground group-hover:underline underline-offset-2">
+                <h3 className="text-lg font-medium tracking-tight text-foreground group-hover:underline underline-offset-2">
                   {project.title}
                 </h3>
                 <span className="text-lg" aria-hidden="true">{project.emoji}</span>
               </div>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-1 text-base leading-relaxed text-muted-foreground">
                 {project.description}
               </p>
             </div>
