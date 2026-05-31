@@ -99,7 +99,7 @@ const ContentSecurityPolicy = `
     style-src 'self' 'unsafe-inline';
     img-src 'self' data: blob: vercel.live;
     media-src 'none';
-    connect-src 'self' vitals.vercel-insights.com vercel.live cdn.vercel-insights.com va.vercel-scripts.com static.cloudflareinsights.com challenges.cloudflare.com;
+    connect-src 'self' vitals.vercel-insights.com vercel.live cdn.vercel-insights.com va.vercel-scripts.com static.cloudflareinsights.com challenges.cloudflare.com stats.g.doubleclick.net;
     font-src 'self' data:;
     frame-src 'self' vercel.live challenges.cloudflare.com;
 `;
