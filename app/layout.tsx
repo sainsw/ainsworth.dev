@@ -9,7 +9,6 @@ import { Suspense } from 'react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { DeferredAnalytics } from './components/deferred-analytics';
 import { CookieConsent } from './components/cookie-banner';
-import { AVATAR_VERSION } from '../lib/version';
 import { cn } from '../lib/utils';
 
 export const metadata: Metadata = {
@@ -18,10 +17,12 @@ export const metadata: Metadata = {
     default: 'Sam Ainsworth - Senior Software Developer & Cloud Engineer',
     template: '%s | Sam Ainsworth',
   },
-  description: 'Senior Software Developer with 8+ years experience building scalable web applications, cloud architecture, and team leadership. Expertise in .NET, Azure, React, and modern development practices.',
+  description:
+    'Senior Software Developer with 8+ years experience building scalable web applications, cloud architecture, and team leadership. Expertise in .NET, Azure, React, and modern development practices.',
   openGraph: {
     title: 'Sam Ainsworth - Senior Software Developer & Cloud Engineer',
-    description: 'Senior Software Developer with 8+ years experience building scalable web applications, cloud architecture, and team leadership. Expertise in .NET, Azure, React, and modern development practices.',
+    description:
+      'Senior Software Developer with 8+ years experience building scalable web applications, cloud architecture, and team leadership. Expertise in .NET, Azure, React, and modern development practices.',
     url: 'https://ainsworth.dev',
     siteName: 'Sam Ainsworth',
     locale: 'en_GB',
@@ -48,6 +49,48 @@ export const metadata: Metadata = {
   // Avoid setting a site-wide canonical. Each route sets its own where needed.
 };
 
+const siteUrl = 'https://ainsworth.dev';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      name: 'Sam Ainsworth',
+      url: siteUrl,
+      jobTitle: 'Senior Software Developer',
+      description:
+        'Senior Software Developer focusing on scalable web applications, cloud architecture, and modern engineering leadership.',
+      email: 'mailto:s@ainsworth.dev',
+      sameAs: ['https://www.linkedin.com/in/samainsworth/'],
+      image: `${siteUrl}/placeholder.jpg`,
+      worksFor: {
+        '@type': 'Organization',
+        name: 'IBM',
+        url: 'https://www.ibm.com',
+      },
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Manchester',
+        addressRegion: 'Greater Manchester',
+        addressCountry: 'GB',
+      },
+    },
+    {
+      '@type': 'WebSite',
+      name: 'Sam Ainsworth',
+      url: siteUrl,
+      inLanguage: 'en-GB',
+      description:
+        'Senior Software Developer sharing projects, blog posts, and practical insights on building reliable cloud-first software.',
+      publisher: {
+        '@type': 'Person',
+        name: 'Sam Ainsworth',
+      },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -59,7 +102,7 @@ export default function RootLayout({
       className={cn(
         'text-foreground bg-background',
         GeistSans.variable,
-        GeistMono.variable
+        GeistMono.variable,
       )}
     >
       <head>
@@ -75,7 +118,16 @@ export default function RootLayout({
          * - Resend is only used on the contact flow; that page preconnects locally.
          */}
         <meta property="og:logo" content="https://ainsworth.dev/favicon.ico" />
-        <link rel="preload" href="/sprite.svg" as="image" type="image/svg+xml" />
+        <link
+          rel="preload"
+          href="/sprite.svg"
+          as="image"
+          type="image/svg+xml"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </head>
       <body className="antialiased font-sans text-foreground bg-background">
         <div className="max-w-2xl mb-40 flex flex-col md:flex-row mx-4 mt-8 lg:mx-auto">

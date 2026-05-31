@@ -1,16 +1,13 @@
 'use server';
 
-import { auth } from 'app/auth';
-import { type Session } from 'next-auth';
 import { sql } from './postgres';
-import { revalidatePath } from 'next/cache';
 import { connection } from 'next/server';
 
 export async function increment(slug: string) {
   if (!process.env.DATABASE_URL) {
     return;
   }
-  
+
   try {
     await connection();
     await sql`
@@ -25,60 +22,22 @@ export async function increment(slug: string) {
   }
 }
 
-async function getSession(): Promise<Session> {
-  let session = await auth();
-  if (!session || !session.user) {
-    throw new Error('Unauthorized');
-  }
-
-  return session;
-}
-
-export async function saveGuestbookEntry(formData: FormData) {
-  let session = await getSession();
-  let email = session.user?.email as string;
-  let created_by = session.user?.name as string;
-
-  if (!session.user) {
-    throw new Error('Unauthorized');
-  }
-
-  let entry = formData.get('entry')?.toString() || '';
-  let body = entry.slice(0, 500);
-
-  await sql`
-    INSERT INTO guestbook (email, body, created_by, created_at)
-    VALUES (${email}, ${body}, ${created_by}, NOW())
-  `;
-
-  revalidatePath('/guestbook');
-
-  let data = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_SECRET}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: 'guestbook@contact.ainsworth.dev',
-      to: 's@ainsworth.dev',
-      subject: 'New Guestbook Entry',
-      html: `<p>Email: ${email}</p><p>Message: ${body}</p>`,
-    }),
-  });
-
-  let response = await data.json();
-  console.log('Email sent', response);
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 export async function sendEmail(formData: FormData) {
-  
-  let entry = formData.get('message')?.toString() || '';
-  let email = formData.get('email')?.toString() || '';
-  let body = entry.slice(0, 4000);
-  let em = email.slice(0, 100);
- 
-  let data = await fetch('https://api.resend.com/emails', {
+  const entry = formData.get('message')?.toString() || '';
+  const email = formData.get('email')?.toString() || '';
+  const body = escapeHtml(entry.slice(0, 4000));
+  const em = escapeHtml(email.slice(0, 100));
+
+  const data = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${process.env.RESEND_SECRET}`,
@@ -92,11 +51,11 @@ export async function sendEmail(formData: FormData) {
     }),
   });
 
-  let response = await data.json();
+  const response = await data.json();
   console.log('Email sent', response);
 
-  if(response.statusCode > 0){
-    throw new Error(response.message)
+  if (response.statusCode > 0) {
+    throw new Error(response.message);
   }
 
   return response;
@@ -121,7 +80,7 @@ async function verifyTurnstileToken(token: string): Promise<boolean> {
           secret: secretKey,
           response: token,
         }),
-      }
+      },
     );
 
     const data = await response.json();
@@ -135,44 +94,31 @@ async function verifyTurnstileToken(token: string): Promise<boolean> {
 // Server action compatible with React useFormState API
 export async function submitContact(
   _prevState: { success: boolean; message: string } | undefined,
-  formData: FormData
+  formData: FormData,
 ) {
   try {
     // Verify Turnstile token
     const turnstileToken = formData.get('cf-turnstile-response')?.toString();
     if (!turnstileToken) {
-      return { success: false, message: 'please complete the verification challenge.' };
+      return {
+        success: false,
+        message: 'please complete the verification challenge.',
+      };
     }
 
     const isValid = await verifyTurnstileToken(turnstileToken);
     if (!isValid) {
-      return { success: false, message: 'verification failed. please try again.' };
+      return {
+        success: false,
+        message: 'verification failed. please try again.',
+      };
     }
 
     await sendEmail(formData);
     return { success: true, message: 'you sent me a message. nicely done!' };
-  } catch (err: any) {
-    const msg = (err?.message || 'something went wrong').toString().toLowerCase() + '. how embarrassing.';
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : 'something went wrong';
+    const msg = `${reason.toLowerCase()}. how embarrassing.`;
     return { success: false, message: msg };
   }
-}
-
-export async function deleteGuestbookEntries(selectedEntries: string[]) {
-  let session = await getSession();
-  let email = session.user?.email as string;
-
-  if (email !== 's.ainsworth@me.com') {
-    throw new Error('Unauthorized');
-  }
-
-  let selectedEntriesAsNumbers = selectedEntries.map(Number);
-  let arrayLiteral = `{${selectedEntriesAsNumbers.join(',')}}`;
-
-  await sql`
-    DELETE FROM guestbook
-    WHERE id = ANY(${arrayLiteral}::int[])
-  `;
-
-  revalidatePath('/admin');
-  revalidatePath('/guestbook');
 }
