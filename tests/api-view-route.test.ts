@@ -8,7 +8,7 @@ beforeEach(() => {
   vi.doMock('../lib/content/blog', () => ({
     getBlogPosts: vi.fn(() => [{ slug: 'hello-world' }]),
   }));
-  vi.doMock('../app/db/views', () => ({ incrementView }));
+  vi.doMock('../lib/db/views', () => ({ incrementView }));
 });
 
 function createRequest(hasCookie = false) {

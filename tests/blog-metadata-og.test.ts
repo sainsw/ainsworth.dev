@@ -1,5 +1,5 @@
-import { generateMetadata } from 'app/blog/[slug]/page';
 import { describe, expect, it } from 'vitest';
+import { generateMetadata } from '@/app/blog/[slug]/page';
 import { getBlogPosts } from '@/lib/content/blog';
 
 describe('Blog metadata OG tags', () => {

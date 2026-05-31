@@ -1,7 +1,7 @@
 'use client';
 
+import { usePrefetchOnView } from '@/app/hooks/use-prefetch-on-view';
 import { ArrowIcon } from '@/components/arrow-icon';
-import { usePrefetchOnView } from '../hooks/use-prefetch-on-view';
 
 export function CvLink({ cvUrl }: { cvUrl: string }) {
   const ref = usePrefetchOnView(cvUrl);

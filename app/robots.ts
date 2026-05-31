@@ -1,3 +1,5 @@
+import { SITE_URL } from '@/lib/site';
+
 export default function robots() {
   return {
     rules: [
@@ -5,7 +7,7 @@ export default function robots() {
         userAgent: '*',
       },
     ],
-    sitemap: 'https://ainsworth.dev/sitemap.xml',
-    host: 'https://ainsworth.dev',
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL,
   };
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useServerInsertedHTML } from 'next/navigation';
-import { AVATAR_VERSION } from '../lib/version';
+import { AVATAR_VERSION } from '@/lib/version';
 
 export function HomePreloads() {
   useServerInsertedHTML(() => (

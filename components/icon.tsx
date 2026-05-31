@@ -18,7 +18,7 @@ const THEME_SVG_LOGOS: Record<string, { light: string; dark: string }> = {
 // Logos that should use image files with brand colours instead of sprite
 const BRAND_COLOR_LOGOS = new Set(['dotnet', 'azure']);
 
-import { SPRITE_VERSION } from '../lib/version';
+import { SPRITE_VERSION } from '@/lib/version';
 
 export function Icon({
   id,

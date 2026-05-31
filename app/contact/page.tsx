@@ -1,6 +1,5 @@
 'use client';
 
-import { submitContact } from 'app/db/actions';
 import type React from 'react';
 import {
   useActionState,
@@ -15,7 +14,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '../../lib/utils';
+import { submitContact } from '@/lib/contact/actions';
+import { cn } from '@/lib/utils';
 
 export default function Page() {
   const formRef = useRef<HTMLFormElement>(null);

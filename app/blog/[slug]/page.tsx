@@ -1,4 +1,3 @@
-import { getViewsCount } from 'app/db/queries';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
@@ -6,7 +5,9 @@ import { Suspense } from 'react';
 import { BlogContent } from '@/components/blog-content';
 import { ViewTracker } from '@/components/view-tracker';
 import { getBlogPosts } from '@/lib/content/blog';
-import { formatRelativeDate } from '@/lib/date';
+import { formatLongDate, formatRelativeDate } from '@/lib/date';
+import { getViewsCount } from '@/lib/db/queries';
+import { SITE_NAME, SITE_URL } from '@/lib/site';
 import ViewCounter from '../view-counter';
 
 export async function generateMetadata({
@@ -27,21 +28,21 @@ export async function generateMetadata({
     image,
   } = post.metadata;
   const ogImage = image
-    ? `https://ainsworth.dev${image}`
-    : `https://ainsworth.dev/api/og/${post.slug}`;
+    ? `${SITE_URL}${image}`
+    : `${SITE_URL}/api/og/${post.slug}`;
 
   return {
     title,
     description,
     alternates: {
-      canonical: `https://ainsworth.dev/blog/${post.slug}`,
+      canonical: `${SITE_URL}/blog/${post.slug}`,
     },
     openGraph: {
       title,
       description,
       type: 'article',
       publishedTime,
-      url: `https://ainsworth.dev/blog/${post.slug}`,
+      url: `${SITE_URL}/blog/${post.slug}`,
       images: [
         {
           url: ogImage,
@@ -59,16 +60,7 @@ export async function generateMetadata({
 
 async function formatDate(date: string) {
   await connection();
-  const targetDate = new Date(date.includes('T') ? date : `${date}T00:00:00`);
-  const formattedDate = formatRelativeDate(date);
-
-  const fullDate = targetDate.toLocaleString('en-us', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
-
-  return `${fullDate} (${formattedDate})`;
+  return `${formatLongDate(date)} (${formatRelativeDate(date)})`;
 }
 
 async function FormattedDate({ date }: { date: string }) {
@@ -103,12 +95,12 @@ export default async function Blog({
             dateModified: post.metadata.publishedAt,
             description: post.metadata.summary,
             image: post.metadata.image
-              ? `https://ainsworth.dev${post.metadata.image}`
-              : `https://ainsworth.dev/api/og/${post.slug}`,
-            url: `https://ainsworth.dev/blog/${post.slug}`,
+              ? `${SITE_URL}${post.metadata.image}`
+              : `${SITE_URL}/api/og/${post.slug}`,
+            url: `${SITE_URL}/blog/${post.slug}`,
             author: {
               '@type': 'Person',
-              name: 'Sam Ainsworth',
+              name: SITE_NAME,
             },
           }),
         }}

@@ -1,14 +1,15 @@
 import { getBlogPosts } from '@/lib/content/blog';
+import { SITE_URL } from '@/lib/site';
 
 export default async function sitemap() {
   const blogs = getBlogPosts().map((post) => ({
-    url: `https://ainsworth.dev/blog/${post.slug}`,
+    url: `${SITE_URL}/blog/${post.slug}`,
     lastModified: post.metadata.publishedAt,
   }));
 
   const routes = ['', '/blog', '/work', '/contact', '/privacy', '/uses'].map(
     (route) => ({
-      url: `https://ainsworth.dev${route}`,
+      url: `${SITE_URL}${route}`,
       lastModified: new Date().toISOString().split('T')[0],
     }),
   );

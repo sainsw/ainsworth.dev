@@ -1,6 +1,6 @@
 import { Icon } from '@/components/icon';
-import resumeData from '../../data/resume.json';
-import { CV_VERSION } from '../../lib/version';
+import resumeData from '@/data/resume.json';
+import { CV_VERSION } from '@/lib/version';
 import { CvLink } from './cv-link';
 
 function ExperienceCard({

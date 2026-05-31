@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowIcon } from '@/components/arrow-icon';
 import { Icon } from '@/components/icon';
 import { PersonalProjects } from '@/components/personal-projects';
+import { SITE_URL } from '@/lib/site';
 import { HomePreloads } from './home-preloads';
 
 function getYearsOfExperience(): number {
@@ -135,6 +136,6 @@ export default function Page() {
 
 export const metadata: Metadata = {
   alternates: {
-    canonical: 'https://ainsworth.dev',
+    canonical: SITE_URL,
   },
 };

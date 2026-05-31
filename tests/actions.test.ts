@@ -8,8 +8,8 @@ const cookieStore = {
 
 beforeEach(() => {
   vi.resetModules();
-  vi.doUnmock('app/db/actions');
-  vi.doUnmock('../app/db/actions');
+  vi.doUnmock('@/lib/contact/actions');
+  vi.doUnmock('@/lib/contact/actions');
   process.env = {
     ...origEnv,
     RESEND_SECRET: 'resend-secret',
@@ -41,7 +41,7 @@ function createFormData({
 
 describe('submitContact', () => {
   it('rejects submissions without a Turnstile token', async () => {
-    const { submitContact } = await import('../app/db/actions');
+    const { submitContact } = await import('@/lib/contact/actions');
     const result = await submitContact(
       undefined,
       createFormData({ token: '' }),
@@ -55,7 +55,7 @@ describe('submitContact', () => {
     vi.spyOn(global, 'fetch').mockResolvedValueOnce(
       new Response(JSON.stringify({ success: true }), { status: 200 }),
     );
-    const { submitContact } = await import('../app/db/actions');
+    const { submitContact } = await import('@/lib/contact/actions');
     const result = await submitContact(
       undefined,
       createFormData({ email: 'not-an-email' }),
@@ -74,7 +74,7 @@ describe('submitContact', () => {
       .mockResolvedValueOnce(
         new Response(JSON.stringify({ id: 'email-id' }), { status: 200 }),
       );
-    const { submitContact } = await import('../app/db/actions');
+    const { submitContact } = await import('@/lib/contact/actions');
     const result = await submitContact(undefined, createFormData());
 
     expect(result.success).toBe(true);
@@ -91,7 +91,7 @@ describe('submitContact', () => {
     vi.spyOn(global, 'fetch').mockResolvedValueOnce(
       new Response(JSON.stringify({ success: true }), { status: 200 }),
     );
-    const { submitContact } = await import('../app/db/actions');
+    const { submitContact } = await import('@/lib/contact/actions');
     const result = await submitContact(undefined, createFormData());
 
     expect(result.success).toBe(false);

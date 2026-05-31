@@ -1,9 +1,18 @@
+export function parsePostDate(date: string): Date {
+  return new Date(date.includes('T') ? date : `${date}T00:00:00`);
+}
+
+export function formatLongDate(date: string): string {
+  return parsePostDate(date).toLocaleString('en-us', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 export function formatRelativeDate(date: string) {
   const currentDate = new Date();
-  if (!date.includes('T')) {
-    date = `${date}T00:00:00`;
-  }
-  const targetDate = new Date(date);
+  const targetDate = parsePostDate(date);
 
   const yearDiff = currentDate.getFullYear() - targetDate.getFullYear();
   const monthDiff = currentDate.getMonth() - targetDate.getMonth();
