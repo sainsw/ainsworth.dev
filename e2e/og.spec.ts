@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test('article OG image route returns an image', async ({ request }) => {
   const res = await request.get('/api/og/hello-world');

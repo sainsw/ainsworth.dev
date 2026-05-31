@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 describe('OG Image Route', () => {
   it('returns 404 when post not found', async () => {

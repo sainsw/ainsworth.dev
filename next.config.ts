@@ -17,7 +17,6 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  turbopack: {},
   images: {
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 31536000, // 1 year

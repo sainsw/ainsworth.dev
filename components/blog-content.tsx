@@ -1,7 +1,7 @@
-import { highlight } from 'sugar-high';
 import { parseHTML } from 'linkedom';
-import MermaidClient from './mermaid-client';
+import { highlight } from 'sugar-high';
 import { AvatarDemo } from './avatar-demo';
+import MermaidClient from './mermaid-client';
 
 function slugify(str: string) {
   return str

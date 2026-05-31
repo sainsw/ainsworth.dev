@@ -7,14 +7,13 @@ export default function ViewCounter({
     slug: string;
     count: number;
   }[];
-  trackView?: boolean;
 }) {
   const viewsForSlug = allViews?.find((view) => view.slug === slug);
-  const number = new Number(viewsForSlug?.count || 0);
+  const count = viewsForSlug?.count ?? 0;
 
   return (
     <span className="text-muted-foreground">
-      {`${number.toLocaleString()} views`}
+      {`${count.toLocaleString()} views`}
     </span>
   );
 }

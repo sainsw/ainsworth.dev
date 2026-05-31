@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 // Unmock the blog module for integration testing
 vi.unmock('../lib/content/blog');
+
 import { getBlogPosts } from '../lib/content/blog';
 
 describe('Integration Tests', () => {

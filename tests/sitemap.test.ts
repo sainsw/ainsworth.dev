@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 describe('sitemap', () => {
   it('includes base routes and blog posts', async () => {

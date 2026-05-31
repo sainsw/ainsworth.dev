@@ -1,13 +1,13 @@
-import type { Metadata } from 'next';
-import { Suspense } from 'react';
-import { notFound } from 'next/navigation';
-import { BlogContent } from '@/components/blog-content';
 import { getViewsCount } from 'app/db/queries';
-import { getBlogPosts } from '@/lib/content/blog';
-import ViewCounter from '../view-counter';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
-import { formatRelativeDate } from '@/lib/date';
+import { Suspense } from 'react';
+import { BlogContent } from '@/components/blog-content';
 import { ViewTracker } from '@/components/view-tracker';
+import { getBlogPosts } from '@/lib/content/blog';
+import { formatRelativeDate } from '@/lib/date';
+import ViewCounter from '../view-counter';
 
 export async function generateMetadata({
   params,

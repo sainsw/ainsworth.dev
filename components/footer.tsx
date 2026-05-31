@@ -1,18 +1,15 @@
-import { PrideAvatar } from './pride-avatar';
 import { AVATAR_VERSION } from '@/lib/version';
+import { PrideAvatar } from './pride-avatar';
 
 const year = new Date().getFullYear();
 
-const getCopyrightString = async () => {
-  var string = year.toString();
-  if (year > 2024) {
-    string = `2024 - ${string}`;
-  }
-  return `© Sam Ainsworth ${string}. All Rights Reserved.`;
-};
+function getCopyrightString() {
+  const range = year > 2024 ? `2024 - ${year}` : `${year}`;
+  return `© Sam Ainsworth ${range}. All Rights Reserved.`;
+}
 
-export async function Footer() {
-  const copyrightString = await getCopyrightString();
+export function Footer() {
+  const copyrightString = getCopyrightString();
   return (
     <footer>
       <div className="relative h-64 ">

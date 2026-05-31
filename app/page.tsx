@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowIcon } from '@/components/arrow-icon';
-import { HomePreloads } from './home-preloads';
 import { Icon } from '@/components/icon';
 import { PersonalProjects } from '@/components/personal-projects';
+import { HomePreloads } from './home-preloads';
 
 function getYearsOfExperience(): number {
   const startDate = new Date(2016, 6, 26); // 26th July 2016 (months are 0-indexed)

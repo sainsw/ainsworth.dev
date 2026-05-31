@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface CookieConsentProps {
@@ -94,7 +94,7 @@ export function CookieConsent({
       }, 2000);
       return () => clearTimeout(timer);
     } catch (e) {
-      console.log('Error checking cookies:', e);
+      console.error('Error checking cookies:', e);
     }
   }, [demo]);
 

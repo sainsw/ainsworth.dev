@@ -1,9 +1,9 @@
+import { getViewsCount } from 'app/db/queries';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import ViewCounter from './view-counter';
-import { getViewsCount } from 'app/db/queries';
 import { getBlogPosts } from '@/lib/content/blog';
 import { formatRelativeDate } from '@/lib/date';
+import ViewCounter from './view-counter';
 
 export const metadata = {
   title: 'Blog',

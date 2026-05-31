@@ -1,6 +1,6 @@
 import 'server-only';
-import { sql } from './postgres';
 import { connection } from 'next/server';
+import { sql } from './postgres';
 
 export async function getViewsCount(): Promise<
   { slug: string; count: number }[]
