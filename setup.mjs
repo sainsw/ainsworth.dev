@@ -1,5 +1,5 @@
-import { promises as fs } from 'fs';
-import path from 'path';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
 import dotenv from 'dotenv';
 
 const template = `---
@@ -40,7 +40,7 @@ const deleteFolderRecursive = async (path) => {
     if (stat.isDirectory()) {
       const files = await fs.readdir(path);
       await Promise.all(
-        files.map((file) => deleteFolderRecursive(`${path}/${file}`))
+        files.map((file) => deleteFolderRecursive(`${path}/${file}`)),
       );
       await fs.rmdir(path);
     } else {

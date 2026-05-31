@@ -1,6 +1,6 @@
 'use client';
 
-import { Sandpack } from '@codesandbox/sandpack-react';
+import { Sandpack, type SandpackFiles } from '@codesandbox/sandpack-react';
 import {
   HTML,
   CSS,
@@ -21,7 +21,7 @@ class ErrorBoundary extends React.Component<
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_error: unknown) {
     return { hasError: true };
   }
 
@@ -39,7 +39,7 @@ class ErrorBoundary extends React.Component<
 }
 
 export function LiveCode({ example }: { example: string }) {
-  let files;
+  let files: SandpackFiles | undefined;
 
   if (example === 'html') {
     files = {

@@ -9,7 +9,7 @@ export default function ViewCounter({
   }[];
   trackView?: boolean;
 }) {
-  const viewsForSlug = allViews && allViews.find((view) => view.slug === slug);
+  const viewsForSlug = allViews?.find((view) => view.slug === slug);
   const number = new Number(viewsForSlug?.count || 0);
 
   return (

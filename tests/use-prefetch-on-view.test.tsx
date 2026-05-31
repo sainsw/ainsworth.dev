@@ -1,50 +1,58 @@
-import { render } from '@testing-library/react'
-import React from 'react'
-import { usePrefetchOnView } from '../app/hooks/use-prefetch-on-view'
+import { render } from '@testing-library/react';
+import { usePrefetchOnView } from '../app/hooks/use-prefetch-on-view';
 
 // Mock IntersectionObserver
 class MockIntersectionObserver {
-  cb: IntersectionObserverCallback
+  cb: IntersectionObserverCallback;
   constructor(cb: IntersectionObserverCallback) {
-    this.cb = cb
+    this.cb = cb;
   }
-  observe = (el: Element) => {
+  observe = (_el: Element) => {
     // Trigger an intersecting entry immediately
-    this.cb([{ isIntersecting: true } as IntersectionObserverEntry], this as any)
-  }
-  unobserve = () => {}
-  disconnect = () => {}
-  takeRecords = () => []
-  root = null
-  rootMargin = ''
-  thresholds = []
+    this.cb(
+      [{ isIntersecting: true } as IntersectionObserverEntry],
+      this as any,
+    );
+  };
+  unobserve = () => {};
+  disconnect = () => {};
+  takeRecords = () => [];
+  root = null;
+  rootMargin = '';
+  thresholds = [];
 }
 
-// @ts-ignore
-global.IntersectionObserver = MockIntersectionObserver
+// @ts-expect-error
+global.IntersectionObserver = MockIntersectionObserver;
 
 describe('usePrefetchOnView', () => {
   beforeEach(() => {
-    document.head.querySelectorAll('link[rel="prefetch"]').forEach((el) => el.parentElement?.removeChild(el))
-    vi.spyOn(global, 'fetch').mockResolvedValue({} as any)
-  })
+    document.head.querySelectorAll('link[rel="prefetch"]').forEach((el) => {
+      el.remove();
+    });
+    vi.spyOn(global, 'fetch').mockResolvedValue({} as any);
+  });
 
   afterEach(() => {
-    vi.restoreAllMocks()
-  })
+    vi.restoreAllMocks();
+  });
 
   function TestComp() {
-    const ref = usePrefetchOnView('/cv.pdf')
-    return <li ref={ref}>item</li>
+    const ref = usePrefetchOnView('/cv.pdf');
+    return <li ref={ref}>item</li>;
   }
 
   it('prefetches via fetch and appends link', async () => {
-    render(<TestComp />)
+    render(<TestComp />);
     // fetch called once
-    expect(global.fetch).toHaveBeenCalledWith('/cv.pdf', expect.objectContaining({ method: 'GET' }))
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/cv.pdf',
+      expect.objectContaining({ method: 'GET' }),
+    );
     // link element added
-    const link = document.head.querySelector('link[rel="prefetch"][href="/cv.pdf"]')
-    expect(link).not.toBeNull()
-  })
-})
-
+    const link = document.head.querySelector(
+      'link[rel="prefetch"][href="/cv.pdf"]',
+    );
+    expect(link).not.toBeNull();
+  });
+});

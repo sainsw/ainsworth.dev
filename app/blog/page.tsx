@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default function BlogPage() {
-  let allBlogs = getBlogPosts().sort((a, b) => {
+  const allBlogs = getBlogPosts().sort((a, b) => {
     if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
       return -1;
     }
@@ -27,7 +27,11 @@ export default function BlogPage() {
       {isTest ? (
         allBlogs.map((post) => <BlogRow key={post.slug} post={post} />)
       ) : (
-        <Suspense fallback={allBlogs.map((post) => <BlogRow key={post.slug} post={post} />)}>
+        <Suspense
+          fallback={allBlogs.map((post) => (
+            <BlogRow key={post.slug} post={post} />
+          ))}
+        >
           <BlogListWithViews allBlogs={allBlogs} />
         </Suspense>
       )}
@@ -68,10 +72,13 @@ function BlogRow({
 async function BlogListWithViews({
   allBlogs,
 }: {
-  allBlogs: { slug: string; metadata: { title: string; publishedAt: string } }[];
+  allBlogs: {
+    slug: string;
+    metadata: { title: string; publishedAt: string };
+  }[];
 }) {
   try {
-    let views = await getViewsCount();
+    const views = await getViewsCount();
     return allBlogs.map((post) => (
       <BlogRow key={post.slug} post={post} allViews={views} />
     ));

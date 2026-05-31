@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { useServerInsertedHTML } from 'next/navigation'
-import { AVATAR_VERSION } from '../lib/version'
+import { useServerInsertedHTML } from 'next/navigation';
+import { AVATAR_VERSION } from '../lib/version';
 
 export function HomePreloads() {
   useServerInsertedHTML(() => (
@@ -13,7 +13,6 @@ export function HomePreloads() {
         type="image/webp"
       />
     </>
-  ))
-  return null
+  ));
+  return null;
 }
-

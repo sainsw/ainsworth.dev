@@ -1,6 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useCallback, useImperativeHandle, forwardRef } from 'react';
+import {
+  useEffect,
+  useRef,
+  useCallback,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
 
 declare global {
   interface Window {
@@ -15,7 +21,7 @@ declare global {
           theme?: 'light' | 'dark' | 'auto';
           size?: 'normal' | 'compact' | 'flexible';
           execution?: 'render' | 'execute';
-        }
+        },
       ) => string;
       reset: (widgetId: string) => void;
       remove: (widgetId: string) => void;
@@ -49,7 +55,7 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
       invisible = false,
       className,
     },
-    ref
+    ref,
   ) {
     const containerRef = useRef<HTMLDivElement>(null);
     const widgetIdRef = useRef<string | null>(null);
@@ -65,7 +71,7 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
           resolveTokenRef.current = null;
         }
       },
-      [onVerify]
+      [onVerify],
     );
 
     const renderWidget = useCallback(() => {
@@ -111,7 +117,7 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
           }
         },
       }),
-      []
+      [],
     );
 
     useEffect(() => {
@@ -148,5 +154,5 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
     }, [renderWidget]);
 
     return <div ref={containerRef} className={className} />;
-  }
+  },
 );

@@ -4,8 +4,5 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "jsx": "react-jsx"
   },
-  "include": [
-    "../vitest.config.ts",
-    "./**/*"
-  ]
+  "include": ["../vitest.config.ts", "./**/*"]
 }

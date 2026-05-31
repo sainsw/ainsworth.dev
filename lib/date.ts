@@ -1,9 +1,9 @@
 export function formatRelativeDate(date: string) {
-  let currentDate = new Date();
+  const currentDate = new Date();
   if (!date.includes('T')) {
     date = `${date}T00:00:00`;
   }
-  let targetDate = new Date(date);
+  const targetDate = new Date(date);
 
   const yearDiff = currentDate.getFullYear() - targetDate.getFullYear();
   const monthDiff = currentDate.getMonth() - targetDate.getMonth();
@@ -23,7 +23,7 @@ export function formatRelativeDate(date: string) {
 
   const msPerDay = 1000 * 60 * 60 * 24;
   const daysAgo = Math.floor(
-    (currentDate.getTime() - targetDate.getTime()) / msPerDay
+    (currentDate.getTime() - targetDate.getTime()) / msPerDay,
   );
   return daysAgo > 0 ? `${daysAgo}d ago` : 'Today';
 }

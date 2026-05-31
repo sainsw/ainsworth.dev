@@ -12,8 +12,8 @@ export function DeferredAnalytics() {
     const checkConsent = () => {
       const cookieConsent = document.cookie
         .split('; ')
-        .find(row => row.startsWith('cookie-consent='));
-      
+        .find((row) => row.startsWith('cookie-consent='));
+
       const consentValue = cookieConsent?.split('=')[1];
       return consentValue === 'accepted';
     };
@@ -36,18 +36,26 @@ export function DeferredAnalytics() {
 
     // Listen for custom consent events
     window.addEventListener('cookie-consent-accepted', handleConsentChange);
-    
+
     // Use requestIdleCallback if available, otherwise fallback to setTimeout
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      const idleCallback = window.requestIdleCallback(loadAnalytics, { timeout: 500 });
+      const idleCallback = window.requestIdleCallback(loadAnalytics, {
+        timeout: 500,
+      });
       return () => {
-        window.removeEventListener('cookie-consent-accepted', handleConsentChange);
+        window.removeEventListener(
+          'cookie-consent-accepted',
+          handleConsentChange,
+        );
         window.cancelIdleCallback(idleCallback);
       };
     } else {
       const timer = setTimeout(loadAnalytics, 200);
       return () => {
-        window.removeEventListener('cookie-consent-accepted', handleConsentChange);
+        window.removeEventListener(
+          'cookie-consent-accepted',
+          handleConsentChange,
+        );
         clearTimeout(timer);
       };
     }
@@ -58,9 +66,5 @@ export function DeferredAnalytics() {
     return null;
   }
 
-  return (
-    <>
-      <Analytics />
-    </>
-  );
+  return <Analytics />;
 }

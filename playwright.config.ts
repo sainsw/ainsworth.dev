@@ -1,7 +1,7 @@
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000'
-const skipWebServer = process.env.PLAYWRIGHT_SKIP_WEBSERVER === '1'
+const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000';
+const skipWebServer = process.env.PLAYWRIGHT_SKIP_WEBSERVER === '1';
 
 export default defineConfig({
   testDir: 'e2e',
@@ -26,4 +26,4 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-})
+});

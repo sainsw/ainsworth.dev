@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 interface PrideAvatarProps {
   children: React.ReactNode;
   className?: string;
 }
 
-export function PrideAvatar({ children, className = "" }: PrideAvatarProps) {
+export function PrideAvatar({ children, className = '' }: PrideAvatarProps) {
   const [isPrideTime, setIsPrideTime] = useState(false);
 
   useEffect(() => {

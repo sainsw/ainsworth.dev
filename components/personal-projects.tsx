@@ -39,7 +39,7 @@ export function PersonalProjects() {
   return (
     <section className="mt-6">
       <div className="flex flex-col gap-0">
-        {projects.map((project, index) => (
+        {projects.map((project, _index) => (
           <a
             key={project.title}
             href={project.href}
@@ -51,23 +51,25 @@ export function PersonalProjects() {
             <span className="font-mono text-xs text-muted-foreground tabular-nums">
               {project.number}
             </span>
-            
+
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline gap-2">
                 <h3 className="text-lg font-medium tracking-tight text-foreground group-hover:underline underline-offset-2">
                   {project.title}
                 </h3>
-                <span className="text-lg" aria-hidden="true">{project.emoji}</span>
+                <span className="text-lg" aria-hidden="true">
+                  {project.emoji}
+                </span>
               </div>
               <p className="mt-1 text-base leading-relaxed text-muted-foreground">
                 {project.description}
               </p>
             </div>
-            
+
             {/* Arrow */}
-            <span 
-              className="text-muted-foreground group-hover:text-foreground transition-all group-hover:translate-x-0.5" 
+            <span
+              className="text-muted-foreground group-hover:text-foreground transition-all group-hover:translate-x-0.5"
               aria-hidden="true"
             >
               →

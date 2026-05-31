@@ -1,6 +1,4 @@
-import { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 import { ArrowIcon } from './components/arrow-icon';
 import { HomePreloads } from './home-preloads';
@@ -11,14 +9,22 @@ function getYearsOfExperience(): number {
   const startDate = new Date(2016, 6, 26); // 26th July 2016 (months are 0-indexed)
   const now = new Date();
   const years = now.getFullYear() - startDate.getFullYear();
-  const hasReachedAnniversary = 
+  const hasReachedAnniversary =
     now.getMonth() > startDate.getMonth() ||
-    (now.getMonth() === startDate.getMonth() && now.getDate() >= startDate.getDate());
+    (now.getMonth() === startDate.getMonth() &&
+      now.getDate() >= startDate.getDate());
   return hasReachedAnniversary ? years : years - 1;
 }
 
 // Inline tech badge - more spacious for use within prose
-function TechBadge({ href, children, ...props }: { href: string; children: React.ReactNode } & React.AnchorHTMLAttributes<HTMLAnchorElement>) {
+function TechBadge({
+  href,
+  children,
+  ...props
+}: {
+  href: string;
+  children: React.ReactNode;
+} & React.AnchorHTMLAttributes<HTMLAnchorElement>) {
   return (
     <a
       href={href}
@@ -36,15 +42,17 @@ export default function Page() {
   return (
     <section>
       <HomePreloads />
-      <h1 className="font-medium text-2xl mb-8 tracking-tighter">hello, I'm Sam 👋</h1>
+      <h1 className="font-medium text-2xl mb-8 tracking-tighter">
+        hello, I'm Sam 👋
+      </h1>
       <div className="prose dark:prose-invert">
-        <p>
-          I like to keep things simple and practical.
-        </p>
+        <p>I like to keep things simple and practical.</p>
       </div>
       <p className="prose dark:prose-invert">
         {`I'm a Senior Full Stack Engineer with ${getYearsOfExperience()}+ years of experience in full-stack development and cloud solutions. I currently `}
-        <Link href="/work" prefetch={true}>work</Link>
+        <Link href="/work" prefetch={true}>
+          work
+        </Link>
         {` at `}
         <span className="not-prose">
           <TechBadge href="https://www.ibm.com" aria-label="IBM">
@@ -61,7 +69,12 @@ export default function Page() {
         {`, `}
         <span className="not-prose">
           <TechBadge href="https://dotnet.microsoft.com">
-            <Icon id="dotnet" size={14} className="shrink-0" decorative={true} />
+            <Icon
+              id="dotnet"
+              size={14}
+              className="shrink-0"
+              decorative={true}
+            />
             .NET
           </TechBadge>
         </span>
@@ -76,14 +89,20 @@ export default function Page() {
       </p>
       <div className="prose dark:prose-invert">
         <p>
-          I'm passionate about enterprise design thinking and building scalable, reliable software solutions. 
-          On my <Link href="/blog" prefetch={true}>blog</Link>, I share insights about software development, cloud technologies, .NET, Azure, and the latest in enterprise software architecture.
-          You'll find content that reflects my experience in leading development teams and implementing modern software practices.
+          I'm passionate about enterprise design thinking and building scalable,
+          reliable software solutions. On my{' '}
+          <Link href="/blog" prefetch={true}>
+            blog
+          </Link>
+          , I share insights about software development, cloud technologies,
+          .NET, Azure, and the latest in enterprise software architecture.
+          You'll find content that reflects my experience in leading development
+          teams and implementing modern software practices.
         </p>
       </div>
 
       <h2 className="font-medium text-2xl mt-8 mb-2 tracking-tighter text-foreground">
-          personal projects 👨‍💻
+        personal projects 👨‍💻
       </h2>
       <PersonalProjects />
 

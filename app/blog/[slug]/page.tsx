@@ -14,21 +14,21 @@ import { formatRelativeDate } from '@/lib/date';
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata | undefined> {
   const { slug } = await params;
-  let post = getBlogPosts().find((post) => post.slug === slug);
+  const post = getBlogPosts().find((post) => post.slug === slug);
   if (!post) {
     return;
   }
 
-  let {
+  const {
     title,
     publishedAt: publishedTime,
     summary: description,
     image,
   } = post.metadata;
-  let ogImage = image
+  const ogImage = image
     ? `https://ainsworth.dev${image}`
     : `https://ainsworth.dev/api/og/${post.slug}`;
 
@@ -61,10 +61,10 @@ export async function generateMetadata({
 
 async function formatDate(date: string) {
   await connection();
-  let targetDate = new Date(date.includes('T') ? date : `${date}T00:00:00`);
+  const targetDate = new Date(date.includes('T') ? date : `${date}T00:00:00`);
   const formattedDate = formatRelativeDate(date);
 
-  let fullDate = targetDate.toLocaleString('en-us', {
+  const fullDate = targetDate.toLocaleString('en-us', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
@@ -75,19 +75,17 @@ async function formatDate(date: string) {
 
 async function FormattedDate({ date }: { date: string }) {
   return (
-    <p className="text-sm text-muted-foreground">
-      {await formatDate(date)}
-    </p>
+    <p className="text-sm text-muted-foreground">{await formatDate(date)}</p>
   );
 }
 
 export default async function Blog({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  let post = getBlogPosts().find((post) => post.slug === slug);
+  const post = getBlogPosts().find((post) => post.slug === slug);
 
   if (!post) {
     notFound();
@@ -138,11 +136,11 @@ export default async function Blog({
   );
 }
 
-let incrementViews = cache(increment);
+const incrementViews = cache(increment);
 
 async function Views({ slug }: { slug: string }) {
   try {
-    let views = await getViewsCount();
+    const views = await getViewsCount();
     incrementViews(slug);
     return <ViewCounter allViews={views} slug={slug} />;
   } catch (error) {

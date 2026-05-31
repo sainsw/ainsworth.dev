@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface MermaidClientProps {
   chart: string;
@@ -9,7 +9,7 @@ interface MermaidClientProps {
 
 export default function MermaidClient({
   chart,
-  className = "",
+  className = '',
 }: MermaidClientProps) {
   const elementRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -19,10 +19,12 @@ export default function MermaidClient({
   // Effect to detect theme changes
   useEffect(() => {
     const checkDarkMode = () => {
-      const prefersDark = (typeof window !== 'undefined' && typeof window.matchMedia === 'function')
-        ? window.matchMedia('(prefers-color-scheme: dark)').matches
-        : false;
-      const darkMode = document.documentElement.classList.contains('dark') || prefersDark;
+      const prefersDark =
+        typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+          ? window.matchMedia('(prefers-color-scheme: dark)').matches
+          : false;
+      const darkMode =
+        document.documentElement.classList.contains('dark') || prefersDark;
       setIsDark(darkMode);
     };
 
@@ -33,12 +35,15 @@ export default function MermaidClient({
     const observer = new MutationObserver(checkDarkMode);
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['class']
+      attributeFilter: ['class'],
     });
 
     // Watch for system theme changes
     let mediaQuery: MediaQueryList | null = null;
-    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+    if (
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function'
+    ) {
       mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       mediaQuery.addEventListener('change', checkDarkMode);
     }
@@ -53,59 +58,83 @@ export default function MermaidClient({
   const themedChart = useMemo(() => {
     // Only transform known pastel fills used in content
     // Light mode: ensure readable dark text; Dark mode: use darker fills and light text
-    const mappingsLight: Record<string, { fill: string; color: string; stroke?: string }> = {
+    const mappingsLight: Record<
+      string,
+      { fill: string; color: string; stroke?: string }
+    > = {
       // sky-50
-      "#e1f5fe": { fill: "#e1f5fe", color: "#111827", stroke: "#93c5fd" },
+      '#e1f5fe': { fill: '#e1f5fe', color: '#111827', stroke: '#93c5fd' },
       // green-50
-      "#e8f5e8": { fill: "#e8f5e8", color: "#111827", stroke: "#86efac" },
+      '#e8f5e8': { fill: '#e8f5e8', color: '#111827', stroke: '#86efac' },
       // amber-50
-      "#fff3e0": { fill: "#fff3e0", color: "#111827", stroke: "#fcd34d" },
+      '#fff3e0': { fill: '#fff3e0', color: '#111827', stroke: '#fcd34d' },
       // fuchsia-50
-      "#f3e5f5": { fill: "#f3e5f5", color: "#111827", stroke: "#f0abfc" },
+      '#f3e5f5': { fill: '#f3e5f5', color: '#111827', stroke: '#f0abfc' },
       // hot pink highlight
-      "#ff69b4": { fill: "#ff69b4", color: "#111827", stroke: "#f472b6" },
+      '#ff69b4': { fill: '#ff69b4', color: '#111827', stroke: '#f472b6' },
     };
 
-    const mappingsDark: Record<string, { fill: string; color: string; stroke?: string }> = {
+    const mappingsDark: Record<
+      string,
+      { fill: string; color: string; stroke?: string }
+    > = {
       // sky-900
-      "#e1f5fe": { fill: "#0c4a6e", color: "#e5e7eb", stroke: "#38bdf8" },
+      '#e1f5fe': { fill: '#0c4a6e', color: '#e5e7eb', stroke: '#38bdf8' },
       // emerald-900
-      "#e8f5e8": { fill: "#064e3b", color: "#e5e7eb", stroke: "#34d399" },
+      '#e8f5e8': { fill: '#064e3b', color: '#e5e7eb', stroke: '#34d399' },
       // amber-900
-      "#fff3e0": { fill: "#713f12", color: "#e5e7eb", stroke: "#fbbf24" },
+      '#fff3e0': { fill: '#713f12', color: '#e5e7eb', stroke: '#fbbf24' },
       // fuchsia-900
-      "#f3e5f5": { fill: "#6d28d9", color: "#f3f4f6", stroke: "#c084fc" },
+      '#f3e5f5': { fill: '#6d28d9', color: '#f3f4f6', stroke: '#c084fc' },
       // hot pink highlight → fuchsia-800
-      "#ff69b4": { fill: "#86198f", color: "#f5f3ff", stroke: "#e879f9" },
+      '#ff69b4': { fill: '#86198f', color: '#f5f3ff', stroke: '#e879f9' },
     };
 
     const source = chart;
-    const replacer = (hex: string, map: Record<string, { fill: string; color: string; stroke?: string }>) => {
+    const _replacer = (
+      hex: string,
+      map: Record<string, { fill: string; color: string; stroke?: string }>,
+    ) => {
       // Replace lines like: style A fill:#e1f5fe
-      const regex = new RegExp(`(style\\s+[^\\n]*?)fill:${hex}`, "gi");
-      return source
-        .replace(regex, (_, pre) => `${pre}fill:${map[hex].fill},color:${map[hex].color}${map[hex].stroke ? `,stroke:${map[hex].stroke}` : ""}`)
-        // Also handle multiline style blocks if any
-        .replace(new RegExp(`(style\\s+[^\\n]*?fill:${hex}[^\\n]*)`, "gi"), (m) => {
-          // If color not already present, append it
-          if (!/color:/i.test(m)) {
-            const { color } = map[hex];
-            return `${m},color:${color}`;
-          }
-          return m;
-        });
+      const regex = new RegExp(`(style\\s+[^\\n]*?)fill:${hex}`, 'gi');
+      return (
+        source
+          .replace(
+            regex,
+            (_, pre) =>
+              `${pre}fill:${map[hex].fill},color:${map[hex].color}${map[hex].stroke ? `,stroke:${map[hex].stroke}` : ''}`,
+          )
+          // Also handle multiline style blocks if any
+          .replace(
+            new RegExp(`(style\\s+[^\\n]*?fill:${hex}[^\\n]*)`, 'gi'),
+            (m) => {
+              // If color not already present, append it
+              if (!/color:/i.test(m)) {
+                const { color } = map[hex];
+                return `${m},color:${color}`;
+              }
+              return m;
+            },
+          )
+      );
     };
 
     // Apply mapping
     const palette = isDark ? mappingsDark : mappingsLight;
     let out = source;
     Object.keys(palette).forEach((hex) => {
-      out = out.replace(new RegExp(`fill:${hex}`, "gi"), (m) => {
+      out = out.replace(new RegExp(`fill:${hex}`, 'gi'), (_m) => {
         const { fill } = palette[hex];
         return `fill:${fill}`;
       });
       // Ensure text colour for that style line
-      out = out.replace(new RegExp(`(style\\s+[^\\n]*?fill:${palette[hex].fill})(?![^\\n]*color:)`, "gi"), `$1,color:${palette[hex].color}`);
+      out = out.replace(
+        new RegExp(
+          `(style\\s+[^\\n]*?fill:${palette[hex].fill})(?![^\\n]*color:)`,
+          'gi',
+        ),
+        `$1,color:${palette[hex].color}`,
+      );
     });
 
     return out;
@@ -117,7 +146,7 @@ export default function MermaidClient({
     async function renderMermaid() {
       try {
         // Dynamically import mermaid to avoid SSR issues
-        const mermaid = (await import("mermaid")).default;
+        const mermaid = (await import('mermaid')).default;
 
         if (!mounted) return;
 
@@ -127,23 +156,25 @@ export default function MermaidClient({
         mermaid.initialize({
           startOnLoad: false,
           // Use built-in dark theme when dark mode is active
-          theme: isDark ? "dark" : "neutral",
-          securityLevel: "loose",
-          fontFamily: "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace",
+          theme: isDark ? 'dark' : 'neutral',
+          securityLevel: 'loose',
+          fontFamily:
+            "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace",
           maxTextSize: 90000,
           flowchart: {
             useMaxWidth: false,
             // Use SVG labels; they render reliably and keep edge labels intact
             htmlLabels: false,
-            curve: "basis",
+            curve: 'basis',
             padding: 12,
             nodeSpacing: 30,
             rankSpacing: 50,
             diagramPadding: 12,
           },
           themeVariables: {
-            fontFamily: "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace",
-            fontSize: "13px",
+            fontFamily:
+              "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace",
+            fontSize: '13px',
             // Base colours tuned to match site palette
             background: 'transparent',
             primaryColor: isDark ? '#111827' : '#e7e1d8', // hsl(43,19%,90%)
@@ -166,7 +197,7 @@ export default function MermaidClient({
 
         if (elementRef.current) {
           // Clear any existing content
-          elementRef.current.innerHTML = "";
+          elementRef.current.innerHTML = '';
 
           // Generate unique ID for this diagram
           const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
@@ -178,9 +209,9 @@ export default function MermaidClient({
               if (fonts?.ready) {
                 await fonts.ready;
                 await Promise.all([
-                  fonts.load("13px var(--font-geist-mono)"),
+                  fonts.load('13px var(--font-geist-mono)'),
                   fonts.load("13px 'Geist Mono'"),
-                  fonts.load("700 13px var(--font-geist-mono)"),
+                  fonts.load('700 13px var(--font-geist-mono)'),
                 ]);
               } else {
                 await new Promise((r) => setTimeout(r, 50));
@@ -199,64 +230,66 @@ export default function MermaidClient({
             elementRef.current.innerHTML = svg;
 
             // Fix SVG viewBox to prevent text clipping
-            const svgElement = elementRef.current.querySelector("svg");
+            const svgElement = elementRef.current.querySelector('svg');
             if (svgElement) {
               // Safari-specific sizing improvements for full container width usage
               const ua = navigator.userAgent.toLowerCase();
-              const isSafari = ua.includes("safari") &&
-                !ua.includes("chrome") &&
-                !ua.includes("crios") &&
-                !ua.includes("android") &&
-                !ua.includes("edg") &&
-                !ua.includes("opr");
+              const isSafari =
+                ua.includes('safari') &&
+                !ua.includes('chrome') &&
+                !ua.includes('crios') &&
+                !ua.includes('android') &&
+                !ua.includes('edg') &&
+                !ua.includes('opr');
 
               // Get the current viewBox to maintain aspect ratio
-              const viewBox = svgElement.getAttribute("viewBox");
+              const viewBox = svgElement.getAttribute('viewBox');
               if (viewBox && isSafari) {
-                const [, , width, height] = viewBox.split(" ").map(Number);
+                const [, , width, height] = viewBox.split(' ').map(Number);
                 const aspectRatio = height / width;
-                
+
                 // Force Safari to use the full container width
-                svgElement.style.width = "100%";
+                svgElement.style.width = '100%';
                 svgElement.style.height = `${aspectRatio * 100}vw`;
                 svgElement.style.maxHeight = `${height}px`;
-                svgElement.style.minWidth = "100%";
-                svgElement.setAttribute("preserveAspectRatio", "xMidYMid meet");
+                svgElement.style.minWidth = '100%';
+                svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
               } else {
                 // Standard responsive sizing for other browsers
-                svgElement.setAttribute("preserveAspectRatio", "xMidYMin meet");
-                svgElement.style.width = "100%";
-                svgElement.style.height = "auto";
+                svgElement.setAttribute('preserveAspectRatio', 'xMidYMin meet');
+                svgElement.style.width = '100%';
+                svgElement.style.height = 'auto';
               }
-              
-              svgElement.style.maxWidth = "100%";
-              svgElement.style.marginLeft = "auto";
-              svgElement.style.marginRight = "auto";
-              svgElement.style.display = "block";
+
+              svgElement.style.maxWidth = '100%';
+              svgElement.style.marginLeft = 'auto';
+              svgElement.style.marginRight = 'auto';
+              svgElement.style.display = 'block';
 
               // Fix text elements that might be clipped
               const textElements = svgElement.querySelectorAll(
-                "text, tspan, foreignObject",
+                'text, tspan, foreignObject',
               );
               textElements.forEach((el: any) => {
-                el.style.overflow = "visible";
+                el.style.overflow = 'visible';
                 if (el.style.textOverflow) {
-                  el.style.textOverflow = "clip";
+                  el.style.textOverflow = 'clip';
                 }
               });
 
               // No CSS transform scaling; let viewBox handle responsiveness
-              svgElement.style.transform = "none";
-              svgElement.style.overflow = "visible";
+              svgElement.style.transform = 'none';
+              svgElement.style.overflow = 'visible';
 
               // Safari-specific label centre correction without CSS scaling
 
               if (isSafari) {
-                const nodes = svgElement.querySelectorAll<SVGGElement>(".node");
+                const nodes = svgElement.querySelectorAll<SVGGElement>('.node');
                 nodes.forEach((node) => {
-                  const text = node.querySelector<SVGTextElement>(".label text, text");
+                  const text =
+                    node.querySelector<SVGTextElement>('.label text, text');
                   const shape = node.querySelector<SVGGraphicsElement>(
-                    "rect, polygon, ellipse, circle, path",
+                    'rect, polygon, ellipse, circle, path',
                   );
                   if (!text || !shape) return;
 
@@ -264,14 +297,14 @@ export default function MermaidClient({
                   const cx = b.x + b.width / 2;
                   const cy = b.y + b.height / 2;
 
-                  text.removeAttribute("transform");
-                  text.removeAttribute("dx");
-                  text.removeAttribute("dy");
-                  text.setAttribute("x", `${cx}`);
-                  text.setAttribute("y", `${cy}`);
-                  text.setAttribute("text-anchor", "middle");
-                  text.setAttribute("dominant-baseline", "middle");
-                  (text.style as any).textAnchor = "middle";
+                  text.removeAttribute('transform');
+                  text.removeAttribute('dx');
+                  text.removeAttribute('dy');
+                  text.setAttribute('x', `${cx}`);
+                  text.setAttribute('y', `${cy}`);
+                  text.setAttribute('text-anchor', 'middle');
+                  text.setAttribute('dominant-baseline', 'middle');
+                  (text.style as any).textAnchor = 'middle';
                 });
               }
             }
@@ -280,10 +313,10 @@ export default function MermaidClient({
           }
         }
       } catch (err) {
-        console.error("Mermaid rendering error:", err);
+        console.error('Mermaid rendering error:', err);
         if (mounted) {
           setError(
-            err instanceof Error ? err.message : "Failed to render diagram",
+            err instanceof Error ? err.message : 'Failed to render diagram',
           );
         }
       }
@@ -328,14 +361,14 @@ export default function MermaidClient({
       )}
       <div
         ref={elementRef}
-        className={`mermaid-diagram flex justify-center ${!isLoaded ? "hidden" : ""}`}
+        className={`mermaid-diagram flex justify-center ${!isLoaded ? 'hidden' : ''}`}
         data-testid="mermaid"
         // Expose chart source as a data attribute for tests (TS-safe)
         data-chart={chart as any}
         style={{
-          width: "100%",
-          padding: "12px",
-          overflow: "visible",
+          width: '100%',
+          padding: '12px',
+          overflow: 'visible',
         }}
       />
     </div>

@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 
-export function usePrefetchOnView(url: string, options?: IntersectionObserverInit) {
+export function usePrefetchOnView(
+  url: string,
+  options?: IntersectionObserverInit,
+) {
   const containerRef = useRef<HTMLLIElement>(null);
   const hasPrefetched = useRef(false);
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -17,7 +20,7 @@ export function usePrefetchOnView(url: string, options?: IntersectionObserverIni
         threshold: 0.1, // Trigger when 10% visible
         rootMargin: '50px', // Start prefetching 50px before element enters viewport
         ...options,
-      }
+      },
     );
 
     observer.observe(element);
@@ -26,25 +29,25 @@ export function usePrefetchOnView(url: string, options?: IntersectionObserverIni
       observer.unobserve(element);
       observer.disconnect();
     };
-  }, [options, url]);
+  }, [options]);
 
   useEffect(() => {
     if (isIntersecting && !hasPrefetched.current) {
       hasPrefetched.current = true;
-      
+
       // Use fetch() for PDFs as browsers may not handle <link rel="prefetch"> for PDFs reliably
       fetch(url, {
         method: 'GET',
         mode: 'cors',
         cache: 'force-cache', // Use cache if available
-        priority: 'low' // Low priority prefetch
+        priority: 'low', // Low priority prefetch
       })
-      .then(response => {
-        // Response is cached automatically by browser
-      })
-      .catch(() => {
-        // Silently handle prefetch failures
-      });
+        .then((_response) => {
+          // Response is cached automatically by browser
+        })
+        .catch(() => {
+          // Silently handle prefetch failures
+        });
 
       // Also add the link element as fallback for browsers that support it
       const link = document.createElement('link');

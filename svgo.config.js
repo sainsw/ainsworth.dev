@@ -8,8 +8,8 @@ module.exports = {
           removeDimensions: false,
           removeXMLNS: false,
           cleanupIDs: false,
-        }
-      }
-    }
-  ]
+        },
+      },
+    },
+  ],
 };

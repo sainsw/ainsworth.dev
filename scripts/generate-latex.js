@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 console.log('📄 Generating LaTeX from resume data...');
 
@@ -16,7 +16,7 @@ function escapeLatex(text) {
     .replace(/&/g, '\\&')
     .replace(/%/g, '\\%')
     .replace(/\$/g, '\\$')
-    .replace(/#/g, '\\#')  
+    .replace(/#/g, '\\#')
     .replace(/_/g, '\\_')
     .replace(/\{/g, '\\{')
     .replace(/\}/g, '\\}')
@@ -25,8 +25,9 @@ function escapeLatex(text) {
 }
 
 function generatePersonalInfoSection(personalInfo) {
-  const { name, title, location, phone, email, linkedin, website } = personalInfo;
-  
+  const { name, title, location, phone, email, linkedin, website } =
+    personalInfo;
+
   return `%----------------------------------------------------------------------------------------
 %	TITLE AND CONTACT INFORMATION
 %----------------------------------------------------------------------------------------
@@ -61,25 +62,25 @@ function generatePersonalInfoSection(personalInfo) {
 
 function generateSummarySection(summary, skillCategories) {
   let skillsLatex = '';
-  
+
   skillCategories.forEach((category, index) => {
     const colWidth = index === 0 ? '0.25\\textwidth' : '0.3\\textwidth';
     const chartOffset = index === 0 ? '0' : '5';
-    
+
     skillsLatex += `\\begin{minipage}[t]{${colWidth}} % Skills column
 	\\vspace{-\\baselineskip} % Required for vertically aligning minipages
 	\\begin{barchart}{${chartOffset}}
 `;
-    
-    category.skills.forEach(skill => {
+
+    category.skills.forEach((skill) => {
       skillsLatex += `        \\baritem{\\texttt{${escapeLatex(skill)}}}{0}\n`;
     });
-    
+
     skillsLatex += `	\\end{barchart}
 \\end{minipage}`;
-    
+
     if (index < skillCategories.length - 1) {
-      skillsLatex += '\n\\hfill % Whitespace between\n';  
+      skillsLatex += '\n\\hfill % Whitespace between\n';
     }
   });
 
@@ -115,17 +116,21 @@ function generateExperienceSection(experience) {
 		{}
 		{\\vspace{-0.5cm}}`;
 
-  experience.forEach((job, index) => {
+  experience.forEach((job, _index) => {
     const location = job.location ? `, ${job.location}` : '';
     let techStack = '';
-    
+
     if (job.technologies.length > 0) {
-      const techItems = job.technologies.map(tech => `\\texttt{${escapeLatex(tech)}}`);
+      const techItems = job.technologies.map(
+        (tech) => `\\texttt{${escapeLatex(tech)}}`,
+      );
       techStack = `\\\\\\vspace{0.1cm}${techItems.join('\\slashsep')}`;
     }
-    
-    const descriptions = job.description.map(desc => escapeLatex(desc)).join('\\\\\\vspace{0.1cm}');
-    
+
+    const descriptions = job.description
+      .map((desc) => escapeLatex(desc))
+      .join('\\\\\\vspace{0.1cm}');
+
     experienceLatex += `
 
 \\vspace{0.6cm}
@@ -157,11 +162,14 @@ function generateEducationSection(education) {
 		{}
 		{\\vspace{-0.5cm}}`;
 
-  education.forEach((school, index) => {
+  education.forEach((school, _index) => {
     const degree = school.degree || '';
     const descriptions = school.description || [];
-    const descText = descriptions.length > 0 ? descriptions.map(desc => escapeLatex(desc)).join(' ') : '';
-    
+    const descText =
+      descriptions.length > 0
+        ? descriptions.map((desc) => escapeLatex(desc)).join(' ')
+        : '';
+
     educationLatex += `
 
 \\vspace{0.6cm}
@@ -185,14 +193,14 @@ function generateAdditionalInfoSection(nonTechnicalSkills, hobbies) {
 	\\vspace{-\\baselineskip} % Required for vertically aligning minipages
 
 	\\cvsect{Non-Technical Skills}\\\\
-	${nonTechnicalSkills.map(skill => escapeLatex(skill)).join('\\\\\\\\')}
+	${nonTechnicalSkills.map((skill) => escapeLatex(skill)).join('\\\\\\\\')}
 \\end{minipage}
 \\hfill
 \\begin{minipage}[t]{0.45\\textwidth}
 	\\vspace{-\\baselineskip} % Required for vertically aligning minipages
 	
 	\\cvsect{Hobbies}\\\\
-	 ${hobbies.map(hobby => escapeLatex(hobby)).join('\\\\\\\\')}
+	 ${hobbies.map((hobby) => escapeLatex(hobby)).join('\\\\\\\\')}
 \\end{minipage}`;
 }
 

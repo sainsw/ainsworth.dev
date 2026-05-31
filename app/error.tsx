@@ -2,9 +2,8 @@
 
 import { useEffect } from 'react';
 
-export default function Error({
+export default function ErrorBoundary({
   error,
-  reset,
 }: {
   error: Error;
   reset: () => void;

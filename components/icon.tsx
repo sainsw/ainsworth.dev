@@ -5,38 +5,52 @@ interface IconProps extends React.SVGProps<SVGSVGElement> {
 }
 
 // Logos that should use PNG/WebP files instead of sprite
-const PNG_LOGOS = new Set(["westhill", "whsmith"]);
+const PNG_LOGOS = new Set(['westhill', 'whsmith']);
 
 // Logos that should use SVG files with theme support instead of sprite
 const THEME_SVG_LOGOS: Record<string, { light: string; dark: string }> = {
   uol: {
-    light: "/images/logos/uol_light_mode.svg",
-    dark: "/images/logos/uol_dark_mode.svg",
+    light: '/images/logos/uol_light_mode.svg',
+    dark: '/images/logos/uol_dark_mode.svg',
   },
 };
 
 // Logos that should use image files with brand colours instead of sprite
-const BRAND_COLOR_LOGOS = new Set(["dotnet", "azure"]);
+const BRAND_COLOR_LOGOS = new Set(['dotnet', 'azure']);
 
-import { SPRITE_VERSION } from "../lib/version";
+import { SPRITE_VERSION } from '../lib/version';
 
 export function Icon({
   id,
   size = 16,
-  className = "",
+  className = '',
   decorative = false,
   ...props
 }: IconProps) {
   // Allow callers to specify only height or only width; if neither provided, use size for both.
-  const { width: widthProp, height: heightProp, ...restProps } = props as {
+  const {
+    width: widthProp,
+    height: heightProp,
+    ...restProps
+  } = props as {
     width?: number | string;
     height?: number | string;
   } & React.SVGProps<SVGSVGElement>;
 
-  const widthAttr = widthProp !== undefined ? widthProp : heightProp !== undefined ? undefined : size;
-  const heightAttr = heightProp !== undefined ? heightProp : widthProp !== undefined ? undefined : size;
+  const widthAttr =
+    widthProp !== undefined
+      ? widthProp
+      : heightProp !== undefined
+        ? undefined
+        : size;
+  const heightAttr =
+    heightProp !== undefined
+      ? heightProp
+      : widthProp !== undefined
+        ? undefined
+        : size;
 
-  const altText = decorative ? "" : `${id} logo`;
+  const altText = decorative ? '' : `${id} logo`;
   const svgClassName = className;
   // Use PNG/WebP fallback for certain logos
   if (PNG_LOGOS.has(id)) {
@@ -52,7 +66,7 @@ export function Icon({
           width={widthAttr}
           height={heightAttr}
           className={className}
-          style={{ objectFit: "contain" }}
+          style={{ objectFit: 'contain' }}
         />
       </picture>
     );
@@ -64,16 +78,15 @@ export function Icon({
     const targetHeight = heightProp ?? widthProp ?? size;
     const targetWidth = widthProp ?? heightProp ?? size;
     const roundedHeight =
-      typeof targetHeight === "number" ? Math.round(targetHeight) : targetHeight;
+      typeof targetHeight === 'number'
+        ? Math.round(targetHeight)
+        : targetHeight;
     const roundedWidth =
-      typeof targetWidth === "number" ? Math.round(targetWidth) : targetWidth;
+      typeof targetWidth === 'number' ? Math.round(targetWidth) : targetWidth;
 
     return (
       <picture>
-        <source
-          srcSet={themeLogo.dark}
-          media="(prefers-color-scheme: dark)"
-        />
+        <source srcSet={themeLogo.dark} media="(prefers-color-scheme: dark)" />
         <img
           src={themeLogo.light}
           alt={altText}
@@ -81,7 +94,7 @@ export function Icon({
           height={roundedHeight}
           className={className}
           style={{
-            objectFit: "contain",
+            objectFit: 'contain',
             width: roundedWidth,
             height: roundedHeight,
           }}
@@ -92,7 +105,7 @@ export function Icon({
 
   // Use brand colour images for certain logos (instead of currentColor sprites)
   if (BRAND_COLOR_LOGOS.has(id)) {
-    const fileExtension = id === "azure" ? "ico" : "jpg";
+    const fileExtension = id === 'azure' ? 'ico' : 'jpg';
     return (
       <picture>
         <source srcSet={`/images/logos/${id}.webp`} type="image/webp" />
@@ -102,7 +115,7 @@ export function Icon({
           width={widthAttr}
           height={heightAttr}
           className={className}
-          style={{ objectFit: "contain" }}
+          style={{ objectFit: 'contain' }}
         />
       </picture>
     );
@@ -115,9 +128,9 @@ export function Icon({
   let svgHeight: number | string | undefined = heightAttr;
 
   if (ratio) {
-    if (svgWidth === undefined && typeof svgHeight === "number") {
+    if (svgWidth === undefined && typeof svgHeight === 'number') {
       svgWidth = svgHeight * ratio;
-    } else if (svgHeight === undefined && typeof svgWidth === "number") {
+    } else if (svgHeight === undefined && typeof svgWidth === 'number') {
       svgHeight = svgWidth / ratio;
     }
   }
@@ -128,7 +141,7 @@ export function Icon({
       height={svgHeight}
       className={svgClassName}
       aria-label={decorative ? undefined : altText}
-      role={decorative ? "presentation" : "img"}
+      role={decorative ? 'presentation' : 'img'}
       {...(restProps as React.SVGProps<SVGSVGElement>)}
     >
       <use href={`/sprite.svg?v=${SPRITE_VERSION}#${id}`} />
@@ -139,11 +152,11 @@ export function Icon({
 // Aspect ratios for specific sprite symbols (viewBox width / height)
 function getSpriteAspectRatio(id: string): number | undefined {
   switch (id) {
-    case "ibm":
+    case 'ibm':
       return 58 / 23;
-    case "musicmagpie":
+    case 'musicmagpie':
       return 91 / 91; // square viewBox
-    case "bott":
+    case 'bott':
       return 244.8 / 244.8; // square viewBox
     default:
       return undefined;
@@ -152,10 +165,10 @@ function getSpriteAspectRatio(id: string): number | undefined {
 
 function getLogoFilename(id: string): string {
   switch (id) {
-    case "westhill":
-      return "wh";
-    case "whsmith":
-      return "whs";
+    case 'westhill':
+      return 'wh';
+    case 'whsmith':
+      return 'whs';
     default:
       return id;
   }

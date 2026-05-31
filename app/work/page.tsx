@@ -1,14 +1,21 @@
-"use client";
-import Link from 'next/link';
+'use client';
 import { ArrowIcon } from '../components/arrow-icon';
 import { Icon } from '../../components/icon';
 import { usePrefetchOnView } from '../hooks/use-prefetch-on-view';
 import { CV_VERSION } from '../../lib/version';
 import resumeData from '../../data/resume.json';
 
-function ExperienceCard({ name, dates, post, description, iconId, url, technologies = [] }: {
+function ExperienceCard({
+  name,
+  dates,
+  post,
+  description,
+  iconId,
+  url,
+  technologies = [],
+}: {
   name: string;
-  dates: string; 
+  dates: string;
   post: string;
   description?: string[];
   iconId: string;
@@ -22,12 +29,8 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
           <p className="text-lg font-medium text-foreground tracking-tight">
             {name}
           </p>
-          <p className="text-base italic text-muted-foreground">
-            {post}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {dates}
-          </p>
+          <p className="text-base italic text-muted-foreground">{post}</p>
+          <p className="text-sm text-muted-foreground">{dates}</p>
         </div>
         <div className="flex-shrink-0">
           {url ? (
@@ -46,16 +49,21 @@ function ExperienceCard({ name, dates, post, description, iconId, url, technolog
         </div>
       </div>
 
-      {(description && description.length > 0) && (
+      {description && description.length > 0 && (
         <div className="space-y-2">
           {description.map((desc, index) => (
-            <p key={index} className="text-base text-foreground leading-relaxed">{desc}</p>
+            <p
+              key={index}
+              className="text-base text-foreground leading-relaxed"
+            >
+              {desc}
+            </p>
           ))}
           {technologies && technologies.length > 0 && (
             <div className="mt-3 pt-3 border-t border-border">
               <p className="text-xs text-muted-foreground italic">
                 {technologies.join(' • ')}
-              </p>  
+              </p>
             </div>
           )}
         </div>
@@ -85,20 +93,26 @@ function SkillCloud({ skills }: { skills: string[] }) {
 export default function Page() {
   const cvUrl = `/files/cv-${CV_VERSION}.pdf`;
   const cvLinkRef = usePrefetchOnView(cvUrl);
-  
+
   // Combine all skills for word cloud
-  const allSkills = resumeData.skillCategories.flatMap(category => category.skills);
-  
+  const allSkills = resumeData.skillCategories.flatMap(
+    (category) => category.skills,
+  );
+
   return (
     <section>
       {/* Skills Cloud Section */}
       <div className="mb-12">
-        <h2 className="font-medium text-2xl mb-6 tracking-tighter">skills & technologies 💻</h2>
+        <h2 className="font-medium text-2xl mb-6 tracking-tighter">
+          skills & technologies 💻
+        </h2>
         <SkillCloud skills={allSkills} />
       </div>
 
       <div className="mt-12">
-        <h2 className="font-medium text-2xl mb-6 tracking-tighter">work 👨‍💻</h2>
+        <h2 className="font-medium text-2xl mb-6 tracking-tighter">
+          work 👨‍💻
+        </h2>
         <div className="flex flex-col gap-4">
           {resumeData.experience.map((job, index) => (
             <ExperienceCard
@@ -116,7 +130,9 @@ export default function Page() {
       </div>
 
       <div className="mt-12">
-        <h2 className="font-medium text-2xl mb-6 tracking-tighter">education 👨‍🎓</h2>
+        <h2 className="font-medium text-2xl mb-6 tracking-tighter">
+          education 👨‍🎓
+        </h2>
         <div className="flex flex-col gap-4">
           {resumeData.education.map((school, index) => (
             <ExperienceCard
@@ -133,11 +149,16 @@ export default function Page() {
       </div>
 
       <div className="mt-12">
-        <h2 className="font-medium text-2xl mb-6 tracking-tighter">non-technical skills 🤝</h2>
+        <h2 className="font-medium text-2xl mb-6 tracking-tighter">
+          non-technical skills 🤝
+        </h2>
         <div className="border border-border bg-card ring-1 ring-foreground/10 px-4 py-5">
           <ul className="space-y-2">
             {resumeData.nonTechnicalSkills.map((skill, index) => (
-              <li key={index} className="text-base text-foreground leading-relaxed">
+              <li
+                key={index}
+                className="text-base text-foreground leading-relaxed"
+              >
                 {skill}
               </li>
             ))}
@@ -146,11 +167,16 @@ export default function Page() {
       </div>
 
       <div className="mt-12">
-        <h2 className="font-medium text-2xl mb-6 tracking-tighter">hobbies 🎨</h2>
+        <h2 className="font-medium text-2xl mb-6 tracking-tighter">
+          hobbies 🎨
+        </h2>
         <div className="border border-border bg-card ring-1 ring-foreground/10 px-4 py-5">
           <div className="space-y-2">
             {resumeData.hobbies.map((hobby, index) => (
-              <p key={index} className="text-base text-foreground leading-relaxed">
+              <p
+                key={index}
+                className="text-base text-foreground leading-relaxed"
+              >
                 {hobby}
               </p>
             ))}

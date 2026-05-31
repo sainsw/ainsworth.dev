@@ -31,7 +31,7 @@ const nextConfig = {
       return [];
     }
 
-    let redirects = await sql`
+    const redirects = await sql`
       SELECT source, destination, permanent
       FROM redirects;
     `;
@@ -47,37 +47,55 @@ const nextConfig = {
       {
         source: '/images/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
         ],
       },
       {
         source: '/sprite.svg',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
         ],
       },
       {
         source: '/_next/static/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
         ],
       },
       {
         source: '/fonts/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
         ],
       },
       {
         source: '/files/cv-:version.pdf',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }, // 1 year for versioned files
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          }, // 1 year for versioned files
         ],
       },
       {
         source: '/files/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=86400, must-revalidate' }, // 24 hours for non-versioned files
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, must-revalidate',
+          }, // 24 hours for non-versioned files
         ],
       },
       {
@@ -88,7 +106,8 @@ const nextConfig = {
   },
 };
 
-const unsafeEvalSource = process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : '';
+const unsafeEvalSource =
+  process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : '';
 
 const ContentSecurityPolicy = `
     default-src 'self' vercel.live;

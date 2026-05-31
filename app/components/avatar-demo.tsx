@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { AVATAR_VERSION } from "../../lib/version";
+import { AVATAR_VERSION } from '../../lib/version';
 
 interface AvatarDemoProps {
   className?: string;
 }
 
-export function AvatarDemo({ className = "" }: AvatarDemoProps) {
+export function AvatarDemo({ className = '' }: AvatarDemoProps) {
   return (
     <div
       className={`flex flex-row items-center justify-between my-8 px-8 ${className}`}
@@ -30,9 +30,7 @@ export function AvatarDemo({ className = "" }: AvatarDemoProps) {
         </div>
         <div className="text-center">
           <p className="font-medium text-sm">Normal Border</p>
-          <p className="text-xs text-muted-foreground">
-            Most of the year
-          </p>
+          <p className="text-xs text-muted-foreground">Most of the year</p>
         </div>
       </div>
 

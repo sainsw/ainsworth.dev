@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
-const path = require("path");
-const { fetchAndProcessAvatar, writeOutputs } = require("avatar-fetcher");
+const fs = require('node:fs');
+const path = require('node:path');
+const { fetchAndProcessAvatar, writeOutputs } = require('avatar-fetcher');
 
-console.log("🖼️  Fetching GitHub avatar...");
+console.log('🖼️  Fetching GitHub avatar...');
 
-const GITHUB_USERNAME = "sainsw";
-const OUTPUT_DIR = path.join(__dirname, "..", "public", "images", "home");
-const VERSION_FILE_PATH = path.join(__dirname, "..", "lib", "version.js");
+const GITHUB_USERNAME = 'sainsw';
+const OUTPUT_DIR = path.join(__dirname, '..', 'public', 'images', 'home');
+const VERSION_FILE_PATH = path.join(__dirname, '..', 'lib', 'version.js');
 
 const ensureOutputDir = () => {
   if (!fs.existsSync(OUTPUT_DIR)) {
@@ -22,20 +22,20 @@ const updateVersionFile = (avatarHash) => {
       fs.mkdirSync(path.dirname(VERSION_FILE_PATH), { recursive: true });
     }
 
-    let versionContent = "";
+    let versionContent = '';
     if (fs.existsSync(VERSION_FILE_PATH)) {
-      versionContent = fs.readFileSync(VERSION_FILE_PATH, "utf8");
+      versionContent = fs.readFileSync(VERSION_FILE_PATH, 'utf8');
     }
 
-    if (versionContent.includes("AVATAR_VERSION")) {
+    if (versionContent.includes('AVATAR_VERSION')) {
       versionContent = versionContent.replace(
         /export const AVATAR_VERSION = '[^']*';/,
         `export const AVATAR_VERSION = '${avatarHash}';`,
       );
     } else {
-      const lines = versionContent.split("\n");
+      const lines = versionContent.split('\n');
       const lastExportIndex = lines.findLastIndex((line) =>
-        line.startsWith("export const"),
+        line.startsWith('export const'),
       );
       if (lastExportIndex !== -1) {
         lines.splice(
@@ -46,7 +46,7 @@ const updateVersionFile = (avatarHash) => {
       } else {
         lines.push(`export const AVATAR_VERSION = '${avatarHash}';`);
       }
-      versionContent = lines.join("\n");
+      versionContent = lines.join('\n');
     }
 
     fs.writeFileSync(VERSION_FILE_PATH, versionContent);
@@ -61,12 +61,12 @@ const getExistingAvatarHash = () => {
   const files = fs.readdirSync(OUTPUT_DIR);
   const avatarFiles = files.filter(
     (file) =>
-      file.startsWith("avatar-") &&
-      (file.endsWith(".jpg") || file.endsWith(".webp")),
+      file.startsWith('avatar-') &&
+      (file.endsWith('.jpg') || file.endsWith('.webp')),
   );
 
   const preferredFile =
-    avatarFiles.find((f) => f.endsWith(".jpg")) || avatarFiles[0];
+    avatarFiles.find((f) => f.endsWith('.jpg')) || avatarFiles[0];
 
   if (!preferredFile) return null;
 
@@ -81,17 +81,17 @@ async function fetchGitHubAvatar() {
       username: GITHUB_USERNAME,
       size: 400,
       outputs: [
-        { format: "webp", width: 200, height: 200, quality: 85 },
-        { format: "jpeg", width: 200, height: 200, quality: 90 },
+        { format: 'webp', width: 200, height: 200, quality: 85 },
+        { format: 'jpeg', width: 200, height: 200, quality: 90 },
       ],
-      baseName: "avatar",
+      baseName: 'avatar',
     });
 
     await writeOutputs(result.outputs, OUTPUT_DIR);
     await updateVersionFile(result.hash);
     console.log(`🎉 Avatar updated successfully (hash: ${result.hash})`);
   } catch (error) {
-    console.log("ℹ️  Avatar fetch failed, using existing files");
+    console.log('ℹ️  Avatar fetch failed, using existing files');
     console.log(`   Reason: ${error.message}`);
 
     const existingHash = getExistingAvatarHash();
@@ -105,7 +105,7 @@ async function fetchGitHubAvatar() {
       await updateVersionFile(existingHash);
     } else {
       console.error(
-        "💥 No avatar files found! Please ensure avatar files exist in public/images/home/",
+        '💥 No avatar files found! Please ensure avatar files exist in public/images/home/',
       );
       process.exit(1);
     }
