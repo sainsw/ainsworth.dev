@@ -6,7 +6,7 @@
 
 <p>I spent today doing the sort of “one-inch-deep, one-mile-wide” work that quietly makes a site feel faster, sturdier, and easier to evolve. The goal: modernize the stack, fix a visual jolt on the Work page, and keep the UI aesthetic intact.</p>
 <p>Along the way I leaned on Codex + GPT‑5 like a reliable pairing partner — fast at automation, steady on the guard‑rails, and surprisingly good at spotting the boring stuff I’d normally put off.</p>
-<h3>The Upgrades (and why they matter)</h3>
+<h2>The Upgrades (and why they matter)</h2>
 <ul>
 <li>React 19 + Next 15.5: Unlocks the latest server action ergonomics (<code>useActionState</code>), better dev ergonomics, and compatibility with modern libraries.</li>
 <li>Tailwind CSS 4: Smaller, faster CSS with a more predictable palette; requires some PostCSS and config changes.</li>
@@ -14,7 +14,7 @@
 <li>Node 22 in Vercel: Consistent runtime across local/CI/build; fewer “engine mismatch” surprises.</li>
 <li>Vercel Speed Insights: Bumped to the latest (^1.2.0) and loaded cleanly.</li>
 </ul>
-<h3>The “oh, that’s why” moments</h3>
+<h2>The “oh, that’s why” moments</h2>
 <ol>
 <li>
 <p>CLS on the Work page was self‑inflicted. A “non‑blocking CSS” trick that flipped <code>media=print</code> was causing FOUC and layout shift. We removed it and let Next do its thing. Instant calm.</p>
@@ -36,12 +36,12 @@
 </ul>
 </li>
 </ol>
-<h3>The refactors that paid off</h3>
+<h2>The refactors that paid off</h2>
 <ul>
 <li>Contact form: switched to React 19’s <code>useActionState</code> + server actions. No more “invalid action prop” warning, cleaner intent.</li>
 <li>Theming: standardized on the site’s neutral palette and dark‑mode variables; borders, cards, and pills now read clearly in both themes.</li>
 </ul>
-<h3>What Codex + GPT‑5 did well</h3>
+<h2>What Codex + GPT‑5 did well</h2>
 <p>Think of it like an extremely diligent junior engineer who:</p>
 <ul>
 <li>Sweeps the repo quickly for semantic changes (e.g. all <code>neutral-*</code> vs <code>gray-*</code> classes),</li>
@@ -51,20 +51,20 @@
 </ul>
 <p>If you’re curious about how I use AI on real projects, I wrote about the workflow in
 my post on <a href="/blog/ai-coding-tools">AI Coding Tools</a> and why I reserve human attention for the creative bits.</p>
-<h3>What I’d improve next</h3>
+<h2>What I’d improve next</h2>
 <ul>
 <li>A small design pass on dark‑mode link contrast to make hover states feel even more intentional.</li>
 <li>A Lighthouse/Speed Insights sweep to quantify the CLS and style fixes.</li>
 <li>A short visual regression checklist for Tailwind v4 migrations.</li>
 </ul>
-<h3>Takeaways</h3>
+<h2>Takeaways</h2>
 <ul>
 <li>Upgrade in thin slices, validate, and keep the look. Framework changes shouldn’t force style regressions.</li>
 <li>Use AI to move the furniture — not choose it. Let tools automate the repeatable changes while you keep taste and intent.</li>
 <li>Boring builds are a feature. Pin Node, fix PostCSS, keep types happy, and your pipeline becomes a non‑event.</li>
 </ul>
 <p>Shipping small, correct, and calm beats shipping flashy and fragile every day of the week. Today felt like the former — and that’s a good day.</p>
-<h3>Update — Tailwind 4 follow‑up (2025‑09‑27)</h3>
+<h2>Update — Tailwind 4 follow‑up (2025‑09‑27)</h2>
 <p>After publishing, I finished the Tailwind v4 migration with two fixes that might save you time:</p>
 <ul>
 <li>

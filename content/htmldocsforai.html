@@ -6,7 +6,7 @@
 
 <p>If you are letting an AI agent maintain your docs, you are picking a format on its behalf — and Markdown is the wrong default.</p>
 <p>I have spent the last several months using <strong>Claude Code</strong>, <strong>GitHub Copilot</strong> and <strong>OpenAI Codex</strong> to write and maintain documentation across a handful of repos. The pattern keeps repeating: the models are noticeably better at editing <strong>HTML</strong> than they are at editing <strong>Markdown</strong>, and the gap shows up exactly where it hurts the most — long-lived, frequently-edited docs.</p>
-<h3>Markdown looks simple. That is the problem.</h3>
+<h2>Markdown looks simple. That is the problem.</h2>
 <p>Markdown's appeal is that it is "just text." But the rules are surprisingly fiddly when an LLM is doing surgery on a 600-line file:</p>
 <ul>
 <li>Indentation inside a nested list item must be exactly two or four spaces, and getting it wrong silently breaks rendering.</li>
@@ -15,7 +15,7 @@
 <li>Inline HTML, code fences, and Markdown syntax interact in ways that even experienced humans get wrong.</li>
 </ul>
 <p>When a model makes a small edit to Markdown, the failure modes are <em>invisible</em> until you render the page. The diff looks fine. The tests (if you have any) still pass. The output is subtly broken.</p>
-<h3>HTML is verbose, and that is exactly why models do better with it</h3>
+<h2>HTML is verbose, and that is exactly why models do better with it</h2>
 <p>HTML's tags are explicit. Every container has an opening and closing marker. There is no whitespace-sensitive syntax. There are no positional tokens. A model editing HTML has unambiguous structural anchors to work against:</p>
 <pre><code class="language-html">&lt;section id="install"&gt;
   &lt;h2&gt;Installation&lt;/h2&gt;
@@ -27,7 +27,7 @@
 </code></pre>
 <p>Ask Claude Code to "add a step about environment variables after the install step" and it will reliably insert a new <code>&lt;li&gt;</code> inside the right <code>&lt;ol&gt;</code>. Ask it to do the same in a Markdown list and you are at the mercy of indentation, blank lines, and whatever the surrounding context happens to be.</p>
 <p>The verbosity that humans find tedious is the same verbosity that gives a model <strong>landmarks</strong>. Tags are self-describing. <code>id</code> and <code>class</code> attributes give the agent stable handles to target. Nothing is implicit.</p>
-<h3>Real wins I have seen</h3>
+<h2>Real wins I have seen</h2>
 <p>A few concrete examples from my own workflow:</p>
 <ul>
 <li><strong>Surgical edits in long pages.</strong> "Update the third example in the Caching section" succeeds first-try on an HTML doc. On the Markdown equivalent, the model often touches the wrong heading because it is counting <code>##</code> instances.</li>
@@ -35,10 +35,10 @@
 <li><strong>Code samples next to prose.</strong> HTML's <code>&lt;pre&gt;&lt;code&gt;</code> is unambiguous. Markdown code fences inside list items inside blockquotes are a parser's nightmare, and models hallucinate the right number of backticks.</li>
 <li><strong>Diffs review better.</strong> A pull request that adds a <code>&lt;li&gt;</code> is obvious. A pull request that adds a Markdown bullet sometimes also re-indents the siblings, and the reviewer cannot tell whether the indentation change is intentional.</li>
 </ul>
-<h3>"But Markdown is what everyone uses"</h3>
+<h2>"But Markdown is what everyone uses"</h2>
 <p>It is, and that is fine for human-authored READMEs and short notes. Markdown was designed for humans typing in plain text, not for a model performing structural edits at scale. If your docs site is mostly maintained by an AI agent — and increasingly mine is — you should optimise for the editor doing the work.</p>
 <p>You also do not lose much. Most static site generators (including the one this blog runs on) happily render HTML inline. You can move file-by-file. You keep the Markdown you have, and let any doc you ask an LLM to maintain live as <code>.html</code>.</p>
-<h3>My new rule of thumb</h3>
+<h2>My new rule of thumb</h2>
 <blockquote>
 <p><strong>If a human writes it once, Markdown is fine. If an AI agent will keep editing it, write it in HTML.</strong></p>
 </blockquote>
@@ -47,5 +47,5 @@
 <blockquote>
 <p><strong>Pro Tip:</strong> Try it on your gnarliest doc. Convert one long Markdown page to HTML and run a week's worth of AI edits against both versions. The error rate gap will surprise you.</p>
 </blockquote>
-<h3>Update: this site now runs on HTML</h3>
+<h2>Update: this site now runs on HTML</h2>
 <p>Since writing this post, I migrated every blog post on this site from MDX to plain HTML — eating my own dog food. The content files live as <code>.html</code> in the repo and are read at request time by Next.js, with syntax highlighting and Mermaid diagrams handled at render time. The edit experience with AI tools is noticeably smoother.</p>

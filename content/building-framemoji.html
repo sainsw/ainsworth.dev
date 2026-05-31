@@ -6,7 +6,7 @@
 
 <p>I wanted a small, joyful project I could iterate on quickly — something shippable in a day that still left room for polish. Enter Framemoji: a daily movie guessing game where you decode a film in up to ten emojis. Play it at <a href="https://framemoji.ainsworth.dev">https://framemoji.ainsworth.dev</a>.</p>
 <p>It started simple (“one page, one API”), and then quality‑of‑life requests pushed it into a surprisingly complete product: robust matching, a histogram with popular guesses, UTC midnight rotation, a keyboard‑only flow, and production‑ready stats.</p>
-<h3>What I built</h3>
+<h2>What I built</h2>
 <ul>
 <li>Daily game mode: everyone plays the same movie per day; it flips at 00:00 UTC.</li>
 <li>Ten emoji clues: one per wrong guess; solve earlier, score higher (10 → 1).</li>
@@ -17,9 +17,9 @@
 <li>Answer poster: after you finish, the results panel can show the movie poster (via TMDB) if <code>NEXT_PUBLIC_TMDB_IMAGE_BASE</code> is configured.</li>
 <li>Dev tools: when no secret is set, the UI shows the answer, a “Pin today’s puzzle” form for local testing, and a “clear local data” button.</li>
 </ul>
-<h3>Why it was fun</h3>
+<h2>Why it was fun</h2>
 <p>The mechanic is familiar, but emojis force visual storytelling. Picking clues that are vague → obvious makes the “aha” satisfying — and you can feel the tension climb as the grid fills.</p>
-<h3>Technical bits that mattered</h3>
+<h2>Technical bits that mattered</h2>
 <ol>
 <li>
 <p>App Router + lean client components</p>
@@ -55,7 +55,7 @@
 </ul>
 </li>
 </ol>
-<h3>UX polish that paid off</h3>
+<h2>UX polish that paid off</h2>
 <ul>
 <li>Keyboard‑first flow: input autofocus, arrow navigation, Enter submits the highlighted suggestion, query resets selection to the top.</li>
 <li>Emoji histogram labels: the x‑axis uses the actual reveal emojis (plus ❌) at a larger size.</li>
@@ -63,7 +63,7 @@
 <li>Copy that matches reality: “You’re better than X% of players today.”</li>
 <li>Accessible by design: combobox semantics and listbox roles for suggestions, live regions for wrong‑guess feedback and clue changes, focus management on finish, and a “Skip to content” link.</li>
 </ul>
-<h3>Infra &#x26; data</h3>
+<h2>Infra &#x26; data</h2>
 <ol>
 <li>
 <p>Hybrid stats backend</p>
@@ -106,7 +106,7 @@
 </ul>
 </li>
 </ol>
-<h3>A few bugs I enjoyed fixing</h3>
+<h2>A few bugs I enjoyed fixing</h2>
 <ul>
 <li>Emoji reveal slicing initially split ZWJ sequences in half; <code>Intl.Segmenter</code> fixed it.</li>
 <li>Hydration mismatch on streaks (server 0/0 vs client localStorage): render placeholders until mount.</li>
@@ -114,14 +114,14 @@
 <li>Histogram 10 vs ❌ confusion: fail bucket now uses a separate sentinel (0) so the tenth emoji bar isn’t conflated with failures.</li>
 <li>Baseline jitters: normalized inline emoji sizing for title lines and the grid.</li>
 </ul>
-<h3>What I’d improve next</h3>
+<h2>What I’d improve next</h2>
 <ul>
 <li>Serve a daily share card (OG image) showing your reveal step and an emoji strip.</li>
 <li>Soft rate limiting (per IP) on guess/finish endpoints via KV tokens.</li>
 <li>A tiny “today’s winner” section with a few of the most frequent wrong guesses — tasteful only.</li>
 <li>Expand the dataset and add a human review pass for clue quality.</li>
 </ul>
-<h3>Takeaways</h3>
+<h2>Takeaways</h2>
 <ul>
 <li>Crisp mechanics beat big scope. One daily, one movie, ten clues — that’s enough to feel complete.</li>
 <li>The last 20% is the difference: keyboard flow, emoji sizing, baseline alignment, and copy choices made this feel delightful.</li>
