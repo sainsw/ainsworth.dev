@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { BlogContent } from '@/components/blog-content';
 import { ViewTracker } from '@/components/view-tracker';
@@ -58,14 +57,11 @@ export async function generateMetadata({
   };
 }
 
-async function formatDate(date: string) {
-  await connection();
-  return `${formatLongDate(date)} (${formatRelativeDate(date)})`;
-}
-
-async function FormattedDate({ date }: { date: string }) {
+function FormattedDate({ date }: { date: string }) {
   return (
-    <p className="text-sm text-muted-foreground">{await formatDate(date)}</p>
+    <p className="text-sm text-muted-foreground">
+      {formatLongDate(date)} ({formatRelativeDate(date)})
+    </p>
   );
 }
 

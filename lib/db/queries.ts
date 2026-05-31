@@ -1,17 +1,13 @@
 import 'server-only';
-import { connection } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { sql } from './postgres';
 
-export async function getViewsCount(): Promise<
+export const getViewsCount: () => Promise<
   { slug: string; count: number }[]
-> {
-  if (!process.env.DATABASE_URL) {
-    return [];
-  }
-
-  await connection();
-  return sql`
-    SELECT slug, count
-    FROM views
-  `;
-}
+> = process.env.DATABASE_URL
+  ? unstable_cache(
+      () => sql`SELECT slug, count FROM views`,
+      ['views-count'],
+      { revalidate: 300 },
+    )
+  : () => Promise.resolve([]);
