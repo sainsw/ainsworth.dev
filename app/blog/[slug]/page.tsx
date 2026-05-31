@@ -9,6 +9,10 @@ import { getViewsCount } from '@/lib/db/queries';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import ViewCounter from '../view-counter';
 
+export async function generateStaticParams() {
+  return getBlogPosts().map((post) => ({ slug: post.slug }));
+}
+
 export async function generateMetadata({
   params,
 }: {

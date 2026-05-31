@@ -1,7 +1,9 @@
+import dynamic from 'next/dynamic';
 import { parseHTML } from 'linkedom';
 import { highlight } from 'sugar-high';
 import { AvatarDemo } from './avatar-demo';
-import MermaidClient from './mermaid-client';
+
+const MermaidClient = dynamic(() => import('./mermaid-client'));
 
 function slugify(str: string) {
   return str
