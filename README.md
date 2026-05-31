@@ -31,7 +31,7 @@ The `predev` hook runs [`scripts/ensure-env.js`](scripts/ensure-env.js), which c
 
 | Variable | Used for |
 | --- | --- |
-| `DATABASE_URL` / `DATABASE_URL_NON_POOLING` | Postgres (blog views, redirects). Left empty, DB-backed routes no-op. |
+| `DATABASE_URL` | Postgres (blog views, redirects). Left empty, DB-backed routes no-op. |
 | `RESEND_SECRET` | Sending the contact form email via Resend |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile on the contact form |
 | `NEXT_PUBLIC_GET_IN_TOUCH` | Contact link |
@@ -41,7 +41,7 @@ The `predev` hook runs [`scripts/ensure-env.js`](scripts/ensure-env.js), which c
 | Script | Description |
 | --- | --- |
 | `npm run dev` | Start the dev server (Turbopack) |
-| `npm run build` | Production build (fetches avatar, generates version + CV, runs `next build`) |
+| `npm run build` | Production build (refreshes avatar, generates version + CV, runs `next build`) |
 | `npm run lint` | Biome lint |
 | `npm run format` | Biome format (`format:check` to verify only) |
 | `npm run typecheck` | `tsc --noEmit` |
@@ -57,19 +57,8 @@ The `predev` hook runs [`scripts/ensure-env.js`](scripts/ensure-env.js), which c
 
 ## Database schema
 
-```sql
-CREATE TABLE redirects (
-  id SERIAL PRIMARY KEY,
-  source VARCHAR(255) NOT NULL,
-  destination VARCHAR(255) NOT NULL,
-  permanent BOOLEAN NOT NULL
-);
-
-CREATE TABLE views (
-  slug VARCHAR(255) PRIMARY KEY,
-  count INT NOT NULL
-);
-```
+Apply [`db/migrations/001_initial.sql`](db/migrations/001_initial.sql) to create
+the redirects and blog-view tables.
 
 ## CV
 

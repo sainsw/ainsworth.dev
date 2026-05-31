@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
 
 // Unmock the blog module for integration testing
-vi.unmock('../app/db/blog');
-import { getBlogPosts } from '../app/db/blog';
+vi.unmock('../lib/content/blog');
+import { getBlogPosts } from '../lib/content/blog';
 
 describe('Integration Tests', () => {
   it('should load real blog posts from content directory', () => {

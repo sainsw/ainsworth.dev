@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 describe('OG Image Route', () => {
   it('returns 404 when post not found', async () => {
-    vi.doMock('../app/db/blog', () => ({ getBlogPosts: vi.fn(() => []) }));
+    vi.doMock('../lib/content/blog', () => ({ getBlogPosts: vi.fn(() => []) }));
     const { GET } = await import('../app/api/og/[slug]/route');
 
     const res = await GET(
@@ -13,7 +13,7 @@ describe('OG Image Route', () => {
   });
 
   it('returns a non-404 response when post exists', async () => {
-    vi.doMock('../app/db/blog', () => ({
+    vi.doMock('../lib/content/blog', () => ({
       getBlogPosts: vi.fn(() => [
         {
           slug: 'hello',

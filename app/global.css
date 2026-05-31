@@ -377,17 +377,6 @@ table {
     clip-path: none !important;
 }
 
-/* Sandpack - brutalist styling (no rounded corners) */
-.sp-wrapper,
-.sp-layout,
-.sp-stack,
-.sp-preview-container,
-.sp-code-editor,
-.sp-preview {
-    --sp-border-radius: 0 !important;
-    border-radius: 0 !important;
-}
-
 /* Mermaid diagram container - brutalist styling */
 .mermaid-diagram {
     border: none;

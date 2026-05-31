@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import BlogPage from '../app/blog/page';
 
 // Mock the blog data function
-vi.mock('../app/db/blog', () => ({
+vi.mock('../lib/content/blog', () => ({
   getBlogPosts: vi.fn(() => [
     {
       slug: 'first-post',
@@ -76,7 +76,7 @@ describe('Blog Listing Page', () => {
 
   it('should handle empty blog posts array', () => {
     // Override the mock for this test
-    vi.doMock('../app/db/blog', () => ({
+    vi.doMock('../lib/content/blog', () => ({
       getBlogPosts: vi.fn(() => []),
     }));
 

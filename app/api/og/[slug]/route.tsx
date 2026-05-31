@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import type { NextRequest } from 'next/server';
-import { getBlogPosts } from 'app/db/blog';
+import { getBlogPosts } from '@/lib/content/blog';
 
 // Use Node.js runtime since we read MDX via fs in getBlogPosts
 export const runtime = 'nodejs';

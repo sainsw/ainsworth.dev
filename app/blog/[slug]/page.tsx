@@ -3,11 +3,9 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { BlogContent } from '@/components/blog-content';
 import { getViewsCount } from 'app/db/queries';
-import { getBlogPosts } from 'app/db/blog';
+import { getBlogPosts } from '@/lib/content/blog';
 import ViewCounter from '../view-counter';
 import { connection } from 'next/server';
-import { ReactDebug } from '@/components/react-debug';
-import { SandpackCSS } from './sandpack';
 import { formatRelativeDate } from '@/lib/date';
 import { ViewTracker } from '@/components/view-tracker';
 
@@ -93,9 +91,6 @@ export default async function Blog({
 
   return (
     <section>
-      {/* Inject Sandpack styles only on blog posts that may use it */}
-      <SandpackCSS />
-      <ReactDebug />
       <script
         type="application/ld+json"
         suppressHydrationWarning

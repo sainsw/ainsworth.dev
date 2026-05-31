@@ -44,15 +44,6 @@ vi.mock('react-dom', async () => {
   };
 });
 
-// Mock problematic components
-vi.mock('@/components/tweet', () => ({
-  TweetComponent: () => React.createElement('div', null, 'Tweet Component'),
-}));
-
-vi.mock('@/components/sandpack', () => ({
-  LiveCode: () => React.createElement('div', null, 'Live Code'),
-}));
-
 // Mock database functions
 vi.mock('app/db/queries', () => ({
   getViewsCount: vi.fn().mockResolvedValue([]),
@@ -62,7 +53,7 @@ vi.mock('app/db/actions', () => ({
   submitContact: vi.fn().mockResolvedValue({ success: true, message: 'ok' }),
 }));
 
-vi.mock('app/db/blog', () => ({
+vi.mock('@/lib/content/blog', () => ({
   getBlogPosts: vi.fn().mockReturnValue([
     {
       slug: 'test-post',

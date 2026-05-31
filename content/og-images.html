@@ -15,7 +15,7 @@
 </ol>
 <p>That's it. Here's the minimal code.</p>
 <h3>1) Post index (whatever you already have)</h3>
-<pre><code class="language-ts">// app/db/blog.ts
+<pre><code class="language-ts">// lib/content/blog.ts
 export type Metadata = {
   title: string;
   publishedAt: string;
@@ -30,7 +30,7 @@ export function getBlogPosts() {
 <h3>2) The image route</h3>
 <pre><code class="language-tsx">// app/api/og/[slug]/route.ts
 import { ImageResponse } from "next/server";
-import { getBlogPosts } from "@/app/db/blog";
+import { getBlogPosts } from "@/lib/content/blog";
 
 // Edge runtime = fast cold starts for tiny images
 export const runtime = "edge";

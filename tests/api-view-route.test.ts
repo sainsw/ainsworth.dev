@@ -5,7 +5,7 @@ const incrementView = vi.fn(async () => {});
 beforeEach(() => {
   vi.resetModules();
   incrementView.mockClear();
-  vi.doMock('../app/db/blog', () => ({
+  vi.doMock('../lib/content/blog', () => ({
     getBlogPosts: vi.fn(() => [{ slug: 'hello-world' }]),
   }));
   vi.doMock('../app/db/views', () => ({ incrementView }));

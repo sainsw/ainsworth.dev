@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import ViewCounter from './view-counter';
 import { getViewsCount } from 'app/db/queries';
-import { getBlogPosts } from 'app/db/blog';
+import { getBlogPosts } from '@/lib/content/blog';
 import { formatRelativeDate } from '@/lib/date';
 
 export const metadata = {

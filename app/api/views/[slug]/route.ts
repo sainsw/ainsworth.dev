@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { getBlogPosts } from 'app/db/blog';
+import { getBlogPosts } from '@/lib/content/blog';
 import { incrementView } from 'app/db/views';
 
 const VIEW_COOKIE_MAX_AGE = 60 * 60 * 24;

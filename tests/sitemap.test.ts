@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 describe('sitemap', () => {
   it('includes base routes and blog posts', async () => {
-    vi.doMock('../app/db/blog', () => ({
+    vi.doMock('../lib/content/blog', () => ({
       getBlogPosts: vi.fn(() => [
         { slug: 'hello-world', metadata: { publishedAt: '2024-01-01' } },
         { slug: 'second', metadata: { publishedAt: '2024-02-02' } },
