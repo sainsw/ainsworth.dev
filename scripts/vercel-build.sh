@@ -19,9 +19,12 @@ npm run generate-version
 echo "📄 Building CV..."
 npm run build-cv
 
-# Note: unit tests (Vitest), lint, and typecheck run in CI (.github/workflows/ci.yml),
-# not in the Vercel build, to keep deploys fast and focused on building.
-# Playwright E2E runs in a separate CI job against the Preview URL (e2e:vercel).
+# Gate the deploy on unit tests: a failing test fails the build, so nothing
+# ships. (next build already gates TypeScript type errors.) Lint/format and a
+# duplicate test run also happen in CI (.github/workflows/ci.yml); Playwright
+# E2E runs in a separate CI job against the Preview URL (e2e:vercel).
+echo "🧪 Running unit tests (vitest) — deploy is blocked if these fail..."
+NODE_ENV=test npm run test:run
 
 # Run Next.js build
 echo "🔨 Running Next.js build..."
