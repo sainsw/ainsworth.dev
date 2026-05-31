@@ -9,6 +9,7 @@
     "includes": [
       "**/*.{ts,tsx,js,jsx,mjs,cjs,json}",
       "!**/package-lock.json",
+      "!.claude",
       "!.next",
       "!public",
       "!content",
