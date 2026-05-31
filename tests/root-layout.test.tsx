@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
 import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 vi.mock('@vercel/speed-insights/next', () => ({
   SpeedInsights: () => React.createElement('div', { 'data-testid': 'speed' }),
@@ -17,25 +17,32 @@ describe('RootLayout', () => {
     vi.doMock('@/components/footer', () => ({
       Footer: () => React.createElement('footer', { 'data-testid': 'footer' }),
     }));
+    vi.doMock('@/components/cookie-banner', () => ({
+      CookieConsent: () =>
+        React.createElement('div', { 'data-testid': 'cookie-banner' }),
+    }));
+    vi.doMock('../app/tw.css', () => ({}));
+    vi.doMock('../app/global.css', () => ({}));
     const RootLayout = (await import('../app/layout')).default;
-    render(
+    const markup = renderToStaticMarkup(
       <RootLayout>
         <div data-testid="child">content</div>
       </RootLayout>,
     );
+    document.open();
+    document.write(`<!doctype html>${markup}`);
+    document.close();
 
     // Child content present
-    expect(screen.getByTestId('child')).toBeInTheDocument();
+    expect(document.querySelector('[data-testid="child"]')).not.toBeNull();
 
     // Navbar link present
-    expect(screen.getByRole('link', { name: /home/i })).toBeInTheDocument();
+    expect(document.querySelector('a[href="/"]')).not.toBeNull();
 
-    // Cookie banner text appears in test env
+    // Cookie banner wiring is present; banner behavior has dedicated tests
     expect(
-      screen.getByText(
-        /I use cookies to analyse traffic and provide features/i,
-      ),
-    ).toBeInTheDocument();
+      document.querySelector('[data-testid="cookie-banner"]'),
+    ).not.toBeNull();
 
     // Preload links in <head>
     const spritePreload = document.querySelector(

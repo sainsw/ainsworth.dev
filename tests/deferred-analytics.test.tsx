@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import React from 'react';
 import { DeferredAnalytics } from '@/components/deferred-analytics';
 
@@ -45,8 +45,10 @@ describe('DeferredAnalytics', () => {
     expect(queryByTestId('analytics')).toBeNull();
 
     // Simulate user accepting cookies and dispatch event
-    document.cookie = 'cookie-consent=accepted';
-    window.dispatchEvent(new Event('cookie-consent-accepted'));
+    act(() => {
+      document.cookie = 'cookie-consent=accepted';
+      window.dispatchEvent(new Event('cookie-consent-accepted'));
+    });
     expect(await findByTestId('analytics')).toBeInTheDocument();
   });
 });

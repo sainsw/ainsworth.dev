@@ -163,7 +163,7 @@ declare global {
         granted: () => void;
         revoked: () => void;
       };
-      track: (event: string, properties?: Record<string, any>) => void;
+      track: (event: string, properties?: Record<string, unknown>) => void;
     };
   }
 }

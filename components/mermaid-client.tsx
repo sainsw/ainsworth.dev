@@ -205,7 +205,7 @@ export default function MermaidClient({
           // Ensure fonts are loaded before measuring/laying out labels
           const ensureFontsLoaded = async () => {
             try {
-              const fonts: any = (document as any).fonts;
+              const { fonts } = document;
               if (fonts?.ready) {
                 await fonts.ready;
                 await Promise.all([
@@ -267,10 +267,10 @@ export default function MermaidClient({
               svgElement.style.display = 'block';
 
               // Fix text elements that might be clipped
-              const textElements = svgElement.querySelectorAll(
+              const textElements = svgElement.querySelectorAll<SVGElement>(
                 'text, tspan, foreignObject',
               );
-              textElements.forEach((el: any) => {
+              textElements.forEach((el) => {
                 el.style.overflow = 'visible';
                 if (el.style.textOverflow) {
                   el.style.textOverflow = 'clip';
@@ -304,7 +304,7 @@ export default function MermaidClient({
                   text.setAttribute('y', `${cy}`);
                   text.setAttribute('text-anchor', 'middle');
                   text.setAttribute('dominant-baseline', 'middle');
-                  (text.style as any).textAnchor = 'middle';
+                  text.style.setProperty('text-anchor', 'middle');
                 });
               }
             }
@@ -363,8 +363,8 @@ export default function MermaidClient({
         ref={elementRef}
         className={`mermaid-diagram flex justify-center ${!isLoaded ? 'hidden' : ''}`}
         data-testid="mermaid"
-        // Expose chart source as a data attribute for tests (TS-safe)
-        data-chart={chart as any}
+        // Expose chart source as a data attribute for tests
+        data-chart={chart}
         style={{
           width: '100%',
           padding: '12px',
