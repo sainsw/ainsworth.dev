@@ -93,7 +93,13 @@ export default function PrivacyPage() {
           If you submit the contact form, your message and (optionally) your
           email address are sent to me via Resend (email delivery provider) and
           delivered to my inbox. This information is used only to respond to
-          your enquiry. It is not added to marketing lists.
+          your enquiry. It is not added to marketing lists. The form uses
+          Cloudflare Turnstile to prevent abuse. Cloudflare describes how
+          Turnstile processes data in its{' '}
+          <a href="https://www.cloudflare.com/policies/privacy/#18-turnstile-privacy-addendum">
+            Turnstile Privacy Addendum
+          </a>
+          .
         </p>
 
         <h2>Data retention</h2>
@@ -126,6 +132,10 @@ export default function PrivacyPage() {
           <li>
             <strong>Tag management:</strong> Cloudflare Zaraz (loads optional
             analytics with consent).
+          </li>
+          <li>
+            <strong>Bot protection:</strong> Cloudflare Turnstile (contact form
+            abuse prevention).
           </li>
           <li>
             <strong>Email delivery:</strong> Resend (contact form

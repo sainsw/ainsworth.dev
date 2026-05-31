@@ -17,7 +17,7 @@ declare global {
           sitekey: string;
           callback?: (token: string) => void;
           'expired-callback'?: () => void;
-          'error-callback'?: () => void;
+          'error-callback'?: (errorCode: string) => boolean | undefined;
           theme?: 'light' | 'dark' | 'auto';
           size?: 'normal' | 'compact' | 'flexible';
           execution?: 'render' | 'execute';
@@ -39,7 +39,7 @@ export interface TurnstileRef {
 interface TurnstileProps {
   onVerify?: (token: string) => void;
   onExpire?: () => void;
-  onError?: () => void;
+  onError?: (errorCode: string) => void;
   theme?: 'light' | 'dark' | 'auto';
   invisible?: boolean;
   className?: string;
@@ -61,6 +61,15 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
     const widgetIdRef = useRef<string | null>(null);
     const scriptLoadedRef = useRef(false);
     const resolveTokenRef = useRef<((token: string) => void) | null>(null);
+    const rejectTokenRef = useRef<((reason: Error) => void) | null>(null);
+
+    const rejectPendingExecution = useCallback((reason: string) => {
+      if (rejectTokenRef.current) {
+        rejectTokenRef.current(new Error(reason));
+        resolveTokenRef.current = null;
+        rejectTokenRef.current = null;
+      }
+    }, []);
 
     const handleVerify = useCallback(
       (token: string) => {
@@ -69,9 +78,24 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
         if (resolveTokenRef.current) {
           resolveTokenRef.current(token);
           resolveTokenRef.current = null;
+          rejectTokenRef.current = null;
         }
       },
       [onVerify],
+    );
+
+    const handleExpire = useCallback(() => {
+      onExpire?.();
+      rejectPendingExecution('Turnstile verification expired');
+    }, [onExpire, rejectPendingExecution]);
+
+    const handleError = useCallback(
+      (errorCode: string) => {
+        onError?.(errorCode);
+        rejectPendingExecution(`Turnstile verification failed: ${errorCode}`);
+        return true;
+      },
+      [onError, rejectPendingExecution],
     );
 
     const renderWidget = useCallback(() => {
@@ -88,14 +112,14 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: siteKey,
         callback: handleVerify,
-        'expired-callback': onExpire,
-        'error-callback': onError,
+        'expired-callback': handleExpire,
+        'error-callback': handleError,
         theme,
         // Note: "invisible" mode is determined by the sitekey type in Cloudflare dashboard,
         // not by size parameter. Use execution: 'execute' for on-demand triggering.
         execution: invisible ? 'execute' : 'render',
       });
-    }, [handleVerify, onExpire, onError, theme, invisible]);
+    }, [handleVerify, handleExpire, handleError, theme, invisible]);
 
     // Expose execute() and reset() methods via ref
     useImperativeHandle(
@@ -108,6 +132,7 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
               return;
             }
             resolveTokenRef.current = resolve;
+            rejectTokenRef.current = reject;
             window.turnstile.execute(widgetIdRef.current);
           });
         },
@@ -146,12 +171,13 @@ export const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(
       }
 
       return () => {
+        rejectPendingExecution('Turnstile widget removed');
         if (widgetIdRef.current && window.turnstile) {
           window.turnstile.remove(widgetIdRef.current);
           widgetIdRef.current = null;
         }
       };
-    }, [renderWidget]);
+    }, [renderWidget, rejectPendingExecution]);
 
     return <div ref={containerRef} className={className} />;
   },
