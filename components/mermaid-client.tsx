@@ -91,35 +91,7 @@ export default function MermaidClient({
     };
 
     const source = chart;
-    const _replacer = (
-      hex: string,
-      map: Record<string, { fill: string; color: string; stroke?: string }>,
-    ) => {
-      // Replace lines like: style A fill:#e1f5fe
-      const regex = new RegExp(`(style\\s+[^\\n]*?)fill:${hex}`, 'gi');
-      return (
-        source
-          .replace(
-            regex,
-            (_, pre) =>
-              `${pre}fill:${map[hex].fill},color:${map[hex].color}${map[hex].stroke ? `,stroke:${map[hex].stroke}` : ''}`,
-          )
-          // Also handle multiline style blocks if any
-          .replace(
-            new RegExp(`(style\\s+[^\\n]*?fill:${hex}[^\\n]*)`, 'gi'),
-            (m) => {
-              // If color not already present, append it
-              if (!/color:/i.test(m)) {
-                const { color } = map[hex];
-                return `${m},color:${color}`;
-              }
-              return m;
-            },
-          )
-      );
-    };
 
-    // Apply mapping
     const palette = isDark ? mappingsDark : mappingsLight;
     let out = source;
     Object.keys(palette).forEach((hex) => {
