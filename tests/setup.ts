@@ -1,6 +1,9 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 
+// Allow server-only modules to be imported in vitest
+vi.mock('server-only', () => ({}));
+
 // Mock React cache function
 vi.mock('react', async () => {
   const actual = await vi.importActual('react');

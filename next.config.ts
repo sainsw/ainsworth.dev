@@ -98,9 +98,9 @@ const ContentSecurityPolicy = `
     object-src 'none';
     script-src 'self'${unsafeEvalSource} 'unsafe-inline' cdn.vercel-insights.com vercel.live va.vercel-scripts.com static.cloudflareinsights.com challenges.cloudflare.com;
     style-src 'self' 'unsafe-inline';
-    img-src * blob: data:;
+    img-src 'self' data: blob: vercel.live;
     media-src 'none';
-    connect-src *;
+    connect-src 'self' vitals.vercel-insights.com vercel.live cdn.vercel-insights.com va.vercel-scripts.com static.cloudflareinsights.com challenges.cloudflare.com;
     font-src 'self' data:;
     frame-src 'self' vercel.live challenges.cloudflare.com;
 `;

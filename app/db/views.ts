@@ -1,3 +1,4 @@
+import 'server-only';
 import { sql } from './postgres';
 
 export async function incrementView(slug: string) {

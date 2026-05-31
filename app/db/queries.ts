@@ -1,3 +1,4 @@
+import 'server-only';
 import { sql } from './postgres';
 import { connection } from 'next/server';
 

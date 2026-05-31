@@ -58,10 +58,19 @@ export function PrideAvatar({ children, className = '' }: PrideAvatarProps) {
 
     checkPrideTime();
 
-    // Check daily at midnight
-    const interval = setInterval(checkPrideTime, 24 * 60 * 60 * 1000);
+    // Re-check at next midnight rather than a fixed 24h interval
+    const now = new Date();
+    const nextMidnight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+    );
+    const msUntilMidnight = nextMidnight.getTime() - now.getTime();
+    const timeout = setTimeout(() => {
+      checkPrideTime();
+    }, msUntilMidnight);
 
-    return () => clearInterval(interval);
+    return () => clearTimeout(timeout);
   }, []);
 
   if (!isPrideTime) {

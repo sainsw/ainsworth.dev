@@ -1,3 +1,5 @@
+import 'server-only';
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, '&amp;')

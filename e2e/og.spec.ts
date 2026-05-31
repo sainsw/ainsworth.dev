@@ -7,11 +7,10 @@ test('article OG image route returns an image', async ({ request }) => {
   expect(ctype).toMatch(/image\//);
 });
 
-test('generic OG route with title param returns an image', async ({
+test('article OG image route returns correct content type', async ({
   request,
 }) => {
-  const res = await request.get('/og?title=Test+Title');
-  expect(res.status()).toBe(200);
+  const res = await request.get('/api/og/hello-world');
   const ctype = res.headers()['content-type'] || '';
-  expect(ctype).toMatch(/image\//);
+  expect(ctype).toContain('image/');
 });

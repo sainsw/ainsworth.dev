@@ -2,8 +2,15 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 
-// Generate random 8-character hash for sprite cache busting
-const spriteVersion = crypto.randomBytes(4).toString('hex');
+// Generate content-derived hash for sprite cache busting
+const spritePath = path.join(__dirname, '..', 'public', 'sprite.svg');
+const spriteVersion = fs.existsSync(spritePath)
+  ? crypto
+      .createHash('sha256')
+      .update(fs.readFileSync(spritePath))
+      .digest('hex')
+      .substring(0, 8)
+  : crypto.randomBytes(4).toString('hex');
 
 // Generate CV version based on CV source content
 function generateCVVersion() {

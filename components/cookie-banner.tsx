@@ -27,7 +27,7 @@ export function CookieConsent({
   const handleAccept = useCallback(() => {
     setIsOpen(false);
     document.cookie =
-      'cookie-consent=accepted; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; SameSite=Lax';
+      'cookie-consent=accepted; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; SameSite=Lax; Secure';
     if (process.env.NODE_ENV === 'test') {
       setHide(true);
     } else {
@@ -52,7 +52,7 @@ export function CookieConsent({
   const handleDecline = useCallback(() => {
     setIsOpen(false);
     document.cookie =
-      'cookie-consent=declined; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; SameSite=Lax';
+      'cookie-consent=declined; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; SameSite=Lax; Secure';
     if (process.env.NODE_ENV === 'test') {
       setHide(true);
     } else {

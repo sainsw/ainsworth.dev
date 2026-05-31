@@ -86,11 +86,10 @@ describe('Blog Listing Page', () => {
     // Should not crash with empty array
   });
 
-  it('should include Suspense fallbacks for view counts', () => {
-    const { container } = render(<BlogPage />);
+  it('should render view count placeholders for each post', () => {
+    render(<BlogPage />);
 
-    // Should have Suspense components (though in test they render immediately)
-    const suspenseElements = container.querySelectorAll('[data-testid], .h-6');
-    expect(suspenseElements.length).toBeGreaterThanOrEqual(0); // Fallbacks might not be visible in tests
+    const placeholders = screen.getAllByTestId('views-fallback');
+    expect(placeholders).toHaveLength(3);
   });
 });

@@ -12,8 +12,6 @@ export default function ContactLayout({
 }) {
   return (
     <div>
-      {/* Resend is only used on the contact flow; preconnect here rather than globally */}
-      <link rel="preconnect" href="https://api.resend.com" />
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">
         get in touch 📮
       </h1>

@@ -104,18 +104,15 @@ export default function Page() {
         <div className="flex items-center justify-between gap-4 pt-1">
           <Turnstile ref={turnstileRef} invisible />
           <div className="flex items-center gap-4">
-            {clientMessage && (
-              <p
-                className={cn(
-                  'text-sm',
-                  clientMessage.isError
-                    ? 'text-destructive'
-                    : 'text-foreground',
-                )}
-              >
-                {clientMessage.text}
-              </p>
-            )}
+            <p
+              aria-live="polite"
+              className={cn(
+                'text-sm',
+                clientMessage?.isError ? 'text-destructive' : 'text-foreground',
+              )}
+            >
+              {clientMessage?.text}
+            </p>
             <SubmitButton isVerifying={isVerifying} />
           </div>
         </div>
