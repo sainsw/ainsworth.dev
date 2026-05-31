@@ -10,6 +10,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { DeferredAnalytics } from './components/deferred-analytics';
 import { CookieConsent } from './components/cookie-banner';
 import { AVATAR_VERSION } from '../lib/version';
+import { cn } from '../lib/utils';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://ainsworth.dev'),
@@ -47,8 +48,6 @@ export const metadata: Metadata = {
   // Avoid setting a site-wide canonical. Each route sets its own where needed.
 };
 
-const cx = (...classes) => classes.filter(Boolean).join(' ');
-
 export default function RootLayout({
   children,
 }: {
@@ -57,7 +56,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cx(
+      className={cn(
         'text-foreground bg-background',
         GeistSans.variable,
         GeistMono.variable

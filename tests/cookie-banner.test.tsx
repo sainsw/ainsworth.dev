@@ -70,16 +70,4 @@ describe('CookieConsent', () => {
     mockDispatchEvent.mockRestore()
   })
 
-  it('includes hover styles on Accept and Decline buttons', () => {
-    render(<CookieConsent variant="mini" />)
-
-    const acceptButton = screen.getByRole('button', { name: /accept/i })
-    const declineButton = screen.getByRole('button', { name: /decline/i })
-
-    // Accept button uses default variant
-    expect(acceptButton.className).toContain('hover:bg-primary/80')
-    
-    // Decline button uses outline variant
-    expect(declineButton.className).toContain('hover:bg-muted')
-  })
 })

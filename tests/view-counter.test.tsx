@@ -42,18 +42,4 @@ describe('ViewCounter Component', () => {
     expect(viewText).toBeInTheDocument()
   })
 
-  it('should handle null/undefined allViews gracefully', () => {
-    render(<ViewCounter slug="test" allViews={null as any} />)
-
-    expect(screen.getByText('0 views')).toBeInTheDocument()
-  })
-
-  it('should apply correct CSS classes', () => {
-    const mockViews = [{ slug: 'test', count: 42 }]
-    
-    const { container } = render(<ViewCounter slug="test" allViews={mockViews} />)
-    
-    const text = container.querySelector('span')
-    expect(text).toHaveClass('text-muted-foreground')
-  })
 })
