@@ -4,7 +4,6 @@ import { EmailLink } from '../components/email-link';
 describe('EmailLink', () => {
   it('constructs mailto with subject and updates window.location.href', () => {
     const originalHref = window.location.href;
-    // @ts-expect-error allow override for test
     delete (window as any).location;
     (window as any).location = { href: originalHref };
 

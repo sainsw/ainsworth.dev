@@ -9,11 +9,12 @@ vi.mock('@vercel/analytics/react', () => ({
 
 // Polyfill requestIdleCallback/cancelIdleCallback
 beforeAll(() => {
-  // @ts-expect-error
-  global.requestIdleCallback = (cb: any) =>
-    setTimeout(() => cb({ didTimeout: false, timeRemaining: () => 50 }), 0);
-  // @ts-expect-error
-  global.cancelIdleCallback = (id: any) => clearTimeout(id);
+  global.requestIdleCallback = ((cb: any) =>
+    setTimeout(
+      () => cb({ didTimeout: false, timeRemaining: () => 50 }),
+      0,
+    )) as any;
+  global.cancelIdleCallback = ((id: any) => clearTimeout(id)) as any;
 });
 
 describe('DeferredAnalytics', () => {

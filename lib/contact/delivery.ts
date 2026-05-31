@@ -37,7 +37,8 @@ export async function sendContactEmail({
 
   const data = await response.json().catch(() => null);
   if (!response.ok) {
-    throw new Error(data?.message || 'email delivery failed');
+    console.error('Resend API error:', data?.message);
+    throw new Error('email delivery failed');
   }
 
   return data;

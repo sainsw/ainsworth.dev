@@ -77,5 +77,4 @@ class MockResizeObserver {
   disconnect = vi.fn();
 }
 
-// @ts-expect-error - attach to global for tests
-global.ResizeObserver = MockResizeObserver;
+global.ResizeObserver = MockResizeObserver as any;

@@ -15,6 +15,7 @@
     "format": "biome format --write",
     "format:check": "biome format",
     "typecheck": "tsc --noEmit",
+    "typecheck:tests": "tsc --noEmit --project tests/tsconfig.json",
     "fetch-avatar": "node ./scripts/fetch-avatar.js",
     "generate-version": "node ./scripts/generate-version.js",
     "build-cv": "./scripts/build-cv.sh",

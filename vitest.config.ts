@@ -21,9 +21,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './'),
     },
   },
-  css: {
-    modules: {
-      classNameStrategy: 'non-scoped',
-    },
-  },
 });

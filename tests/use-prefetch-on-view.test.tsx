@@ -22,8 +22,7 @@ class MockIntersectionObserver {
   thresholds = [];
 }
 
-// @ts-expect-error
-global.IntersectionObserver = MockIntersectionObserver;
+global.IntersectionObserver = MockIntersectionObserver as any;
 
 describe('usePrefetchOnView', () => {
   beforeEach(() => {

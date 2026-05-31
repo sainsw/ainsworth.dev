@@ -41,7 +41,7 @@ describe('Blog metadata OG tags', () => {
 
       // Twitter
       expect(meta.twitter).toBeDefined();
-      expect(meta.twitter?.card).toBe('summary_large_image');
+      expect((meta.twitter as any)?.card).toBe('summary_large_image');
       const twImages = (meta.twitter?.images ?? []) as Array<string>;
       expect(twImages.length).toBeGreaterThan(0);
       expect(twImages[0]).toBe(expectedOg);
