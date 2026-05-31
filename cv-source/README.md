@@ -23,24 +23,21 @@ npm run build-cv
 
 The CV is automatically built during:
 - **Local builds**: `npm run build` (if LaTeX is available)
-- **Vercel deployment**: Installs LaTeX and builds fresh PDF on every deploy
+- **Vercel deployment**: Uses the committed PDF fallback
 
 The generated PDF is placed at `public/files/cv.pdf` and served at `/files/cv.pdf`.
 
-### Vercel-Only Pipeline
+### Deployment Pipeline
 
-**Simplified approach:**
-- **LaTeX installed** in Vercel build environment via `vercel-build.sh`
-- **Always fresh builds** from source on every deployment  
-- **No artifacts or fallbacks** - single source of truth
-- **Fast builds** - ~1 minute vs 5+ minutes with GitHub Actions
-- **Single pipeline** to maintain and debug
+- LaTeX is not installed in the Vercel build environment.
+- Update the committed PDF locally with `npm run update-cv`.
+- `vercel-build.sh` skips LaTeX compilation and deploys the committed PDF.
 
 ## Editing
 
-1. Edit `main.tex` with your CV content
-2. Commit and push changes
-3. The PDF will be automatically regenerated and deployed
+1. Edit `data/resume.json`.
+2. Run `npm run update-cv`.
+3. Commit the generated LaTeX and PDF files.
 
 ## Template
 

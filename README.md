@@ -51,7 +51,7 @@ The `predev` hook runs [`scripts/ensure-env.js`](scripts/ensure-env.js), which c
 
 ## Testing & CI
 
-- **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs lint → format check → typecheck → unit tests on every push and PR to `main`.
+- **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs lint → format check → typecheck → unit tests → production build on every push and PR to `main`.
 - **E2E** ([`.github/workflows/e2e.yml`](.github/workflows/e2e.yml)) runs Playwright against a Vercel preview deployment on PRs.
 - The **Vercel build** ([`scripts/vercel-build.sh`](scripts/vercel-build.sh)) runs the unit tests before `next build`, so a failing test blocks the deploy.
 

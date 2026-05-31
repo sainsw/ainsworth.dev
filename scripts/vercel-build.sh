@@ -15,9 +15,9 @@ echo "🖼️  Using committed avatar fallback..."
 echo "🔢 Generating version information..."
 npm run generate-version
 
-# Build CV if possible
-echo "📄 Building CV..."
-npm run build-cv
+# Keep deployment independent of a LaTeX toolchain.
+echo "📄 Skipping CV compilation; using committed fallback..."
+SKIP_CV=1 npm run build-cv
 
 # Gate the deploy on unit tests: a failing test fails the build, so nothing
 # ships. (next build already gates TypeScript type errors.) Lint/format and a

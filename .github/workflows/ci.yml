@@ -36,3 +36,8 @@ jobs:
 
       - name: Unit tests (Vitest)
         run: npm run test:run
+
+      - name: Production build
+        env:
+          SKIP_CV: '1'
+        run: npm run build-only
