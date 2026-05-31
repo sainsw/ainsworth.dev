@@ -45,11 +45,11 @@ vi.mock('react-dom', async () => {
 });
 
 // Mock problematic components
-vi.mock('app/components/tweet', () => ({
+vi.mock('@/components/tweet', () => ({
   TweetComponent: () => React.createElement('div', null, 'Tweet Component'),
 }));
 
-vi.mock('app/components/sandpack', () => ({
+vi.mock('@/components/sandpack', () => ({
   LiveCode: () => React.createElement('div', null, 'Live Code'),
 }));
 

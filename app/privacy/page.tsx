@@ -3,7 +3,7 @@ export const metadata = {
   description: 'Privacy policy and cookie information for ainsworth.dev',
 };
 
-import { EmailLink } from '../../components/email-link';
+import { EmailLink } from '@/components/email-link';
 
 export default function PrivacyPage() {
   return (

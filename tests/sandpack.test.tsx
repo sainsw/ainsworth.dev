@@ -8,8 +8,8 @@ describe('LiveCode Sandpack', () => {
       Sandpack: (props: any) =>
         React.createElement('div', { 'data-testid': 'sandpack', ...props }),
     }));
-    vi.doUnmock('app/components/sandpack');
-    const { LiveCode } = await import('app/components/sandpack');
+    vi.doUnmock('@/components/sandpack');
+    const { LiveCode } = await import('@/components/sandpack');
     render(<LiveCode example="html" />);
     expect(screen.getByTestId('sandpack')).toBeInTheDocument();
   });
@@ -25,8 +25,8 @@ describe('LiveCode Sandpack', () => {
           throw new Error('boom');
         },
       }));
-      vi.doUnmock('app/components/sandpack');
-      const { LiveCode } = await import('app/components/sandpack');
+      vi.doUnmock('@/components/sandpack');
+      const { LiveCode } = await import('@/components/sandpack');
       render(<LiveCode example="html" />);
       // Fallback text from component
       expect(

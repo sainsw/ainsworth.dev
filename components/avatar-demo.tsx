@@ -1,6 +1,6 @@
 'use client';
 
-import { AVATAR_VERSION } from '../../lib/version';
+import { AVATAR_VERSION } from '@/lib/version';
 
 interface AvatarDemoProps {
   className?: string;

@@ -14,7 +14,7 @@ describe('RootLayout', () => {
     vi.doMock('geist/font/mono', () => ({
       GeistMono: { variable: 'geist-mono' },
     }));
-    vi.doMock('app/components/footer', () => ({
+    vi.doMock('@/components/footer', () => ({
       Footer: () => React.createElement('footer', { 'data-testid': 'footer' }),
     }));
     const RootLayout = (await import('../app/layout')).default;

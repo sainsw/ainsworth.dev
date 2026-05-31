@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { DeferredAnalytics } from '../app/components/deferred-analytics';
+import { DeferredAnalytics } from '@/components/deferred-analytics';
 
 // Mock the Analytics component to a simple marker div
 vi.mock('@vercel/analytics/react', () => ({

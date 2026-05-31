@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactDebug } from 'app/components/react-debug';
+import { ReactDebug } from '@/components/react-debug';
 
 export default function DebugReactPage() {
   return (

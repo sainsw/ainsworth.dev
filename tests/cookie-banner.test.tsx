@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
-import { CookieConsent } from '../app/components/cookie-banner';
+import { CookieConsent } from '@/components/cookie-banner';
 
 // Mock document.cookie
 Object.defineProperty(document, 'cookie', {

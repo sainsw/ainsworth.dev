@@ -1,6 +1,6 @@
 'use client';
-import { ArrowIcon } from '../components/arrow-icon';
-import { Icon } from '../../components/icon';
+import { ArrowIcon } from '@/components/arrow-icon';
+import { Icon } from '@/components/icon';
 import { usePrefetchOnView } from '../hooks/use-prefetch-on-view';
 import { CV_VERSION } from '../../lib/version';
 import resumeData from '../../data/resume.json';

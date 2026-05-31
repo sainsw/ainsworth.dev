@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { PrideAvatar } from '../app/components/pride-avatar';
+import { PrideAvatar } from '@/components/pride-avatar';
 
 describe('PrideAvatar', () => {
   beforeEach(() => {

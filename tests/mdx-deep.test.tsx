@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { BlogContent } from '../app/components/blog-content';
+import { BlogContent } from '@/components/blog-content';
 
 describe('BlogContent deep rendering', () => {
   it('renders code blocks with syntax highlighting', () => {

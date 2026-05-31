@@ -1,5 +1,5 @@
 import { PrideAvatar } from './pride-avatar';
-import { AVATAR_VERSION } from '../../lib/version';
+import { AVATAR_VERSION } from '@/lib/version';
 
 const year = new Date().getFullYear();
 

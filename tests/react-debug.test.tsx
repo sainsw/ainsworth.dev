@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { ReactDebug } from '../app/components/react-debug';
+import { ReactDebug } from '@/components/react-debug';
 import React from 'react';
 
 describe('React Debug Component', () => {

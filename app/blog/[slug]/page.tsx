@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import { Suspense, cache } from 'react';
 import { notFound } from 'next/navigation';
-import { BlogContent } from 'app/components/blog-content';
+import { BlogContent } from '@/components/blog-content';
 import { getViewsCount } from 'app/db/queries';
 import { getBlogPosts } from 'app/db/blog';
 import ViewCounter from '../view-counter';
 import { increment } from 'app/db/actions';
 import { connection } from 'next/server';
-import { ReactDebug } from 'app/components/react-debug';
+import { ReactDebug } from '@/components/react-debug';
 import { SandpackCSS } from './sandpack';
 import { formatRelativeDate } from '@/lib/date';
 

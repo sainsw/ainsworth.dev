@@ -1,8 +1,8 @@
 'use client';
 
-import { CookieConsent } from '../components/cookie-banner';
+import { CookieConsent } from '@/components/cookie-banner';
 import { useEffect, useState } from 'react';
-import { Button } from '../../components/ui/button';
+import { Button } from '@/components/ui/button';
 
 export default function TestBannerPage() {
   const [cookies, setCookies] = useState('');
