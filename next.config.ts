@@ -1,16 +1,15 @@
-import postgres from 'postgres';
+import bundleAnalyzer from '@next/bundle-analyzer';
+import type { NextConfig } from 'next';
+// Reuse the app's single Postgres client instead of defining a second one here.
+import { sql } from './app/db/postgres';
 
-export const sql = postgres(process.env.DATABASE_URL, {
-  ssl: 'allow',
+// No-op passthrough unless ANALYZE=true (avoids top-level await, which
+// next.config.ts does not support).
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
 });
 
-let withBundleAnalyzer = (config) => config;
-if (process.env.ANALYZE === 'true') {
-  const { default: bundleAnalyzer } = await import('@next/bundle-analyzer');
-  withBundleAnalyzer = bundleAnalyzer({ enabled: true });
-}
-
-const nextConfig = {
+const nextConfig: NextConfig = {
   trailingSlash: false,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   typedRoutes: true,
@@ -55,15 +54,6 @@ const nextConfig = {
       },
       {
         source: '/sprite.svg',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/_next/static/:path*',
         headers: [
           {
             key: 'Cache-Control',
