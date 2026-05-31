@@ -1,9 +1,7 @@
-'use client';
-import { ArrowIcon } from '@/components/arrow-icon';
 import { Icon } from '@/components/icon';
 import resumeData from '../../data/resume.json';
 import { CV_VERSION } from '../../lib/version';
-import { usePrefetchOnView } from '../hooks/use-prefetch-on-view';
+import { CvLink } from './cv-link';
 
 function ExperienceCard({
   name,
@@ -92,16 +90,13 @@ function SkillCloud({ skills }: { skills: string[] }) {
 
 export default function Page() {
   const cvUrl = `/files/cv-${CV_VERSION}.pdf`;
-  const cvLinkRef = usePrefetchOnView(cvUrl);
 
-  // Combine all skills for word cloud
   const allSkills = resumeData.skillCategories.flatMap(
     (category) => category.skills,
   );
 
   return (
     <section>
-      {/* Skills Cloud Section */}
       <div className="mb-12">
         <h2 className="font-medium text-2xl mb-6 tracking-tighter">
           skills & technologies 💻
@@ -131,7 +126,7 @@ export default function Page() {
 
       <div className="mt-12">
         <h2 className="font-medium text-2xl mb-6 tracking-tighter">
-          education 👨‍🎓
+          education 👨��🎓
         </h2>
         <div className="flex flex-col gap-4">
           {resumeData.education.map((school, index) => (
@@ -184,19 +179,7 @@ export default function Page() {
         </div>
       </div>
 
-      <ul className="flex flex-col md:flex-row mt-8 space-x-0 md:space-x-4 space-y-2 md:space-y-0 font-sm text-muted-foreground">
-        <li ref={cvLinkRef}>
-          <a
-            className="flex items-center hover:text-foreground transition-colors"
-            rel="noopener noreferrer"
-            target="_blank"
-            href={cvUrl}
-          >
-            <ArrowIcon />
-            <p className="h-7 ml-2">Open PDF Version</p>
-          </a>
-        </li>
-      </ul>
+      <CvLink cvUrl={cvUrl} />
     </section>
   );
 }

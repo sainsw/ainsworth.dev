@@ -1,5 +1,3 @@
-'use client';
-
 type PersonalProject = {
   title: string;
   emoji: string;
