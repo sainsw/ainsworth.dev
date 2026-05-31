@@ -11,6 +11,8 @@
       "!**/package-lock.json",
       "!.claude",
       "!.next",
+      "!playwright-report",
+      "!test-results",
       "!public",
       "!content",
       "!cv-source",

@@ -56,7 +56,7 @@ if (fs.existsSync(versionFile)) {
   }
 }
 
-// If no AVATAR_VERSION found, generate a fallback from existing avatar files or use default
+// If no AVATAR_VERSION found, use the hash in the committed fallback filename.
 if (!avatarVersion) {
   const avatarDir = path.join(__dirname, '..', 'public', 'images', 'home');
   let fallbackHash = 'fallback';
@@ -68,14 +68,10 @@ if (!avatarVersion) {
         (f) => f.startsWith('avatar') && f.endsWith('.jpg'),
       );
       if (avatarFile) {
-        const content = fs.readFileSync(path.join(avatarDir, avatarFile));
-        fallbackHash = crypto
-          .createHash('sha256')
-          .update(content)
-          .digest('hex')
-          .substring(0, 8);
+        const match = avatarFile.match(/^avatar-([^.]+)\.jpg$/);
+        fallbackHash = match?.[1] ?? fallbackHash;
         console.log(
-          `Generated fallback AVATAR_VERSION from ${avatarFile}: ${fallbackHash}`,
+          `Using fallback AVATAR_VERSION from ${avatarFile}: ${fallbackHash}`,
         );
       }
     }

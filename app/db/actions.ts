@@ -1,26 +1,8 @@
 'use server';
 
-import { sql } from './postgres';
-import { connection } from 'next/server';
+import { cookies } from 'next/headers';
 
-export async function increment(slug: string) {
-  if (!process.env.DATABASE_URL) {
-    return;
-  }
-
-  try {
-    await connection();
-    await sql`
-      INSERT INTO views (slug, count)
-      VALUES (${slug}, 1)
-      ON CONFLICT (slug)
-      DO UPDATE SET count = views.count + 1
-    `;
-  } catch (error) {
-    console.error('Failed to increment view count:', error);
-    // Don't throw error - just log it so page doesn't crash
-  }
-}
+const CONTACT_COOLDOWN_SECONDS = 60;
 
 function escapeHtml(value: string): string {
   return value
@@ -31,16 +13,45 @@ function escapeHtml(value: string): string {
     .replace(/'/g, '&#39;');
 }
 
-export async function sendEmail(formData: FormData) {
-  const entry = formData.get('message')?.toString() || '';
-  const email = formData.get('email')?.toString() || '';
-  const body = escapeHtml(entry.slice(0, 4000));
-  const em = escapeHtml(email.slice(0, 100));
+function validateContactForm(formData: FormData) {
+  const message = formData.get('message')?.toString().trim() ?? '';
+  const email = formData.get('email')?.toString().trim() ?? '';
+
+  if (!message) {
+    throw new Error('please enter a message');
+  }
+  if (message.length > 4000) {
+    throw new Error('please keep your message under 4000 characters');
+  }
+  if (email.length > 254) {
+    throw new Error('please enter a valid email address');
+  }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new Error('please enter a valid email address');
+  }
+
+  return { message, email };
+}
+
+async function sendEmail({
+  message,
+  email,
+}: {
+  message: string;
+  email: string;
+}) {
+  const secret = process.env.RESEND_SECRET;
+  if (!secret) {
+    throw new Error('email delivery is not configured');
+  }
+
+  const body = escapeHtml(message);
+  const em = escapeHtml(email);
 
   const data = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.RESEND_SECRET}`,
+      Authorization: `Bearer ${secret}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -51,11 +62,10 @@ export async function sendEmail(formData: FormData) {
     }),
   });
 
-  const response = await data.json();
-  console.log('Email sent', response);
+  const response = await data.json().catch(() => null);
 
-  if (response.statusCode > 0) {
-    throw new Error(response.message);
+  if (!data.ok) {
+    throw new Error(response?.message || 'email delivery failed');
   }
 
   return response;
@@ -82,6 +92,10 @@ async function verifyTurnstileToken(token: string): Promise<boolean> {
         }),
       },
     );
+
+    if (!response.ok) {
+      return false;
+    }
 
     const data = await response.json();
     return data.success === true;
@@ -114,7 +128,23 @@ export async function submitContact(
       };
     }
 
-    await sendEmail(formData);
+    const cookieStore = await cookies();
+    if (cookieStore.has('contact-submitted')) {
+      return {
+        success: false,
+        message: 'please wait a minute before sending another message.',
+      };
+    }
+
+    const contact = validateContactForm(formData);
+    await sendEmail(contact);
+    cookieStore.set('contact-submitted', '1', {
+      httpOnly: true,
+      maxAge: CONTACT_COOLDOWN_SECONDS,
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
     return { success: true, message: 'you sent me a message. nicely done!' };
   } catch (err) {
     const reason = err instanceof Error ? err.message : 'something went wrong';

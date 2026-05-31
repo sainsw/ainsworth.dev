@@ -30,6 +30,8 @@ describe('Turnstile', () => {
 
     expect(execute).toHaveBeenCalledWith('widget-id');
     expect(errorCallback?.('300030')).toBe(true);
-    await expect(token).rejects.toThrow('Turnstile verification failed: 300030');
+    await expect(token).rejects.toThrow(
+      'Turnstile verification failed: 300030',
+    );
   });
 });

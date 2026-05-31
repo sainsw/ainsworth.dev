@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
-import { Suspense, cache } from 'react';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { BlogContent } from '@/components/blog-content';
 import { getViewsCount } from 'app/db/queries';
 import { getBlogPosts } from 'app/db/blog';
 import ViewCounter from '../view-counter';
-import { increment } from 'app/db/actions';
 import { connection } from 'next/server';
 import { ReactDebug } from '@/components/react-debug';
 import { SandpackCSS } from './sandpack';
 import { formatRelativeDate } from '@/lib/date';
+import { ViewTracker } from '@/components/view-tracker';
 
 export async function generateMetadata({
   params,
@@ -132,16 +132,14 @@ export default async function Blog({
       <article className="prose prose-quoteless dark:prose-invert">
         <BlogContent source={post.content} />
       </article>
+      <ViewTracker slug={post.slug} />
     </section>
   );
 }
 
-const incrementViews = cache(increment);
-
 async function Views({ slug }: { slug: string }) {
   try {
     const views = await getViewsCount();
-    incrementViews(slug);
     return <ViewCounter allViews={views} slug={slug} />;
   } catch (error) {
     console.error('Failed to load view count:', error);

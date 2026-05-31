@@ -7,11 +7,11 @@ echo "🚀 Starting Vercel build..."
 echo "📄 LaTeX compilation will be skipped in Vercel"
 echo "💡 CV should be built locally and committed when source changes"
 
-# Fetch latest avatar from GitHub
-echo "🖼️  Fetching GitHub avatar..."
-npm run fetch-avatar
+# Use the committed avatar fallback. Refresh it explicitly with `npm run
+# fetch-avatar` and commit the new files so deploys do not depend on GitHub.
+echo "🖼️  Using committed avatar fallback..."
 
-# Generate version file (must run after avatar fetch)
+# Generate version file from committed assets
 echo "🔢 Generating version information..."
 npm run generate-version
 
@@ -28,4 +28,4 @@ NODE_ENV=test npm run test:run
 
 # Run Next.js build
 echo "🔨 Running Next.js build..."
-next build
+npx --no-install next build
