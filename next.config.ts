@@ -1,7 +1,5 @@
 import bundleAnalyzer from '@next/bundle-analyzer';
 import type { NextConfig } from 'next';
-// Reuse the app's single Postgres client instead of defining a second one here.
-import { sql } from './app/db/postgres';
 
 // No-op passthrough unless ANALYZE=true (avoids top-level await, which
 // next.config.ts does not support).
@@ -24,22 +22,6 @@ const nextConfig: NextConfig = {
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 31536000, // 1 year
     dangerouslyAllowSVG: false,
-  },
-  async redirects() {
-    if (!process.env.DATABASE_URL) {
-      return [];
-    }
-
-    const redirects = await sql`
-      SELECT source, destination, permanent
-      FROM redirects;
-    `;
-
-    return redirects.map(({ source, destination, permanent }) => ({
-      source,
-      destination,
-      permanent: !!permanent,
-    }));
   },
   async headers() {
     return [

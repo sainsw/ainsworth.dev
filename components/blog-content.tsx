@@ -1,4 +1,5 @@
 import { highlight } from 'sugar-high';
+import { parseHTML } from 'linkedom';
 import MermaidClient from './mermaid-client';
 import { AvatarDemo } from './avatar-demo';
 
@@ -14,11 +15,35 @@ function slugify(str: string) {
 }
 
 function addHeadingAnchors(html: string): string {
-  return html.replace(/<(h[1-6])>([\s\S]*?)<\/\1>/g, (_match, tag, content) => {
-    const textContent = content.replace(/<[^>]+>/g, '');
-    const slug = slugify(textContent);
-    return `<${tag} id="${slug}"><a href="#${slug}" class="anchor"></a>${content}</${tag}>`;
-  });
+  const { document } = parseHTML(`<div id="blog-content-root">${html}</div>`);
+  const root = document.querySelector('#blog-content-root');
+  if (!root) {
+    return html;
+  }
+
+  const usedIds = new Set<string>();
+  for (const heading of Array.from(
+    root.querySelectorAll('h1, h2, h3, h4, h5, h6'),
+  )) {
+    const baseId = heading.id || slugify(heading.textContent) || 'section';
+    let id = baseId;
+    let duplicateIndex = 2;
+    while (usedIds.has(id)) {
+      id = `${baseId}-${duplicateIndex}`;
+      duplicateIndex += 1;
+    }
+    usedIds.add(id);
+    heading.id = id;
+
+    if (!heading.querySelector(':scope > a.anchor')) {
+      const anchor = document.createElement('a');
+      anchor.setAttribute('href', `#${id}`);
+      anchor.setAttribute('class', 'anchor');
+      heading.prepend(anchor);
+    }
+  }
+
+  return root.innerHTML;
 }
 
 function decodeEntities(code: string): string {

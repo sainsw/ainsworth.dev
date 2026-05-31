@@ -5,7 +5,7 @@
 /* Source paths for Tailwind to scan for utility classes */
 @source "../app/**/*.{ts,tsx}";
 @source "../components/**/*.{ts,tsx}";
-@source "../content/**/*.mdx";
+@source "../content/**/*.html";
 @source "../public/**/*.svg";
 
 /* Enable official typography plugin so `.prose` styles generate under v4 */

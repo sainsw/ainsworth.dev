@@ -9,7 +9,7 @@ Originally forked from [leerob.io](https://github.com/leerob/leerob.io) — than
 - **Framework**: [Next.js](https://nextjs.org/) 16 (App Router) + [React](https://react.dev/) 19
 - **Language**: [TypeScript](https://www.typescriptlang.org/) (strict)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com) v4
-- **Database**: [Postgres](https://www.postgresql.org/) (blog view counts and redirects)
+- **Database**: [Postgres](https://www.postgresql.org/) (blog view counts)
 - **Lint/format**: [Biome](https://biomejs.dev/)
 - **Tests**: [Vitest](https://vitest.dev/) (unit) and [Playwright](https://playwright.dev/) (E2E)
 - **Email**: [Resend](https://resend.com/) (contact form), with [Cloudflare Turnstile](https://www.cloudflare.com/products/turnstile/) bot protection
@@ -31,7 +31,7 @@ The `predev` hook runs [`scripts/ensure-env.js`](scripts/ensure-env.js), which c
 
 | Variable | Used for |
 | --- | --- |
-| `DATABASE_URL` | Postgres (blog views, redirects). Left empty, DB-backed routes no-op. |
+| `DATABASE_URL` | Postgres blog views. Left empty, view tracking no-ops. |
 | `RESEND_SECRET` | Sending the contact form email via Resend |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile on the contact form |
 | `NEXT_PUBLIC_GET_IN_TOUCH` | Contact link |
@@ -58,7 +58,14 @@ The `predev` hook runs [`scripts/ensure-env.js`](scripts/ensure-env.js), which c
 ## Database schema
 
 Apply [`db/migrations/001_initial.sql`](db/migrations/001_initial.sql) to create
-the redirects and blog-view tables.
+the blog-view table.
+
+## Blog content
+
+Posts are trusted, reviewed HTML files under `content/`. Each post requires a
+`<template data-metadata>` element containing `title`, `publishedAt`, and
+`summary` metadata. The renderer intentionally treats post markup as trusted
+HTML, so do not use it for unreviewed or user-submitted content.
 
 ## CV
 
