@@ -9,8 +9,15 @@ import { CookieConsent } from '@/components/cookie-banner';
 import { DeferredAnalytics } from '@/components/deferred-analytics';
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/nav';
-import { SITE_AUTHOR_EMAIL, SITE_NAME, SITE_URL } from '@/lib/site';
+import {
+  SITE_AUTHOR_EMAIL,
+  SITE_NAME,
+  SITE_URL,
+  getYearsOfExperience,
+} from '@/lib/site';
 import { cn } from '@/lib/utils';
+
+const siteDescription = `Senior Software Developer with ${getYearsOfExperience()}+ years experience building scalable web applications. Expertise in .NET, Azure, React, and cloud architecture.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -18,12 +25,10 @@ export const metadata: Metadata = {
     default: `${SITE_NAME} - Senior Software Developer & Cloud Engineer`,
     template: `%s | ${SITE_NAME}`,
   },
-  description:
-    'Senior Software Developer with 8+ years experience building scalable web applications, cloud architecture, and team leadership. Expertise in .NET, Azure, React, and modern development practices.',
+  description: siteDescription,
   openGraph: {
     title: `${SITE_NAME} - Senior Software Developer & Cloud Engineer`,
-    description:
-      'Senior Software Developer with 8+ years experience building scalable web applications, cloud architecture, and team leadership. Expertise in .NET, Azure, React, and modern development practices.',
+    description: siteDescription,
     url: SITE_URL,
     siteName: SITE_NAME,
     locale: 'en_GB',

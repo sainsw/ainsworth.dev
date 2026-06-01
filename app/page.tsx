@@ -3,19 +3,8 @@ import Link from 'next/link';
 import { ArrowIcon } from '@/components/arrow-icon';
 import { Icon } from '@/components/icon';
 import { PersonalProjects } from '@/components/personal-projects';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL, getYearsOfExperience } from '@/lib/site';
 import { HomePreloads } from './home-preloads';
-
-function getYearsOfExperience(): number {
-  const startDate = new Date(2016, 6, 26); // 26th July 2016 (months are 0-indexed)
-  const now = new Date();
-  const years = now.getFullYear() - startDate.getFullYear();
-  const hasReachedAnniversary =
-    now.getMonth() > startDate.getMonth() ||
-    (now.getMonth() === startDate.getMonth() &&
-      now.getDate() >= startDate.getDate());
-  return hasReachedAnniversary ? years : years - 1;
-}
 
 // Inline tech badge - more spacious for use within prose
 function TechBadge({
