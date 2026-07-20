@@ -126,7 +126,7 @@ export default function Page() {
 
       <div className="mt-12">
         <h2 className="font-medium text-2xl mb-6 tracking-tighter">
-          education 👨��🎓
+          education 👨‍🎓
         </h2>
         <div className="flex flex-col gap-4">
           {resumeData.education.map((school, index) => (
