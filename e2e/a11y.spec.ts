@@ -104,8 +104,11 @@ test('every link has an accessible name', async ({ page }) => {
 test('every form control on the contact page is labelled', async ({ page }) => {
   await page.goto('/contact');
 
+  // Hidden inputs are exempt — they are never presented to the user. The real
+  // Turnstile widget injects one (cf-turnstile-response) whenever it loads,
+  // which is why this only shows up against a deployment.
   const unlabelled = await page
-    .locator('input, textarea, select')
+    .locator('input:not([type="hidden"]), textarea, select')
     .evaluateAll((els) =>
       els
         .filter((el) => {

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { SETTLE_MS } from './helpers';
 
 // components/cookie-banner.tsx shows a mini banner 2s after mount, unless a
 // cookie-consent cookie already exists. Under parallel dev-server load the
@@ -93,7 +94,8 @@ test('analytics stay off when consent is declined', async ({ page }) => {
   await expect(page.getByText(BANNER)).toBeVisible(APPEAR);
   await page.getByRole('button', { name: /decline/i }).click();
   await expect(page.getByText(BANNER)).toBeHidden();
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
+  await page.waitForTimeout(SETTLE_MS);
 
   expect(analyticsRequests).toEqual([]);
 });

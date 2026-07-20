@@ -45,9 +45,13 @@ test('every navbar link reaches its page', async ({ page }) => {
     await expect(page, item.name).toHaveURL(expected);
     await expect(page.locator('#nav')).toBeVisible();
 
-    // Let the client-side navigation and its RSC fetch settle before the next
-    // goto, otherwise WebKit aborts it with "interrupted by another navigation".
-    await page.waitForLoadState('networkidle');
+    // Wait for the destination's own heading, which proves the RSC fetch
+    // finished. Without this the next goto races the in-flight navigation and
+    // WebKit aborts it with "interrupted by another navigation".
+    await expect(
+      page.getByRole('heading', { name: item.heading }).first(),
+      item.name,
+    ).toBeVisible();
   }
 });
 

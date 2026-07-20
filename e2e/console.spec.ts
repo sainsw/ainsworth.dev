@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { PAGE_ROUTES, POSTS, suppressCookieBanner } from './helpers';
+import { PAGE_ROUTES, POSTS, SETTLE_MS, suppressCookieBanner } from './helpers';
 
 const ROUTES = [...PAGE_ROUTES, `/blog/${POSTS[0].slug}`];
 
@@ -36,7 +36,8 @@ test('no page logs a console error', async ({ page }) => {
 
   for (const route of ROUTES) {
     await page.goto(route);
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(SETTLE_MS);
   }
 
   expect(errors).toEqual([]);
@@ -52,7 +53,8 @@ test('no page throws an uncaught exception', async ({ page }) => {
 
   for (const route of ROUTES) {
     await page.goto(route);
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(SETTLE_MS);
   }
 
   expect(failures).toEqual([]);
@@ -68,7 +70,8 @@ test('no page requests a resource that 404s', async ({ page }) => {
 
   for (const route of ROUTES) {
     await page.goto(route);
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(SETTLE_MS);
   }
 
   expect(broken).toEqual([]);

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { POSTS, suppressCookieBanner } from './helpers';
+import { POSTS, SETTLE_MS, suppressCookieBanner } from './helpers';
 
 // components/view-tracker.tsx fires a POST from the client once a post mounts.
 
@@ -31,7 +31,8 @@ test('the blog index does not record views', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: /read my blog/i }),
   ).toBeVisible();
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('load');
+  await page.waitForTimeout(SETTLE_MS);
 
   expect(calls).toEqual([]);
 });

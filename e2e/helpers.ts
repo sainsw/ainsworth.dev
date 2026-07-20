@@ -10,13 +10,24 @@ export const PAGE_ROUTES = [
   '/privacy',
 ] as const;
 
-/** Navbar entries, in render order — mirrors navItems in components/nav.tsx. */
+/**
+ * Navbar entries, in render order — mirrors navItems in components/nav.tsx.
+ * `heading` is the destination's own h1/h2, used to confirm a navigation has
+ * actually landed rather than waiting on the network.
+ */
 export const NAV_ITEMS = [
-  { name: 'home', path: '/' },
-  { name: 'work', path: '/work' },
-  { name: 'blog', path: '/blog' },
-  { name: 'contact', path: '/contact' },
+  { name: 'home', path: '/', heading: /hello, i'm sam/i },
+  { name: 'work', path: '/work', heading: /skills & technologies/i },
+  { name: 'blog', path: '/blog', heading: /read my blog/i },
+  { name: 'contact', path: '/contact', heading: /get in touch/i },
 ] as const;
+
+/**
+ * Settles after a client-side navigation without using `networkidle`, which
+ * never fires against the deployed site — the analytics beacons keep the
+ * connection busy indefinitely.
+ */
+export const SETTLE_MS = 1500;
 
 /**
  * Posts read straight from content/ so the suite covers whatever is published
