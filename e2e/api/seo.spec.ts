@@ -45,8 +45,24 @@ test('robots.txt points at the sitemap and allows crawling', async ({
   expect(body).toMatch(/User-Agent:\s*\*/i);
   expect(body).toContain(`Sitemap: ${SITE}/sitemap.xml`);
   expect(body).toContain(`Host: ${SITE}`);
-  // No blanket disallow — the site is meant to be indexed.
-  expect(body).not.toMatch(/^Disallow:\s*\/\s*$/m);
+
+  // No blanket disallow for general crawlers — the site is meant to be indexed.
+  // Only the wildcard groups matter: in production Cloudflare prepends a
+  // Managed robots.txt block that deliberately disallows named AI crawlers
+  // (GPTBot, ClaudeBot, Amazonbot, ...), which must not fail this check.
+  let wildcardGroup = false;
+  for (const raw of body.split('\n')) {
+    const line = raw.trim();
+    if (/^user-agent:/i.test(line)) {
+      wildcardGroup = line.split(':')[1].trim() === '*';
+      continue;
+    }
+    if (wildcardGroup) {
+      expect(line, 'blanket disallow under User-agent: *').not.toMatch(
+        /^Disallow:\s*\/$/i,
+      );
+    }
+  }
 });
 
 test('every page route is indexable and titled', async ({ request }) => {

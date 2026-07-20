@@ -3,11 +3,15 @@ import { PAGE_ROUTES, POSTS, SECURITY_HEADERS } from '../helpers';
 
 // next.config.ts applies securityHeaders to `/(.*)`, so they must be present on
 // pages, route handlers and static assets alike — not just the home page.
+//
+// /robots.txt is deliberately absent: in production Cloudflare's Managed
+// robots.txt answers that path at the edge, so the request never reaches the
+// app and carries none of its headers. /sitemap.xml does pass through and
+// stands in for the route-handler case here.
 const ALL_SURFACES = [
   ...PAGE_ROUTES,
   `/blog/${POSTS[0].slug}`,
   '/sitemap.xml',
-  '/robots.txt',
   `/api/og/${POSTS[0].slug}`,
   '/sprite.svg',
 ];
