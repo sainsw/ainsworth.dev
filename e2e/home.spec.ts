@@ -1,4 +1,10 @@
 import { expect, test } from '@playwright/test';
+import { AVATAR_VERSION } from '@/lib/version';
+import { suppressCookieBanner } from './helpers';
+
+test.beforeEach(async ({ context, baseURL }) => {
+  await suppressCookieBanner(context, baseURL ?? '');
+});
 
 test('home loads and shows key links', async ({ page }) => {
   await page.goto('/');
@@ -24,16 +30,97 @@ test('home links to LinkedIn as a safe external tab', async ({ page }) => {
   await expect(linkedin).toHaveAttribute('rel', /noopener/);
 });
 
-test('cookie banner appears and can be accepted', async ({ page }) => {
+test('home states years of experience derived from the start date', async ({
+  page,
+}) => {
   await page.goto('/');
-  // Banner shows after a short delay
-  // Banner has a 2s setTimeout on mount; under parallel dev-server load
-  // the initial compile + delay can exceed 5s, so allow more headroom.
+
+  // lib/site.ts counts from 2016-07-26; derive the same number here rather than
+  // hard-coding a value that silently ages out.
+  const start = new Date(2016, 6, 26);
+  const now = new Date();
+  const reachedAnniversary =
+    now.getMonth() > start.getMonth() ||
+    (now.getMonth() === start.getMonth() && now.getDate() >= start.getDate());
+  const years =
+    now.getFullYear() - start.getFullYear() - (reachedAnniversary ? 0 : 1);
+
+  await expect(page.locator('main')).toContainText(
+    `${years}+ years of experience`,
+  );
+});
+
+test('home prose links point at the work and blog pages', async ({ page }) => {
+  await page.goto('/');
+  // The navbar also lives inside <main>, so scope to the page's own section to
+  // assert the inline prose links rather than the nav ones.
+  const prose = page.locator('main > section');
+
   await expect(
-    page.getByText(/I use cookies to analyse traffic and provide features/i),
-  ).toBeVisible({ timeout: 15000 });
-  await page.getByRole('button', { name: /accept/i }).click();
+    prose.getByRole('link', { name: 'work', exact: true }),
+  ).toHaveAttribute('href', '/work');
   await expect(
-    page.getByText(/I use cookies to analyse traffic and provide features/i),
-  ).toBeHidden();
+    prose.getByRole('link', { name: 'blog', exact: true }),
+  ).toHaveAttribute('href', '/blog');
+});
+
+test('home tech badges link out to the right vendors', async ({ page }) => {
+  await page.goto('/');
+
+  const badges = [
+    { name: 'IBM', href: 'https://www.ibm.com' },
+    { name: 'React', href: 'https://react.dev' },
+    { name: '.NET', href: 'https://dotnet.microsoft.com' },
+    { name: 'Azure', href: 'https://azure.microsoft.com/en-gb' },
+  ];
+
+  for (const badge of badges) {
+    const link = page.locator(`main a[href="${badge.href}"]`);
+    await expect(link, badge.name).toHaveCount(1);
+    await expect(link, badge.name).toHaveAttribute('target', '_blank');
+    await expect(link, badge.name).toHaveAttribute('rel', /noopener/);
+  }
+});
+
+test('home lists the personal projects with working outbound links', async ({
+  page,
+}) => {
+  await page.goto('/');
+
+  await expect(
+    page.getByRole('heading', { name: /personal projects/i }),
+  ).toBeVisible();
+
+  const projects = [
+    { title: 'Framemoji', href: 'https://framemoji.ainsworth.dev' },
+    { title: 'BurnRate', href: 'https://burnrate.ainsworth.dev' },
+    { title: 'Invoicer', href: 'https://invoicer.ainsworth.dev' },
+  ];
+
+  for (const project of projects) {
+    const link = page.locator(`main a[href="${project.href}"]`);
+    await expect(link, project.title).toHaveCount(1);
+    await expect(link, project.title).toContainText(project.title);
+    await expect(link, project.title).toHaveAttribute('target', '_blank');
+    await expect(link, project.title).toHaveAttribute('rel', /noreferrer/);
+    // Each card carries a description, so an empty entry is caught.
+    await expect(link.locator('p').first(), project.title).not.toBeEmpty();
+  }
+});
+
+test('home preloads the avatar in webp', async ({ page }) => {
+  await page.goto('/');
+
+  // app/home-preloads.tsx injects this during the server render. It currently
+  // emits once per stream flush rather than once per page, so assert the intent
+  // (the preload is present and points at the hashed avatar) rather than a
+  // count that would encode the duplication.
+  const preloads = page.locator(
+    'link[rel="preload"][as="image"][type="image/webp"]',
+  );
+  expect(await preloads.count()).toBeGreaterThan(0);
+  await expect(preloads.first()).toHaveAttribute(
+    'href',
+    `/images/home/avatar-${AVATAR_VERSION}.webp`,
+  );
 });
