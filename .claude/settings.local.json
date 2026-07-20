@@ -48,7 +48,25 @@
       "Bash(git checkout *)",
       "Bash(git commit *)",
       "Bash(git restore *)",
-      "Bash(gh run *)"
+      "Bash(gh run *)",
+      "Bash(npm audit *)",
+      "Bash(git -C /Users/sam/dev/personal/ainsworth.dev status)",
+      "Bash(git -C /Users/sam/dev/personal/ainsworth.dev add app/blog/\\\\[slug\\\\]/page.tsx lib/db/queries.ts)",
+      "Bash(git -C /Users/sam/dev/personal/ainsworth.dev add next.config.ts)",
+      "Bash(git -C /Users/sam/dev/personal/ainsworth.dev add app/blog/\\\\[slug\\\\]/page.tsx components/blog-content.tsx)",
+      "Bash(git -C /Users/sam/dev/personal/ainsworth.dev add app/layout.tsx)",
+      "Bash(curl -sI https://ainsworth.dev/_next/static/chunks/0q_8.tqs5n-zm.js)",
+      "Bash(curl -sI \"https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496\")",
+      "Bash(curl -sI \"https://ainsworth.dev/cdn-cgi/zaraz/s.js\")",
+      "Bash(curl -s https://ainsworth.dev/_next/static/chunks/0q_8.tqs5n-zm.js -o /private/tmp/claude-501/-Users-sam-dev-personal-ainsworth-dev/13f9eb03-4021-480f-9efd-216d216a0f43/scratchpad/chunk.js)",
+      "WebSearch",
+      "WebFetch(domain:www.spasov.me)",
+      "WebFetch(domain:github.com)",
+      "Bash(gh pr *)",
+      "Bash(npx playwright *)",
+      "Bash(PLAYWRIGHT_BASE_URL=http://localhost:3099 PLAYWRIGHT_SKIP_WEBSERVER=1 npm run e2e)",
+      "Bash(rm -rf /private/tmp/claude-501/-Users-sam-dev-personal-ainsworth-dev/13f9eb03-4021-480f-9efd-216d216a0f43/scratchpad/report)",
+      "Bash(unzip -oq report.zip -d report/)"
     ],
     "deny": []
   }
