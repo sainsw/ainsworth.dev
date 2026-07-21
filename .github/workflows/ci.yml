@@ -1,4 +1,4 @@
-name: CI (lint, typecheck, unit tests, e2e)
+name: CI (lint, typecheck, unit tests)
 
 on:
   push:
@@ -49,82 +49,3 @@ jobs:
         env:
           SKIP_CV: '1'
         run: npm run build-only
-
-  e2e:
-    name: E2E (Playwright)
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    # Runs against a production build on the runner rather than a deployment:
-    # no Vercel secrets, no deploy, and none of the on-demand compile races that
-    # make `next dev` flaky. e2e.yml covers the deployed artifact separately.
-    env:
-      SKIP_CV: '1'
-      # Cloudflare's published always-passes test keys (see .env.example). Not
-      # secrets — they only exist so the widget renders instead of warning.
-      NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA'
-      TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: '22'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Resolve Playwright version
-        id: playwright
-        # Cache on the resolved version, never the range in package.json — a
-        # caret bump would otherwise restore browsers for the wrong release.
-        run: |
-          echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-
-      - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
-
-      - name: Install Playwright system dependencies
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        # The browser binaries are cached but the OS packages they link against
-        # are not part of the runner image.
-        run: npx playwright install-deps
-
-      - name: Generate version file
-        run: npm run generate-version
-
-      - name: Production build
-        run: npm run build-only
-
-      - name: Run Playwright
-        # playwright.config.ts starts this via its webServer block and waits for
-        # http://localhost:3000 before the first test.
-        env:
-          PLAYWRIGHT_WEB_COMMAND: npx next start
-        run: npm run e2e
-
-      - name: Upload Playwright report
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 14
-
-      - name: Upload failure traces and video
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-traces
-          path: test-results/
-          retention-days: 14
