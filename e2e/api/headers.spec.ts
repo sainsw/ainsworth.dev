@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { type APIRequestContext, expect, test } from '@playwright/test';
 import {
   IMMUTABLE_ASSETS,
   PAGE_ROUTES,
@@ -73,14 +73,29 @@ test('CSP never allows unsafe-eval outside development', async ({
 // the last one wins for a repeated key, so the broad directory rules must come
 // before the content-hashed exceptions. These two tests are what catches a
 // reordering that silently downgrades the hashed assets.
+//
+// Against a deployment, a plain request can be answered from the CDN edge with
+// whatever Cache-Control was stored before the last deploy — a snapshot of the
+// old config, not the current one. A unique query string forces a miss so these
+// assert what the origin is configured to send. Next matches header rules on
+// the path, so the parameter does not change which rule applies.
+const originHeaders = async (
+  request: APIRequestContext,
+  path: string,
+): Promise<Record<string, string>> => {
+  const res = await request.get(`${path}?cache-bust=${Date.now()}-${count++}`);
+  expect(res.status(), path).toBe(200);
+  return res.headers();
+};
+
+let count = 0;
 
 test('content-hashed assets are cached immutably for a year', async ({
   request,
 }) => {
   for (const asset of IMMUTABLE_ASSETS) {
-    const res = await request.get(asset);
-    expect(res.status(), asset).toBe(200);
-    expect(res.headers()['cache-control'], asset).toBe(
+    const headers = await originHeaders(request, asset);
+    expect(headers['cache-control'], asset).toBe(
       'public, max-age=31536000, immutable',
     );
   }
@@ -88,9 +103,8 @@ test('content-hashed assets are cached immutably for a year', async ({
 
 test('unversioned assets revalidate daily instead', async ({ request }) => {
   for (const asset of REVALIDATED_ASSETS) {
-    const res = await request.get(asset);
-    expect(res.status(), asset).toBe(200);
-    expect(res.headers()['cache-control'], asset).toBe(
+    const headers = await originHeaders(request, asset);
+    expect(headers['cache-control'], asset).toBe(
       'public, max-age=86400, must-revalidate',
     );
   }
