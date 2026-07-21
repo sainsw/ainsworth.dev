@@ -94,6 +94,10 @@ export async function suppressCookieBanner(
   ]);
 }
 
+/** True only for a local server — used to gate specs that write real data. */
+export const isLocalhost = (baseURL: string | undefined) =>
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(baseURL ?? '');
+
 /**
  * Stops components/view-tracker.tsx writing a view for every post the suite
  * opens. Without this a run against a deployment inflates the real counters by

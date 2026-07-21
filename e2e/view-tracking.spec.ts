@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
+  isLocalhost,
   POSTS,
   prepareContext,
   SETTLE_MS,
@@ -36,7 +37,7 @@ test('prepareContext stops the suite writing view counts', async ({
 test.describe('with the tracker allowed through', () => {
   test.beforeEach(async ({ context, baseURL }, testInfo) => {
     testInfo.skip(
-      !/^https?:\/\/(localhost|127\.0\.0\.1)/.test(baseURL ?? ''),
+      !isLocalhost(baseURL),
       'writes real view counts — localhost only',
     );
     await suppressCookieBanner(context, baseURL ?? '');
