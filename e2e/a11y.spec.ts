@@ -1,10 +1,5 @@
 import { expect, test } from '@playwright/test';
-import {
-  PAGE_ROUTES,
-  POSTS,
-  prepareContext,
-  ROUTES_WITHOUT_H1,
-} from './helpers';
+import { PAGE_ROUTES, POSTS, prepareContext } from './helpers';
 
 const ROUTES = [...PAGE_ROUTES, `/blog/${POSTS[0].slug}`];
 
@@ -21,15 +16,17 @@ test('every page declares British English as its language', async ({
   }
 });
 
-test('no page has more than one h1', async ({ page }) => {
+test('every page has exactly one h1', async ({ page }) => {
   for (const route of ROUTES) {
     await page.goto(route);
-    const count = await page.locator('h1').count();
 
-    expect(count, `${route} h1 count`).toBeLessThanOrEqual(1);
-    if (!ROUTES_WITHOUT_H1.includes(route)) {
-      expect(count, `${route} h1 count`).toBe(1);
-    }
+    const headings = page.locator('h1');
+    await expect(headings, `${route} h1 count`).toHaveCount(1);
+    // An empty h1 is as useless to a screen reader as a missing one.
+    expect(
+      (await headings.first().innerText()).trim().length,
+      `${route} h1 text`,
+    ).toBeGreaterThan(0);
   }
 });
 

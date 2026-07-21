@@ -1,5 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { PAGE_ROUTES, POSTS, SECURITY_HEADERS } from '../helpers';
+import {
+  IMMUTABLE_ASSETS,
+  PAGE_ROUTES,
+  POSTS,
+  REVALIDATED_ASSETS,
+  SECURITY_HEADERS,
+} from '../helpers';
 
 // next.config.ts applies securityHeaders to `/(.*)`, so they must be present on
 // pages, route handlers and static assets alike — not just the home page.
@@ -63,29 +69,29 @@ test('CSP never allows unsafe-eval outside development', async ({
   expect(csp).not.toContain('unsafe-eval');
 });
 
-test('static assets are publicly cacheable', async ({ request }) => {
-  // Long-lived immutable caching is intended for the content-hashed assets, but
-  // the broader /images/* and /files/* rules in next.config.ts currently win, so
-  // assert the invariant that actually holds: a public, non-trivial max-age.
-  const assets = [
-    '/sprite.svg',
-    '/images/logos/asfc.svg',
-    '/fonts/kaisei-tokumin-bold.ttf',
-  ];
+// The rules in next.config.ts are order-sensitive: every match is applied and
+// the last one wins for a repeated key, so the broad directory rules must come
+// before the content-hashed exceptions. These two tests are what catches a
+// reordering that silently downgrades the hashed assets.
 
-  for (const asset of assets) {
-    const cacheControl = (await request.get(asset)).headers()['cache-control'];
-    expect(cacheControl, asset).toContain('public');
-    expect(cacheControl, asset).toMatch(/max-age=(\d+)/);
-
-    const maxAge = Number(cacheControl.match(/max-age=(\d+)/)?.[1]);
-    expect(maxAge, asset).toBeGreaterThanOrEqual(86_400);
+test('content-hashed assets are cached immutably for a year', async ({
+  request,
+}) => {
+  for (const asset of IMMUTABLE_ASSETS) {
+    const res = await request.get(asset);
+    expect(res.status(), asset).toBe(200);
+    expect(res.headers()['cache-control'], asset).toBe(
+      'public, max-age=31536000, immutable',
+    );
   }
 });
 
-test('fonts are served immutable for a year', async ({ request }) => {
-  const res = await request.get('/fonts/kaisei-tokumin-bold.ttf');
-  expect(res.headers()['cache-control']).toBe(
-    'public, max-age=31536000, immutable',
-  );
+test('unversioned assets revalidate daily instead', async ({ request }) => {
+  for (const asset of REVALIDATED_ASSETS) {
+    const res = await request.get(asset);
+    expect(res.status(), asset).toBe(200);
+    expect(res.headers()['cache-control'], asset).toBe(
+      'public, max-age=86400, must-revalidate',
+    );
+  }
 });

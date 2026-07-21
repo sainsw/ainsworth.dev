@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { preload } from 'react-dom';
 import { ArrowIcon } from '@/components/arrow-icon';
 import { Icon } from '@/components/icon';
 import { PersonalProjects } from '@/components/personal-projects';
-import { SITE_URL, getYearsOfExperience } from '@/lib/site';
-import { HomePreloads } from './home-preloads';
+import { getYearsOfExperience, SITE_URL } from '@/lib/site';
+import { AVATAR_VERSION } from '@/lib/version';
 
 // Inline tech badge - more spacious for use within prose
 function TechBadge({
@@ -29,9 +30,17 @@ function TechBadge({
 }
 
 export default function Page() {
+  // Warms the footer avatar. preload() dedupes by href, unlike a JSX
+  // <link rel="preload">, which React hoists into <head> while also leaving the
+  // authored copy behind. The original useServerInsertedHTML version was worse
+  // still: it re-emitted the tag on every stream flush, ~22 copies per page.
+  preload(`/images/home/avatar-${AVATAR_VERSION}.webp`, {
+    as: 'image',
+    type: 'image/webp',
+  });
+
   return (
     <section>
-      <HomePreloads />
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">
         hello, I'm Sam 👋
       </h1>

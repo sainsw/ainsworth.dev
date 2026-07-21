@@ -20,6 +20,32 @@ test('the banner appears and can be accepted', async ({ page }) => {
   expect((await consentCookie(page))?.value).toBe('accepted');
 });
 
+test('the consent choice is readable back by JavaScript', async ({ page }) => {
+  // The whole consent mechanism depends on DeferredAnalytics reading this back
+  // via document.cookie. A `Secure` flag on a plain-http origin makes WebKit
+  // store the cookie but hide it from script, which silently breaks consent.
+  await page.goto('/');
+  await expect(page.getByText(BANNER)).toBeVisible(APPEAR);
+  await page.getByRole('button', { name: /accept/i }).click();
+  await expect(page.getByText(BANNER)).toBeHidden();
+
+  expect(await page.evaluate(() => document.cookie)).toContain(
+    'cookie-consent=accepted',
+  );
+});
+
+test('the cookie is only marked Secure on a secure origin', async ({
+  page,
+  baseURL,
+}) => {
+  await page.goto('/');
+  await expect(page.getByText(BANNER)).toBeVisible(APPEAR);
+  await page.getByRole('button', { name: /decline/i }).click();
+
+  const cookie = await consentCookie(page);
+  expect(cookie?.secure).toBe(baseURL?.startsWith('https:') === true);
+});
+
 test('the banner can be declined', async ({ page }) => {
   await page.goto('/');
 
@@ -100,20 +126,9 @@ test('analytics stay off when consent is declined', async ({ page }) => {
   expect(analyticsRequests).toEqual([]);
 });
 
-test('accepting consent boots analytics', async ({
-  page,
-  baseURL,
-  browserName,
-}) => {
-  // The consent cookie is written with `Secure`. WebKit refuses to expose a
-  // Secure cookie to document.cookie on an insecure origin (Chromium exempts
-  // localhost), so DeferredAnalytics cannot read consent over plain http there.
-  // Against the real https deployment this runs on every engine.
-  test.skip(
-    browserName === 'webkit' && !!baseURL?.startsWith('http://'),
-    'Secure consent cookie is invisible to JS in WebKit over http',
-  );
-
+test('accepting consent boots analytics', async ({ page }) => {
+  // Runs on every engine and origin: cookie-banner.tsx only adds `Secure` on
+  // https, so WebKit can read the consent cookie over plain http too.
   const analyticsRequests: string[] = [];
   page.on('request', (req) => {
     if (isAnalyticsScript(req.url())) analyticsRequests.push(req.url());

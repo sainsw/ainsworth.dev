@@ -23,8 +23,22 @@ const nextConfig: NextConfig = {
     dangerouslyAllowSVG: false,
   },
   async headers() {
+    // ORDER MATTERS. Every matching rule is applied in turn, so for a repeated
+    // key the LAST match wins. The broad directory rules must therefore come
+    // first and the content-hashed exceptions after them — reversing this
+    // silently downgrades the hashed assets to the 24h default.
     return [
       {
+        source: '/images/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, must-revalidate',
+          },
+        ],
+      },
+      {
+        // Content-hashed by scripts/fetch-avatar.js — safe to keep forever.
         source: '/images/home/avatar-:version.:extension',
         headers: [
           {
@@ -52,30 +66,22 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/images/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=86400, must-revalidate',
-          },
-        ],
-      },
-      {
-        source: '/files/cv-:version.pdf',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          }, // 1 year for versioned files
-        ],
-      },
-      {
         source: '/files/:path*',
         headers: [
           {
             key: 'Cache-Control',
             value: 'public, max-age=86400, must-revalidate',
           }, // 24 hours for non-versioned files
+        ],
+      },
+      {
+        // Content-hashed by scripts/build-cv.sh — safe to keep forever.
+        source: '/files/cv-:version.pdf',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          }, // 1 year for versioned files
         ],
       },
       {

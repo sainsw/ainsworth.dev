@@ -1,5 +1,5 @@
-import dynamic from 'next/dynamic';
 import { parseHTML } from 'linkedom';
+import dynamic from 'next/dynamic';
 import { highlight } from 'sugar-high';
 import { AvatarDemo } from './avatar-demo';
 

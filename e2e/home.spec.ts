@@ -108,19 +108,41 @@ test('home lists the personal projects with working outbound links', async ({
   }
 });
 
-test('home preloads the avatar in webp', async ({ page }) => {
+test('home preloads the avatar exactly once', async ({ page }) => {
   await page.goto('/');
 
-  // app/home-preloads.tsx injects this during the server render. It currently
-  // emits once per stream flush rather than once per page, so assert the intent
-  // (the preload is present and points at the hashed avatar) rather than a
-  // count that would encode the duplication.
+  // app/page.tsx calls ReactDOM.preload(), which dedupes by href. A JSX
+  // <link rel="preload"> would be hoisted into <head> while the authored copy
+  // stayed put, shipping the tag twice.
   const preloads = page.locator(
     'link[rel="preload"][as="image"][type="image/webp"]',
   );
-  expect(await preloads.count()).toBeGreaterThan(0);
-  await expect(preloads.first()).toHaveAttribute(
+  await expect(preloads).toHaveCount(1);
+  await expect(preloads).toHaveAttribute(
     'href',
     `/images/home/avatar-${AVATAR_VERSION}.webp`,
   );
+});
+
+test('the sprite is preloaded once per page, on every page', async ({
+  page,
+}) => {
+  for (const route of ['/', '/work', '/blog', '/contact', '/privacy']) {
+    await page.goto(route);
+    await expect(
+      page.locator('link[rel="preload"][href="/sprite.svg"]'),
+      route,
+    ).toHaveCount(1);
+  }
+});
+
+test('the avatar preload is scoped to the page that needs it', async ({
+  page,
+}) => {
+  // Only the home page renders the footer avatar above the fold, so preloading
+  // it elsewhere would be wasted bytes on every other route.
+  await page.goto('/work');
+  await expect(
+    page.locator('link[rel="preload"][as="image"][type="image/webp"]'),
+  ).toHaveCount(0);
 });

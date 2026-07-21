@@ -6,6 +6,21 @@ test.beforeEach(async ({ context, baseURL }) => {
   await prepareContext(context, baseURL);
 });
 
+test('work page leads with an h1 above its sections', async ({ page }) => {
+  await page.goto('/work');
+
+  const h1 = page.getByRole('heading', { level: 1 });
+  await expect(h1).toHaveCount(1);
+  await expect(h1).toContainText(/work & experience/i);
+
+  // The h1 must precede the first h2, or the outline reads out of order.
+  const firstHeadingLevel = await page
+    .locator('main :is(h1, h2, h3)')
+    .first()
+    .evaluate((el) => el.tagName);
+  expect(firstHeadingLevel).toBe('H1');
+});
+
 test('work page renders every entry from resume.json', async ({ page }) => {
   await page.goto('/work');
 

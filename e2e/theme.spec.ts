@@ -158,11 +158,10 @@ for (const scheme of SCHEMES) {
         if ((await page.locator(selector).count()) === 0) continue;
 
         const { contrast } = await probeColours(page, selector);
-        // 3:1 rather than 4.5:1 — the light-mode comment token measures 4.0:1
-        // and already falls short of AA for body-sized text. This is a
-        // regression floor, not an endorsement of that value.
+        // Code is body-sized text, so the full AA bar applies. The tightest of
+        // these is the comment token at ~4.9:1 in both schemes.
         expect(contrast, `${scheme} ${token} contrast`).toBeGreaterThanOrEqual(
-          3,
+          4.5,
         );
       }
     });

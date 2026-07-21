@@ -5,15 +5,16 @@ import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { preload } from 'react-dom';
 import { CookieConsent } from '@/components/cookie-banner';
 import { DeferredAnalytics } from '@/components/deferred-analytics';
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/nav';
 import {
+  getYearsOfExperience,
   SITE_AUTHOR_EMAIL,
   SITE_NAME,
   SITE_URL,
-  getYearsOfExperience,
 } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
@@ -99,6 +100,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Every page renders icons from the sprite. preload() dedupes by href; a JSX
+  // <link rel="preload"> gets hoisted into <head> while the authored copy stays
+  // put, so the tag shipped twice on every page.
+  preload('/sprite.svg', { as: 'image', type: 'image/svg+xml' });
+
   return (
     <html
       lang="en"
@@ -121,12 +127,6 @@ export default function RootLayout({
          * - Resend is only used on the contact flow; that page preconnects locally.
          */}
         <meta property="og:logo" content={`${SITE_URL}/favicon.ico`} />
-        <link
-          rel="preload"
-          href="/sprite.svg"
-          as="image"
-          type="image/svg+xml"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}

@@ -1,5 +1,6 @@
 import type { BrowserContext } from '@playwright/test';
 import { getBlogPosts } from '@/lib/content/blog';
+import { AVATAR_VERSION, CV_VERSION } from '@/lib/version';
 
 /** Every page route the site serves, in nav order. */
 export const PAGE_ROUTES = [
@@ -58,12 +59,20 @@ export const POSTS_WITH_CODE = POSTS.filter((p) =>
 /** A slug that is guaranteed never to exist, for negative-path assertions. */
 export const MISSING_SLUG = 'definitely-not-a-real-post-xyz';
 
-/**
- * /work is the one page with no <h1> — it opens at <h2>. Tracked as a known
- * gap so the heading-structure test stays strict everywhere else; adding an
- * <h1> to /work later will not break the test.
- */
-export const ROUTES_WITHOUT_H1: readonly string[] = ['/work'];
+/** Content-hashed assets, which must be cached immutably for a year. */
+export const IMMUTABLE_ASSETS = [
+  `/files/cv-${CV_VERSION}.pdf`,
+  `/images/home/avatar-${AVATAR_VERSION}.webp`,
+  `/images/home/avatar-${AVATAR_VERSION}.jpg`,
+  '/fonts/kaisei-tokumin-bold.ttf',
+] as const;
+
+/** Unversioned assets, which must revalidate daily. */
+export const REVALIDATED_ASSETS = [
+  '/sprite.svg',
+  '/images/logos/asfc.svg',
+  '/files/cv.pdf',
+] as const;
 
 /**
  * Pre-answers the cookie banner so it never covers the bottom-left of the page

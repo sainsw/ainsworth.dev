@@ -23,12 +23,17 @@ test('the footer avatar actually loads', async ({ page }) => {
     `/images/home/avatar-${AVATAR_VERSION}.jpg`,
   );
 
+  // The avatar is loading="lazy" and sits below the fold, so on a short
+  // viewport it will not fetch until scrolled to. Scroll first, then assert.
+  await avatar.scrollIntoViewIfNeeded();
+
   // A 404 still renders an <img>, so check the decoded bitmap has real pixels.
+  // naturalWidth is 0 until the bytes decode, which covers "not loaded yet" too.
   await expect
-    .poll(() =>
-      avatar.evaluate(
-        (img: HTMLImageElement) => img.complete && img.naturalWidth,
-      ),
+    .poll(
+      () =>
+        avatar.evaluate((img: HTMLImageElement) => img.naturalWidth as number),
+      { timeout: 15000 },
     )
     .toBeGreaterThan(0);
 });

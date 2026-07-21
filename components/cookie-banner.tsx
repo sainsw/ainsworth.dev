@@ -12,6 +12,21 @@ interface CookieConsentProps {
   learnMoreHref?: string;
 }
 
+/**
+ * Builds the consent cookie, adding `Secure` only on a secure origin. WebKit
+ * refuses to expose a Secure cookie to document.cookie over plain http, so
+ * setting it unconditionally left consent unreadable in Safari on localhost —
+ * the banner would reappear and analytics would never start. Production is
+ * https, so it still gets the flag.
+ */
+function consentCookie(value: 'accepted' | 'declined') {
+  const secure =
+    typeof window !== 'undefined' && window.location.protocol === 'https:'
+      ? '; Secure'
+      : '';
+  return `cookie-consent=${value}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; SameSite=Lax${secure}`;
+}
+
 export function CookieConsent({
   variant = 'mini',
   demo = false,
@@ -26,8 +41,7 @@ export function CookieConsent({
 
   const handleAccept = useCallback(() => {
     setIsOpen(false);
-    document.cookie =
-      'cookie-consent=accepted; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; SameSite=Lax; Secure';
+    document.cookie = consentCookie('accepted');
     if (process.env.NODE_ENV === 'test') {
       setHide(true);
     } else {
@@ -51,8 +65,7 @@ export function CookieConsent({
 
   const handleDecline = useCallback(() => {
     setIsOpen(false);
-    document.cookie =
-      'cookie-consent=declined; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; SameSite=Lax; Secure';
+    document.cookie = consentCookie('declined');
     if (process.env.NODE_ENV === 'test') {
       setHide(true);
     } else {

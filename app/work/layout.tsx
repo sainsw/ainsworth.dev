@@ -11,5 +11,12 @@ export default function WorkLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <div>
+      <h1 className="font-medium text-2xl mb-8 tracking-tighter">
+        work & experience 💼
+      </h1>
+      {children}
+    </div>
+  );
 }
