@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 import { formatLongDate } from '@/lib/date';
-import { MISSING_SLUG, POSTS, suppressCookieBanner } from './helpers';
+import { MISSING_SLUG, POSTS, prepareContext } from './helpers';
 
 test.beforeEach(async ({ context, baseURL }) => {
-  await suppressCookieBanner(context, baseURL ?? '');
+  await prepareContext(context, baseURL);
 });
 
 test('blog index shows posts', async ({ page }) => {

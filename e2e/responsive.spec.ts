@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { PAGE_ROUTES, POSTS, suppressCookieBanner } from './helpers';
+import { PAGE_ROUTES, POSTS, prepareContext } from './helpers';
 
 const ROUTES = [...PAGE_ROUTES, `/blog/${POSTS[0].slug}`];
 
@@ -24,7 +24,7 @@ const overflowOf = (page: import('@playwright/test').Page) =>
   );
 
 test.beforeEach(async ({ context, baseURL }) => {
-  await suppressCookieBanner(context, baseURL ?? '');
+  await prepareContext(context, baseURL);
 });
 
 for (const viewport of VIEWPORTS) {

@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 import { AVATAR_VERSION } from '@/lib/version';
-import { suppressCookieBanner } from './helpers';
+import { prepareContext } from './helpers';
 
 test.beforeEach(async ({ context, baseURL }) => {
-  await suppressCookieBanner(context, baseURL ?? '');
+  await prepareContext(context, baseURL);
 });
 
 test('home loads and shows key links', async ({ page }) => {

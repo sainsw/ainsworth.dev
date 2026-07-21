@@ -3,12 +3,12 @@ import {
   NAV_ITEMS,
   PAGE_ROUTES,
   POSTS,
-  suppressCookieBanner,
+  prepareContext,
   waitForHydration,
 } from './helpers';
 
 test.beforeEach(async ({ context, baseURL }) => {
-  await suppressCookieBanner(context, baseURL ?? '');
+  await prepareContext(context, baseURL);
 });
 
 test('the navbar is present with every link on every page', async ({

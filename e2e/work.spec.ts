@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 import resumeData from '../data/resume.json';
-import { suppressCookieBanner } from './helpers';
+import { prepareContext } from './helpers';
 
 test.beforeEach(async ({ context, baseURL }) => {
-  await suppressCookieBanner(context, baseURL ?? '');
+  await prepareContext(context, baseURL);
 });
 
 test('work page renders every entry from resume.json', async ({ page }) => {

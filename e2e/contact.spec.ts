@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { suppressCookieBanner } from './helpers';
+import { prepareContext } from './helpers';
 
 test.beforeEach(async ({ context, baseURL, page }) => {
-  await suppressCookieBanner(context, baseURL ?? '');
+  await prepareContext(context, baseURL);
   // Block Turnstile so verification deterministically fails client-side.
   // Keeps the suite off Cloudflare and off the mail path.
   await page.route('**/challenges.cloudflare.com/**', (route) => route.abort());

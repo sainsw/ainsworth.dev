@@ -2,14 +2,14 @@ import { expect, test } from '@playwright/test';
 import {
   PAGE_ROUTES,
   POSTS,
+  prepareContext,
   ROUTES_WITHOUT_H1,
-  suppressCookieBanner,
 } from './helpers';
 
 const ROUTES = [...PAGE_ROUTES, `/blog/${POSTS[0].slug}`];
 
 test.beforeEach(async ({ context, baseURL }) => {
-  await suppressCookieBanner(context, baseURL ?? '');
+  await prepareContext(context, baseURL);
 });
 
 test('every page declares British English as its language', async ({

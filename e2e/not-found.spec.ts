@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { MISSING_SLUG, suppressCookieBanner } from './helpers';
+import { MISSING_SLUG, prepareContext } from './helpers';
 
 test.beforeEach(async ({ context, baseURL }) => {
-  await suppressCookieBanner(context, baseURL ?? '');
+  await prepareContext(context, baseURL);
 });
 
 test('an unknown route renders the not-found page with a 404', async ({

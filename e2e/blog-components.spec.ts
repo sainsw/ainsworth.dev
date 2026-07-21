@@ -1,16 +1,12 @@
 import { expect, test } from '@playwright/test';
-import {
-  POSTS_WITH_CODE,
-  POSTS_WITH_MERMAID,
-  suppressCookieBanner,
-} from './helpers';
+import { POSTS_WITH_CODE, POSTS_WITH_MERMAID, prepareContext } from './helpers';
 
 // Posts exercising the custom renderers in components/blog-content.tsx:
 //   - api-design: heading anchors + sugar-high syntax highlighting + mermaid
 //   - seasonal-avatar-borders: the <avatar-demo /> custom element
 
 test.beforeEach(async ({ context, baseURL }) => {
-  await suppressCookieBanner(context, baseURL ?? '');
+  await prepareContext(context, baseURL);
 });
 
 test('code-heavy post renders anchors, highlighted code, and mermaid', async ({

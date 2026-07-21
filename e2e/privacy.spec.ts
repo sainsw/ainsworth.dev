@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { suppressCookieBanner } from './helpers';
+import { prepareContext } from './helpers';
 
 test.beforeEach(async ({ context, baseURL }) => {
-  await suppressCookieBanner(context, baseURL ?? '');
+  await prepareContext(context, baseURL);
 });
 
 test('privacy page renders', async ({ page }) => {

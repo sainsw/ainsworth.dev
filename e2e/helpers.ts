@@ -86,6 +86,25 @@ export async function suppressCookieBanner(
 }
 
 /**
+ * Stops components/view-tracker.tsx writing a view for every post the suite
+ * opens. Without this a run against a deployment inflates the real counters by
+ * one per post per test — the counts are aggregate and cannot be undone.
+ * Only e2e/view-tracking.spec.ts, which asserts the tracker itself, skips it.
+ */
+export async function blockViewTracking(context: BrowserContext) {
+  await context.route('**/api/views/**', (route) => route.abort());
+}
+
+/** The standard per-test setup: quiet banner, no writes to real view counts. */
+export async function prepareContext(
+  context: BrowserContext,
+  baseURL: string | undefined,
+) {
+  await suppressCookieBanner(context, baseURL ?? '');
+  await blockViewTracking(context);
+}
+
+/**
  * Waits until React has hydrated the given element. React attaches
  * `__reactProps$…` / `__reactFiber$…` keys to a DOM node as it hydrates, so
  * their presence is a reliable signal that clicks will be handled by the client

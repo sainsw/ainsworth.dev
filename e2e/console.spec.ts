@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { PAGE_ROUTES, POSTS, SETTLE_MS, suppressCookieBanner } from './helpers';
+import { PAGE_ROUTES, POSTS, prepareContext, SETTLE_MS } from './helpers';
 
 const ROUTES = [...PAGE_ROUTES, `/blog/${POSTS[0].slug}`];
 
@@ -23,7 +23,7 @@ const IGNORED = [
 const isNoise = (text: string) => IGNORED.some((pattern) => pattern.test(text));
 
 test.beforeEach(async ({ context, baseURL }) => {
-  await suppressCookieBanner(context, baseURL ?? '');
+  await prepareContext(context, baseURL);
 });
 
 test('no page logs a console error', async ({ page }) => {
