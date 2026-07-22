@@ -13,7 +13,7 @@ import { POSTS_WITH_MERMAID, prepareContext } from './helpers';
  * shapes, quoted labels (which may span lines), subgraph titles, edge labels,
  * and sequenceDiagram participants and messages.
  */
-export function mermaidLabels(source: string): string[] {
+function mermaidLabels(source: string): string[] {
   // `%%` starts a comment. Prose inside one is never rendered, and parentheses
   // in it would otherwise be picked up as a node label.
   const body = source.replace(/^\s*%%.*$/gm, '');
