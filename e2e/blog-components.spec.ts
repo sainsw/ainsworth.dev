@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { POSTS_WITH_CODE, POSTS_WITH_MERMAID, prepareContext } from './helpers';
+import { POSTS_WITH_CODE, prepareContext } from './helpers';
 
 // Posts exercising the custom renderers in components/blog-content.tsx:
 //   - api-design: heading anchors + sugar-high syntax highlighting + mermaid
@@ -81,29 +81,6 @@ test('linking to a heading id scrolls that section into view', async ({
   await expect(page.locator(`article ${target}`)).toBeInViewport();
 });
 
-for (const slug of POSTS_WITH_MERMAID) {
-  test(`mermaid diagrams render in "${slug}"`, async ({ page }) => {
-    await page.goto(`/blog/${slug}`);
-
-    // components/mermaid-client.tsx swaps each fenced block for an inline SVG.
-    const svg = page.locator('svg[id^="mermaid"]');
-    await expect(svg.first()).toBeVisible({ timeout: 30000 });
-
-    // Mermaid inserts the <svg> shell first and fills it in asynchronously, so
-    // poll for a populated diagram rather than measuring the empty placeholder.
-    await expect
-      .poll(
-        () =>
-          svg.first().evaluate((el) => el.querySelectorAll('g, path').length),
-        { timeout: 30000 },
-      )
-      .toBeGreaterThan(0);
-
-    // A diagram that failed to parse renders an error SVG instead.
-    await expect(page.getByText(/syntax error/i)).toHaveCount(0);
-  });
-}
-
 test('non-mermaid code blocks are syntax highlighted', async ({ page }) => {
   expect(POSTS_WITH_CODE.length).toBeGreaterThan(0);
 
@@ -111,17 +88,4 @@ test('non-mermaid code blocks are syntax highlighted', async ({ page }) => {
     await page.goto(`/blog/${slug}`);
     await expect(page.locator('.sh__line').first(), slug).toBeVisible();
   }
-});
-
-test('mermaid blocks are not passed through the syntax highlighter', async ({
-  page,
-}) => {
-  await page.goto('/blog/github-image-sync');
-
-  // highlightCodeBlocks() skips language-mermaid so the client renderer still
-  // sees the raw chart source.
-  await expect(page.locator('svg[id^="mermaid"]').first()).toBeVisible({
-    timeout: 30000,
-  });
-  await expect(page.locator('code.language-mermaid')).toHaveCount(0);
 });

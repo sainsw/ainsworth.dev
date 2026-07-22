@@ -9,10 +9,16 @@ const skipWebServer = process.env.PLAYWRIGHT_SKIP_WEBSERVER === '1';
 // are excluded from the five browser projects below.
 const apiTests = /e2e\/api\//;
 
+// Screenshot baselines are per-engine and per-platform, so running them on all
+// five projects would mean five times the committed PNGs for no extra signal —
+// a layout regression shows up in one engine as readily as in five. They get a
+// single project pinned to Desktop Chrome.
+const visualTests = /e2e\/visual\//;
+
 const browserProject = (name: string, device: (typeof devices)[string]) => ({
   name,
   use: { ...device },
-  testIgnore: apiTests,
+  testIgnore: [apiTests, visualTests],
 });
 
 export default defineConfig({
@@ -31,6 +37,19 @@ export default defineConfig({
     trace: 'on-first-retry',
     video: 'retain-on-failure',
   },
+  expect: {
+    toHaveScreenshot: {
+      // Measured at 0 diff over 24 repeat runs on one platform, so this only
+      // needs to absorb anti-aliasing noise. Kept deliberately tight: these
+      // pages are mostly background, so even halving the content column width
+      // only moves ~2% of pixels — a looser bar would sleep through real
+      // regressions. Cross-platform rendering differences are handled by
+      // separate -darwin / -linux baselines, not by this tolerance.
+      maxDiffPixelRatio: 0.002,
+      animations: 'disabled',
+      scale: 'css',
+    },
+  },
   webServer: skipWebServer
     ? undefined
     : {
@@ -41,6 +60,13 @@ export default defineConfig({
       },
   projects: [
     { name: 'api', testMatch: apiTests },
+    {
+      name: 'visual',
+      testMatch: visualTests,
+      use: { ...devices['Desktop Chrome'] },
+      // A screenshot diff is a real failure, not a flake to be retried away.
+      retries: 0,
+    },
     browserProject('chromium', devices['Desktop Chrome']),
     browserProject('firefox', devices['Desktop Firefox']),
     browserProject('webkit', devices['Desktop Safari']),

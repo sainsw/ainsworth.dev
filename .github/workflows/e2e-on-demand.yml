@@ -15,6 +15,7 @@ on:
         options:
           - all
           - api
+          - visual
           - chromium
           - firefox
           - webkit
@@ -24,6 +25,11 @@ on:
         description: 'Test an existing URL instead (blank = build this ref and test it on the runner)'
         required: false
         type: string
+      update_snapshots:
+        description: 'Rewrite visual baselines and upload them (Linux ones cannot be generated on macOS)'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: e2e-${{ github.ref }}
@@ -99,7 +105,21 @@ jobs:
           if [ "${{ inputs.projects }}" != "all" ]; then
             args+=("--project=${{ inputs.projects }}")
           fi
+          if [ "${{ inputs.update_snapshots }}" = "true" ]; then
+            args+=("--update-snapshots")
+          fi
           npx playwright test "${args[@]}"
+
+      - name: Upload regenerated visual baselines
+        # Screenshot baselines are per-platform. There is no Linux machine in
+        # the loop locally, so this is how the -linux PNGs get produced: run
+        # with update_snapshots, download this artifact, commit the contents.
+        if: ${{ inputs.update_snapshots && !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines
+          path: e2e/visual/**/*.png
+          retention-days: 7
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
