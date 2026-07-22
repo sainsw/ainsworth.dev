@@ -1,9 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { parseHTML } from 'linkedom';
-import dynamic from 'next/dynamic';
 import { highlight } from 'sugar-high';
+import {
+  DIAGRAM_DIR,
+  decodeEntities,
+  diagramHash,
+  MERMAID_BLOCK_SOURCE,
+} from '@/lib/content/mermaid.mjs';
 import { AvatarDemo } from './avatar-demo';
-
-const MermaidClient = dynamic(() => import('./mermaid-client'));
 
 function slugify(str: string) {
   return str
@@ -48,16 +53,35 @@ function addHeadingAnchors(html: string): string {
   return root.innerHTML;
 }
 
-function decodeEntities(code: string): string {
-  return code
-    .replace(/&#x3C;/g, '<')
-    .replace(/&lt;/g, '<')
-    .replace(/&#x3E;/g, '>')
-    .replace(/&gt;/g, '>')
-    .replace(/&#x26;/g, '&')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
+const diagramCache = new Map<string, string>();
+
+/**
+ * Diagrams are drawn once by scripts/render-mermaid.mjs and committed, so a
+ * post ships the finished SVG rather than the ~196KB of mermaid it used to
+ * take to draw it in the reader's browser.
+ *
+ * A missing file means someone edited a chart without re-running the renderer.
+ * That has to fail the build: falling back to an empty box would ship a post
+ * with a hole in it, and there is no longer a client renderer to cover for it.
+ */
+function loadDiagram(chart: string): string {
+  const hash = diagramHash(chart);
+  const cached = diagramCache.get(hash);
+  if (cached) return cached;
+
+  const file = path.join(process.cwd(), DIAGRAM_DIR, `${hash}.svg`);
+  let svg: string;
+  try {
+    svg = fs.readFileSync(file, 'utf8');
+  } catch {
+    throw new Error(
+      `No pre-rendered diagram for chart ${hash}.\n` +
+        `Run \`npm run render-diagrams\` and commit ${DIAGRAM_DIR}/.`,
+    );
+  }
+
+  diagramCache.set(hash, svg);
+  return svg;
 }
 
 function highlightCodeBlocks(html: string): string {
@@ -79,8 +103,10 @@ type Segment =
   | { type: 'avatar-demo' };
 
 function splitContent(html: string): Segment[] {
-  const pattern =
-    /<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>|<avatar-demo><\/avatar-demo>/g;
+  const pattern = new RegExp(
+    `${MERMAID_BLOCK_SOURCE}|<avatar-demo><\\/avatar-demo>`,
+    'g',
+  );
   const segments: Segment[] = [];
   let lastIndex = 0;
   let match = pattern.exec(html);
@@ -127,7 +153,20 @@ export function BlogContent({ source }: { source: string }) {
               <div key={i} dangerouslySetInnerHTML={{ __html: segment.html }} />
             );
           case 'mermaid':
-            return <MermaidClient key={i} chart={segment.chart} />;
+            return (
+              <div key={i} className="my-6">
+                {/* The SVG carries its own viewBox and width:100%/height:auto,
+                    so it takes its final height on the first layout pass. */}
+                <div
+                  className="mermaid-diagram flex justify-center"
+                  data-testid="mermaid"
+                  data-chart={segment.chart}
+                  dangerouslySetInnerHTML={{
+                    __html: loadDiagram(segment.chart),
+                  }}
+                />
+              </div>
+            );
           case 'avatar-demo':
             return <AvatarDemo key={i} />;
           default:

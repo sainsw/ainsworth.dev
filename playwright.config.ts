@@ -28,8 +28,8 @@ export default defineConfig({
   // when the suite hits many cold routes at once ("Manifest file is empty").
   // A production build has no such race, so this only absorbs local dev noise.
   retries: process.env.CI ? 2 : 1,
-  // Mermaid pulls a large chunk on demand; 30s leaves no headroom for that on a
-  // cold dev-server route.
+  // Diagrams are pre-rendered now, so nothing pulls a large chunk on demand;
+  // this headroom is for `next dev` compiling a cold route.
   timeout: 60_000,
   reporter: [['list'], ['html', { outputFolder: 'playwright-report' }]],
   use: {

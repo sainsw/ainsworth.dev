@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { POSTS_WITH_MERMAID, prepareContext } from './helpers';
 
-// components/mermaid-client.tsx renders each fenced ```mermaid block to an
-// inline SVG, and exposes the chart source on data-chart specifically so tests
-// can compare the two. Counting <g> and <path> elements only proves "something
-// was drawn"; these compare the drawing against what it was asked to draw.
+// scripts/render-mermaid.mjs draws each fenced ```mermaid block at build time
+// and blog-content.tsx inlines the result, keeping the chart source on
+// data-chart specifically so tests can compare the two. Counting <g> and <path>
+// elements only proves "something was drawn"; these compare the drawing against
+// what it was asked to draw — which is what catches a stale committed SVG.
 
 /**
  * Pulls the human-readable labels out of mermaid source.
@@ -74,26 +75,24 @@ async function diagramsOn(page: import('@playwright/test').Page, slug: string) {
       return { source: el.getAttribute('data-chart') ?? '', rendered };
     });
 
-  // Every diagram, not just the first: mermaid inserts the <svg> shell and
-  // fills it asynchronously, one instance at a time.
-  await expect
-    .poll(
-      () =>
-        diagrams.evaluateAll((els) =>
-          els.every((el) => {
-            const svg = el.querySelector('svg');
-            if (!svg) return false;
-            return (
-              [...svg.querySelectorAll('text, tspan, foreignObject')]
-                .map((node) => node.textContent ?? '')
-                .join('')
-                .trim().length > 0
-            );
-          }),
-        ),
-      { timeout: 40000 },
-    )
-    .toBe(true);
+  // Every diagram, not just the first. These arrive in the server HTML, so
+  // there is nothing to wait for — assert directly rather than polling, which
+  // means a diagram that never draws fails here instead of after a 40s timeout.
+  expect(
+    await diagrams.evaluateAll((els) =>
+      els.every((el) => {
+        const svg = el.querySelector('svg');
+        if (!svg) return false;
+        return (
+          [...svg.querySelectorAll('text, tspan, foreignObject')]
+            .map((node) => node.textContent ?? '')
+            .join('')
+            .trim().length > 0
+        );
+      }),
+    ),
+    'every diagram drew its labels',
+  ).toBe(true);
 
   return diagrams.evaluateAll(read);
 }
@@ -125,11 +124,10 @@ for (const slug of POSTS_WITH_MERMAID) {
   });
 }
 
-test('a diagram that fails to parse surfaces an error instead of an empty box', async ({
-  page,
-}) => {
-  // The renderer catches parse failures and shows the source; silently drawing
-  // nothing would be the worse outcome.
+test('no diagram ships as an error box', async ({ page }) => {
+  // A chart that will not parse now fails `npm run render-diagrams` rather than
+  // reaching a reader, and a chart edited without re-running it fails the
+  // build. This is the belt to those braces: whatever did ship is a drawing.
   await page.goto(`/blog/${POSTS_WITH_MERMAID[0]}`);
   await expect(page.getByText(/failed to render diagram/i)).toHaveCount(0);
   await expect(page.getByText(/syntax error/i)).toHaveCount(0);
@@ -140,8 +138,8 @@ test('mermaid blocks are not passed through the syntax highlighter', async ({
 }) => {
   await page.goto('/blog/github-image-sync');
 
-  // highlightCodeBlocks() skips language-mermaid so the client renderer still
-  // sees the raw chart source.
+  // highlightCodeBlocks() skips language-mermaid so the chart source reaches
+  // the build-time renderer, and its hash, unhighlighted.
   const diagrams = await diagramsOn(page, 'github-image-sync');
   expect(diagrams.length).toBeGreaterThan(0);
   await expect(page.locator('code.language-mermaid')).toHaveCount(0);

@@ -48,6 +48,7 @@ The `predev` hook runs [`scripts/ensure-env.js`](scripts/ensure-env.js), which c
 | `npm test` / `npm run test:run` | Vitest (watch / single run) |
 | `npm run e2e` | Playwright E2E |
 | `npm run update-cv` | Regenerate LaTeX from `data/resume.json`, rebuild the CV PDF |
+| `npm run render-diagrams` | Redraw the committed mermaid SVGs under `content/diagrams/` |
 
 ## Testing & CI
 
@@ -66,6 +67,27 @@ Posts are trusted, reviewed HTML files under `content/`. Each post requires a
 `<template data-metadata>` element containing `title`, `publishedAt`, and
 `summary` metadata. The renderer intentionally treats post markup as trusted
 HTML, so do not use it for unreviewed or user-submitted content.
+
+### Diagrams
+
+Fenced ` ```mermaid ` blocks are drawn at build time by
+[`scripts/render-mermaid.mjs`](scripts/render-mermaid.mjs) and committed as SVGs
+under `content/diagrams/`, named by a hash of the chart source. Posts then ship
+the finished drawing instead of the ~196KB of mermaid it used to take to redraw
+it in the reader's browser — which was also the page's layout shift, since the
+placeholder was ~86px and the diagram replacing it is 855–1829px tall.
+
+Each chart is rendered twice, once per colour scheme. The two differ only in
+colour, so the output keeps one copy of the geometry, mermaid's light stylesheet
+as the base, and its dark one under a `prefers-color-scheme` media query; the
+script asserts the two renders agree on geometry and fails if they ever stop.
+Following the system theme is therefore a repaint, with no JavaScript involved.
+
+After adding or editing a diagram, run `npm run render-diagrams` and commit
+`content/diagrams/` — the same local-generation pattern as the CV. The renderer
+needs Playwright's Chromium (`npx playwright install chromium`), so it is not
+part of `npm run build`; a chart with no committed SVG fails the build instead
+of quietly leaving a hole in the post.
 
 ## CV
 

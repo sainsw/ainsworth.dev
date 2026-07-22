@@ -197,8 +197,9 @@ for (const scheme of SCHEMES) {
         )
         .toBeGreaterThan(0);
 
-      // mermaid-client.tsx reads matchMedia and picks the dark/neutral theme;
-      // global.css then overrides the node fill for each scheme.
+      // Both themes are baked into the committed SVG — mermaid's light
+      // stylesheet plus its dark one under a prefers-color-scheme media query —
+      // and global.css then overrides the node fill for each scheme.
       const fill = await page.evaluate(() => {
         const rect = document.querySelector('.mermaid-diagram .node rect');
         if (!rect) return null;
