@@ -9,6 +9,12 @@ import { getViewsCount } from '@/lib/db/queries';
 import { SITE_NAME, SITE_URL } from '@/lib/site';
 import ViewCounter from '../view-counter';
 
+// Render as ISR, not fully static. The page is still prerendered and CDN-cached
+// (so bfcache stays intact — that is why `connection()` was removed), but it now
+// regenerates at most once a minute and re-reads the view count. Without this
+// the count is frozen at build time and only moves on redeploy.
+export const revalidate = 60;
+
 export async function generateStaticParams() {
   return getBlogPosts().map((post) => ({ slug: post.slug }));
 }

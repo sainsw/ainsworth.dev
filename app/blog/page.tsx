@@ -10,6 +10,9 @@ export const metadata = {
   description: 'Read my thoughts on software development, design, and more.',
 };
 
+// ISR so the per-row view counts refresh; see app/blog/[slug]/page.tsx.
+export const revalidate = 60;
+
 export default function BlogPage() {
   const allBlogs = getBlogPosts().sort((a, b) => {
     if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
