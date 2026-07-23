@@ -1,0 +1,105 @@
+<template data-metadata>
+  <meta name="title" content="Diagrams That Draw at Build Time - and Still Follow Your Theme">
+  <meta name="publishedAt" content="2026-07-23">
+  <meta name="summary" content="Mermaid diagrams used to ship ~196KB of JavaScript to redraw a picture that never changes, and the redraw was the page's biggest layout shift. I moved the drawing to build time - and kept dark/light theming with zero JavaScript.">
+</template>
+
+<p>A handful of posts on this site have <a href="/blog/github-image-sync">Mermaid</a> diagrams in them. Every one of those pages was shipping around <strong>196KB of JavaScript</strong> to draw a picture that never changes - and worse, the drawing was the single biggest <strong>layout shift</strong> on the page. I fixed both, and the interesting part was keeping the diagrams <strong>theme-aware without any client JavaScript at all</strong>.</p>
+<p><strong>Result:</strong> a post with a diagram now loads the exact same JavaScript as a post with none. The diagram is in the HTML the server sends, at its final size, and it still switches between light and dark with the rest of the page.</p>
+<hr>
+<h2>The two problems</h2>
+<p>The old setup rendered each diagram in the reader's browser. A <code>&#x3C;MermaidClient></code> component dynamically imported Mermaid, waited for fonts, and drew the SVG on mount. That gave two problems for the price of one:</p>
+<ul>
+<li><strong>Weight.</strong> Mermaid is big. The diagram page pulled <strong>28 scripts / ~370KB</strong>; an otherwise-identical page with no diagram pulled <strong>14 scripts / ~174KB</strong>. So one flowchart cost ~196KB and 14 extra requests.</li>
+<li><strong>Movement.</strong> While all that loaded, the reader saw a small <em>"Rendering diagram…"</em> placeholder - about <strong>86px</strong> tall. The diagram that replaced it is <strong>855px</strong> tall on a phone and <strong>1829px</strong> at desktop width. That's ~800–1700px of content getting shoved down the page, late, and it started <em>above the fold</em>. That is a nasty <a href="https://web.dev/articles/cls">Cumulative Layout Shift</a>.</li>
+</ul>
+<p>Both problems have the same root cause: <strong>the browser was doing work that never changes between page loads.</strong> The diagram source is fixed. The output is deterministic. There's no reason to compute it more than once, let alone once per visitor.</p>
+<hr>
+<h2>Move the drawing to build time</h2>
+<p>The fix is to draw each diagram once, when the site is built, and commit the finished SVG. A small script walks <code>content/</code>, renders every <code>&#x60;&#x60;&#x60;mermaid</code> block with headless Chromium (via Playwright, which was already a dev dependency), and writes the SVG to <code>content/diagrams/</code>, named by a hash of the chart source. The blog renderer then inlines that SVG on the server.</p>
+<p>Here's the pipeline - drawn, naturally, by the pipeline itself:</p>
+<pre><code class="language-mermaid">flowchart TD
+    A["A mermaid block
+    in a post"] --> B[render-mermaid.mjs]
+    B --> C[Render light theme]
+    B --> D[Render dark theme]
+    C --> E{Same geometry?}
+    D --> E
+    E -->|No| F[Fail the build]
+    E -->|Yes| G["One SVG:
+    light + dark styles"]
+    G --> H[Commit to content/diagrams]
+    H --> I[Post ships the finished SVG]
+    I --> J[Reader's browser]
+    J --> K["prefers-color-scheme
+    picks the palette"]
+
+    style G fill:#e8f5e8
+    style K fill:#e1f5fe
+    style F fill:#ff69b4
+</code></pre>
+<p>Because the filename is a content hash, editing a chart orphans its old SVG instead of silently reusing it, and an unchanged chart is a no-op. And because there's no longer a client renderer to paper over mistakes, a chart with <strong>no</strong> committed SVG <em>fails the build</em> rather than leaving a hole in the post. It's generated locally and committed, exactly like the LaTeX CV on this site - Vercel never has to download a browser.</p>
+<h3>Reserving the space</h3>
+<p>Inlining the SVG on the server is half the fix; the other half is making sure it takes its final height on the <em>first</em> layout pass. Mermaid sizes its root in absolute pixels, which a stylesheet then overrides to <code>width:100%</code> - but a stylesheet can arrive late, and a box that's one width for a frame and another the next is the exact shift I was trying to kill. So the script strips the fixed dimensions and lets the <code>viewBox</code> carry the aspect ratio:</p>
+<pre><code class="language-html">&#x3C;!-- before: a fixed box that a late stylesheet has to correct -->
+&#x3C;svg width="447.2" height="1258.1" viewBox="-4 -4 447.2 1258.1">
+
+&#x3C;!-- after: sizes itself from the viewBox, no correction needed -->
+&#x3C;svg viewBox="-4 -4 447.2 1258.1"
+     preserveAspectRatio="xMidYMin meet"
+     style="width:100%;height:auto">
+</code></pre>
+<p>The intrinsic ratio is on the element itself, so the first layout is already the final one. Nothing to shift into.</p>
+<hr>
+<h2>The catch: dark and light mode</h2>
+<p>This is the part I actually enjoyed. The site follows your system's colour scheme - there's no toggle, just <code>prefers-color-scheme</code> - and the diagrams have to follow it too. That was easy when a component re-ran <code>mermaid.render()</code> on every theme change. Pre-rendering to a single static file makes it look impossible: <strong>how does one committed SVG show two different colour schemes?</strong></p>
+<p>The answer starts with an observation. I render each chart <strong>twice</strong> - once in Mermaid's light theme, once in its dark theme - and compared the two outputs. They are <strong>byte-for-byte identical except for colours</strong>. Same node positions, same paths, same text. Only the fills, strokes and the embedded stylesheet differ. The script actually <em>asserts</em> this on every run and fails if the two renders ever disagree on geometry, so the assumption can't quietly rot.</p>
+<p>That means I can keep <strong>one</strong> copy of the drawing and give it <strong>two</strong> sets of colours. Mermaid emits its theme as a <code>&#x3C;style></code> block scoped to the SVG's id, so I take the light stylesheet as the base and drop the dark one into a media query:</p>
+<pre><code class="language-html">&#x3C;svg id="mermaid-efce…" viewBox="…">
+  &#x3C;style>
+    /* Mermaid's light theme - the default */
+    #mermaid-efce… .node rect { fill: #e7e1d8; stroke: #d8d0c4; }
+    #mermaid-efce… .marker   { fill: #b7aa9a; }
+
+    /* Mermaid's dark theme - only when the reader asks for it */
+    @media (prefers-color-scheme: dark) {
+      #mermaid-efce… .node rect { fill: #111827; stroke: #374151; }
+      #mermaid-efce… .marker   { fill: #6b7280; }
+    }
+  &#x3C;/style>
+  …one copy of the geometry…
+&#x3C;/svg></code></pre>
+<p>The browser paints the base rules, and if the reader is in dark mode the media query overrides them. No JavaScript, no <code>matchMedia</code> listener, no re-render - the same mechanism the rest of the page already uses. Switching your OS theme with the page open is now an instant repaint instead of a full diagram redraw.</p>
+<h3>The one thing CSS couldn't reach</h3>
+<p>Almost everything is styleable through that stylesheet - but not quite. When you colour a specific node in Mermaid source:</p>
+<pre><code class="language-text">style G fill:#e8f5e8</code></pre>
+<p>Mermaid writes that as an <strong>inline</strong> <code>style="fill:#e8f5e8 !important"</code> on the shape, and inline <code>!important</code> beats anything a stylesheet can say. Those custom fills were the one part of the drawing a media query couldn't repaint. So the merge lifts them into <strong>CSS custom properties</strong>: the inline fill becomes <code>fill:var(--mmd-c0)</code>, and each theme's stylesheet just declares a different value for <code>--mmd-c0</code>.</p>
+<pre><code class="language-html">/* light */  #mermaid-efce… { --mmd-c0: #e8f5e8; }
+/* dark  */  #mermaid-efce… { --mmd-c0: #064e3b; }
+
+&#x3C;polygon style="fill:var(--mmd-c0) !important" … /></code></pre>
+<p>The <code>!important</code> still wins - but now it resolves to a variable that the theme controls. The green "success" node in the diagram above, and the pink and blue ones, are exactly this. If you're reading in light mode they're pastel; flip to dark and they deepen. Same file, same bytes, both themes.</p>
+<blockquote>
+<p>A quiet bonus: this <em>fixed</em> a bug. The old client renderer baked whichever theme was active when it ran into the SVG's markers, and the site's CSS never overrode arrowhead fills - so an arrowhead could end up frozen at the wrong theme's colour. Driving everything through the media query means the arrows follow the theme now too.</p>
+</blockquote>
+<hr>
+<h2>What it cost, what it saved</h2>
+<ul>
+<li><strong>JavaScript:</strong> the diagram page now loads the <strong>same 12 chunks</strong> as a page with no diagram. Mermaid is gone from the client entirely.</li>
+<li><strong>Layout shift:</strong> the SVG is in the server-sent HTML at its final size. I checked with a <code>MutationObserver</code> - <strong>zero</strong> mutations to the diagram after load. There's nothing left that <em>can</em> shift.</li>
+<li><strong>The trade:</strong> the SVG is inlined, so it lives in the HTML (and the navigation payload) - about <strong>+11KB gzipped</strong> per diagram page, against ~196KB of JavaScript removed. Lopsided in the right direction.</li>
+<li><strong>Responsiveness:</strong> unchanged. The SVG still scales to fit its column; I just moved <em>who</em> draws it, not how it fits.</li>
+</ul>
+<hr>
+<h2>Lessons</h2>
+<ul>
+<li><strong>If the output never changes, don't compute it in the browser.</strong> The diagram source is fixed and the render is deterministic - that's the definition of build-time work.</li>
+<li><strong>Reserve space from the element, not a stylesheet.</strong> A <code>viewBox</code> plus <code>height:auto</code> means the first layout is the final layout, with or without CSS.</li>
+<li><strong>Two renders, one drawing.</strong> When outputs differ only in colour, keep the geometry once and let a media query and a few custom properties carry the theme. Then assert they really do only differ in colour, so a future Mermaid upgrade can't break it silently.</li>
+<li><strong>Fail loudly.</strong> Deleting the fallback renderer meant a missing diagram had to break the build. A visible failure at build time beats an invisible hole in production.</li>
+</ul>
+<h2>Related reading</h2>
+<ul>
+<li><a href="/blog/htmldocsforai">HTML docs for AI</a> - why the content on this site is plain HTML in the first place.</li>
+<li><a href="/blog/github-image-sync">Automating My GitHub Avatar Sync</a> - another "let the build do the boring part" pipeline, and home to one of these diagrams.</li>
+</ul>
