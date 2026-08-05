@@ -12,7 +12,7 @@ const projects: PersonalProject[] = [
     title: 'Framemoji',
     emoji: '🎬',
     description:
-      'Guess the day\'s film from ten emoji clues, then share a card showing how you did.',
+      "Guess the day's film from ten emoji clues, then share a card showing how you did.",
     href: 'https://framemoji.ainsworth.dev',
   },
   {
