@@ -1,15 +1,15 @@
 <template data-metadata>
   <meta name="title" content="BurnRate: keeping meeting costs honest in one page">
   <meta name="publishedAt" content="2025-11-16">
-  <meta name="summary" content="A privacy-first meeting burn calculator built with Next.js 16, React 19, and Tailwind 4 — local-only data, a drift-free 30 fps timer, tap-friendly inputs, and shareable recaps in under 500 lines of UI.">
+  <meta name="summary" content="A meeting burn calculator built with Next.js 16, React 19, and Tailwind 4. The data never leaves the device, the timer does not drift, and the whole UI is under 500 lines.">
 </template>
 
-<p>I wanted a tool that shamed runaway meetings without exposing anyone’s salary spreadsheet. BurnRate became that: a single-page app that keeps every byte on-device, shows a live HH:MM:SS + cost meter, and hands you a copy-ready recap the moment you tap “Stop”. You can try it at <a href="https://burnrate.ainsworth.dev">https://burnrate.ainsworth.dev</a>.</p>
+<p>I wanted a tool that shamed runaway meetings without exposing anyone’s salary spreadsheet. BurnRate became that: a single-page app that keeps every byte on-device, shows a live HH:MM:SS and cost meter, and hands you a copy-ready recap the moment you tap “Stop”. You can try it at <a href="https://burnrate.ainsworth.dev">https://burnrate.ainsworth.dev</a>.</p>
 <h2>The product in three stages</h2>
 <ol>
-<li><strong>Intake form</strong> — pick participants, annual/hourly salary, and currency. It’s a tall card with plus/minus “pill” buttons sized for thumbs, number inputs that keep tabular digits, and a sliding currency selector showing the top five symbols.</li>
-<li><strong>Live meter</strong> — the moment the form submits, the timer card takes over. It shows elapsed time, total spend split into major/minor digits, and cost per minute. Pause/Resume and “Stop &#x26; Recap” buttons flank the meter.</li>
-<li><strong>Summary</strong> — stopping locks the stats, reveals a privacy reminder (“all calculations stayed locally”), and shows the shareable text block plus buttons for Copy/native share and “Start new session” (which wipes state immediately).</li>
+<li>The intake form, where you pick participants, annual or hourly salary, and currency. It’s a tall card with plus/minus “pill” buttons sized for thumbs, number inputs that keep tabular digits, and a sliding currency selector showing the top five symbols.</li>
+<li>The live meter, which takes over the moment the form submits. It shows elapsed time, total spend split into major and minor digits, and cost per minute, with Pause/Resume and “Stop &#x26; Recap” buttons either side.</li>
+<li>The summary. Stopping locks the stats, shows a privacy reminder (“all calculations stayed locally”), and gives you the shareable text block, Copy and native share buttons, and “Start new session”, which wipes state immediately.</li>
 </ol>
 <p>All three states exist inside <code>src/app/page.tsx</code>, so there are <strong>zero route changes</strong>. That makes it feel like a dedicated tool rather than a website you click through.</p>
 <h2>Local-only math with Zustand stores</h2>
@@ -59,14 +59,14 @@ export function buildSessionSalaryPerSecond(participants: number, inputSalary: n
   }, [status, startTime, updateMetrics]);
 }
 </code></pre>
-<p>Because updates stay pure, the UI (both the 5–6 digit total and the HH:MM:SS readout) never jitters — just clean tabular numbers running at ~30 fps.</p>
+<p>Because the updates stay pure, the UI never jitters. Both the 5 to 6 digit total and the HH:MM:SS readout stay clean tabular numbers at around 30 fps.</p>
 <h2>Inputs designed for real meetings</h2>
 <ul>
-<li><strong>Participants &#x26; salary</strong> use chunky accent buttons with distinct hues, so adding a contractor mid-call feels tactile even on a phone. The participants input clamps at 1; salary clamps at 0 and switches steps (<code>$5k</code> annual, <code>$5</code> hourly).</li>
-<li><strong>Annual vs hourly</strong> is a segmented control that also resets the input to sane defaults ($50k / $65) when you toggle it.</li>
-<li><strong>Currency slider</strong> shows the top five symbols and moves a rounded highlight with CSS transforms — faster than a select input. It plugs into <code>useLocaleCurrency</code>, which sniffs <code>navigator.language</code> and preselects USD/EUR/INR/etc. with a dead-simple region map.</li>
+<li>Participants and salary use chunky accent buttons in distinct hues, so adding a contractor mid-call feels tactile even on a phone. The participants input clamps at 1, and salary clamps at 0 and switches steps (<code>$5k</code> annual, <code>$5</code> hourly).</li>
+<li>Annual against hourly is a segmented control that also resets the input to sane defaults, $50k or $65, when you toggle it.</li>
+<li>The currency slider shows the top five symbols and moves a rounded highlight with CSS transforms, which is faster to use than a select input. It plugs into <code>useLocaleCurrency</code>, which sniffs <code>navigator.language</code> and preselects USD, EUR, INR and the rest from a dead-simple region map.</li>
 </ul>
-<p>Everything lives inside Tailwind 4 utility classes, plus a <code>glass-slate</code> helper class defined in <code>globals.css</code> to keep the cards consistent in both light and dark modes.</p>
+<p>Everything lives inside Tailwind 4 utility classes, plus a <code>glass-slate</code> helper defined in <code>globals.css</code> that keeps the cards consistent in light and dark modes.</p>
 <h2>Recaps, copy, and native share</h2>
 <p>Once you stop the timer, BurnRate builds a sentence like:</p>
 <blockquote>
@@ -74,12 +74,12 @@ export function buildSessionSalaryPerSecond(participants: number, inputSalary: n
 </blockquote>
 <ul>
 <li>A <code>useMemo</code> builds the string from the final snapshot, so it never re-renders unnecessarily.</li>
-<li>If <code>navigator.share</code> exists, you get both <strong>Copy</strong> and <strong>Share</strong> buttons; otherwise only Copy shows.</li>
-<li>The share payload always includes per-attendee math and the site URL so it’s useful even if pasted into Slack or email.</li>
+<li>If <code>navigator.share</code> exists you get both Copy and Share buttons, and if it doesn’t you only get Copy.</li>
+<li>The share payload always includes the per-attendee math and the site URL, so it still makes sense pasted into Slack or an email.</li>
 </ul>
-<p>Because data never leaves memory, tapping “Start new session” is effectively an immediate wipe — no modal, no confirm dialog. Privacy is the feature.</p>
-<h2>Visual + metadata polish</h2>
-<p>The layout leans on two Google Fonts via the App Router (<code>Space Grotesk</code> + <code>Geist Mono</code>), gradient backdrops, and “glass” cards to keep the single page feeling premium. A <code>/og</code> route renders a custom image on the Edge runtime with callouts for privacy, accuracy, and frame rate, while <code>lib/site-metadata.ts</code> supplies structured data and Open Graph tags. That means when people share BurnRate, the preview matches the product instantly.</p>
+<p>Because the data never leaves memory, tapping “Start new session” wipes everything on the spot without a modal or a confirm dialog. That’s the whole point of the app.</p>
+<h2>Visual and metadata polish</h2>
+<p>The layout leans on two Google Fonts through the App Router (<code>Space Grotesk</code> and <code>Geist Mono</code>), gradient backdrops, and “glass” cards. A <code>/og</code> route renders a custom image on the Edge runtime with callouts for privacy, accuracy, and frame rate, and <code>lib/site-metadata.ts</code> supplies the structured data and Open Graph tags, so a shared link previews as the actual product.</p>
 <h2>Guardrails I rely on</h2>
 <ul>
 <li><code>npm run test:unit</code> (Vitest) covers the tricky math so I don’t guess. There are fixtures for annual ↔ hourly conversions, per-attendee breakdowns, and timer math (pause offsets, frame snapping, HH:MM:SS formatting). If a refactor changes the WORK_HOURS_PER_YEAR constant or breaks the paused offset math, tests fail instantly.</li>
@@ -88,8 +88,8 @@ export function buildSessionSalaryPerSecond(participants: number, inputSalary: n
 </ul>
 <h2>Takeaways</h2>
 <ul>
-<li><strong>Meetings deserve observability.</strong> A live cost meter reframes “can we wrap?” into dollars-per-second, which is a much easier sell.</li>
-<li><strong>Privacy is a UX feature.</strong> By never persisting anything (and saying so in the UI), people feel safe punching in real salaries.</li>
-<li><strong>Polish lives in the periphery.</strong> Things like the moving currency slider, reset-aware form key, and OG card aren’t required, but they make BurnRate feel intentional — which nudges people to actually use it mid-meeting.</li>
+<li>A live cost meter turns “can we wrap this up?” into dollars per second, and that’s a much easier argument to win.</li>
+<li>Never persisting anything, and saying so in the UI, is what makes people willing to type in real salaries.</li>
+<li>The peripheral things (the moving currency slider, the reset-aware form key, the OG card) aren’t required, but they’re what makes people trust it enough to open mid-meeting.</li>
 </ul>
 <p>If you run a meeting that should have been an email, BurnRate will let everyone see what that indecision costs in real time. Give it a spin at <a href="https://burnrate.ainsworth.dev">https://burnrate.ainsworth.dev</a>.</p>

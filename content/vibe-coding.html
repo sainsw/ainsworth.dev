@@ -1,18 +1,18 @@
 <template data-metadata>
-  <meta name="title" content="Vibe Coding: Shipping Faster Without Shipping Garbage">
+  <meta name="title" content="Vibe coding: shipping faster without shipping garbage">
   <meta name="publishedAt" content="2025-08-05">
-  <meta name="summary" content="How I iteratively polished my personal site using AI help: spot an issue, prompt, push, measure in prod. Biggest win: image optimisation. Hardest part: Mermaid visuals. Guardrails: unit tests and intent-driven prompts.">
+  <meta name="summary" content="Polishing my personal site with AI help, one rough edge at a time: spot an issue, prompt, push, measure in prod. Images were the biggest win. Mermaid was the worst fight.">
 </template>
 
-<p>This wasn't a sprint or a grand plan. I browsed my site like a visitor, found rough spots (CV out of date, blog light on content, slow pages, Lighthouse a11y warnings, weak SEO), and polished them one by one. Think <strong>detailing a car</strong>: fix a scuff, step back, spot the next one.</p>
-<p>The twist: I used an AI assistant to handle the <strong>gruntwork</strong>, while I kept ownership of <strong>intent and review</strong>.</p>
+<p>This wasn't a sprint or a grand plan. I browsed my site like a visitor, found the rough spots (CV out of date, blog light on content, slow pages, Lighthouse a11y warnings, weak SEO), and polished them one at a time. It's closer to detailing a car than building one: fix a scuff, step back, spot the next one.</p>
+<p>The twist is that I gave an AI assistant the gruntwork and kept the intent and the review for myself.</p>
 <h2>What actually moved the needle</h2>
-<h3>1) Images — the highest ROI</h3>
+<h3>1) Images, the highest return by far</h3>
 <ul>
-<li>Converted PNG/JPEG assets to <strong>WebP</strong>, added <code>&#x3C;picture></code> fallbacks.</li>
-<li>Set explicit <strong>width/height</strong> to kill layout shift; <code>loading="lazy"</code> and <code>decoding="async"</code> where safe.</li>
-<li>Right-sized oversized art and logos; kept photos less aggressively compressed to protect quality.</li>
-<li>Result: drastically smaller payloads and snappier LCP — with almost no creative risk.</li>
+<li>Converted PNG and JPEG assets to WebP, with <code>&#x3C;picture></code> fallbacks.</li>
+<li>Set explicit width and height to kill layout shift, plus <code>loading="lazy"</code> and <code>decoding="async"</code> where it was safe.</li>
+<li>Right-sized the oversized art and logos, and kept photos less aggressively compressed to protect quality.</li>
+<li>The payloads got drastically smaller and LCP got quicker, at almost no creative risk.</li>
 </ul>
 <pre><code class="language-tsx">// Example shape used across components
 export function BrandLogo() {
@@ -31,26 +31,26 @@ export function BrandLogo() {
   );
 }
 </code></pre>
-<h3>2) Loading &#x26; CSS</h3>
+<h3>2) Loading and CSS</h3>
 <ul>
 <li>Removed render-blocking CSS; inlined only critical styles and deferred the rest.</li>
 <li>Tightened preconnect/preload hints to match real assets.</li>
 <li>Swapped "transition-all" for targeted transitions to reduce forced reflows.</li>
 </ul>
-<h3>3) Content &#x26; pipeline hygiene</h3>
+<h3>3) Content and pipeline hygiene</h3>
 <ul>
 <li>Hardened the MDX/blog pipeline so content renders the same locally and in prod.</li>
 <li>Kept CV page and CV PDF in lockstep (a small build step prevents drift).</li>
 <li>Added lightweight checks so broken links/image paths don't slip through.</li>
 </ul>
-<h3>4) Accessibility &#x26; SEO</h3>
+<h3>4) Accessibility and SEO</h3>
 <ul>
-<li>Wrote meaningful alt text and clarified semantics.</li>
-<li>Cleaned up titles/descriptions/canonicals; avoided duplicated headings.</li>
-<li>Small changes, but Lighthouse and search previews improved fast.</li>
+<li>Wrote meaningful alt text and clarified the semantics.</li>
+<li>Cleaned up titles, descriptions, and canonicals, and got rid of duplicated headings.</li>
+<li>Small changes, but Lighthouse and the search previews improved fast.</li>
 </ul>
 <h2>Hardest problem: Mermaid visuals</h2>
-<p>Front-end visuals were where AI struggled most — especially Mermaid styling, sizing, and theme. What worked:</p>
+<p>Front-end visuals were where AI struggled most, especially Mermaid styling, sizing, and theming. What worked:</p>
 <ul>
 <li>Treat diagrams as responsive components (container-width, not fixed px).</li>
 <li>Use Mermaid's built-in theming for dark mode instead of ad-hoc CSS.</li>
@@ -87,11 +87,11 @@ export default function Mermaid({ chart }: { chart: string }) {
   H --> C
   G -- Yes --> I[Keep moving]
 </code></pre>
-<p>If I were doing this at work, I'd use a safer loop (local run, tests, preview deployments) — but for a personal site, this speed was fun and productive.</p>
+<p>At work I'd use a safer loop: local run, tests, preview deployments. For a personal site, this speed was fun and productive.</p>
 <h2>Guardrails that actually helped</h2>
 <ul>
 <li>Unit tests as "intent beacons". I add or update tests around the area I'm changing, so the AI has a target and I have a safety net.</li>
-<li>Do-not-touch zones. Config/secrets/infra are off-limits unless I explicitly say otherwise.</li>
+<li>Do-not-touch zones. Config, secrets, and infra are off-limits unless I say otherwise.</li>
 <li>Small diffs with measurable outcomes. If I can't write a one-line "why" in the commit, it's probably too big.</li>
 </ul>
 <pre><code class="language-tsx">// Example: make CLS improvements explicit
@@ -106,16 +106,16 @@ it('renders hero image with fixed dimensions to avoid layout shift', () => {
   expect(img.getAttribute('loading')).toBe('lazy');
 });
 </code></pre>
-<h2>One big "aha"</h2>
+<h2>The one thing I'd tell someone starting out</h2>
 <p>If you're stuck in a prompt loop, it's almost always one of two things:</p>
 <ol>
-<li><strong>Context</strong>. You haven't given enough specific code, constraints, or failure output.</li>
-<li><strong>Model</strong>. You gave everything you can; it's time to switch tools (e.g., try a different model).</li>
+<li>Context. You haven't given it enough specific code, constraints, or failure output.</li>
+<li>Model. You've given it everything you have, and it's time to try a different one.</li>
 </ol>
-<p>Swapping the model broke several deadlocks for me. When context is maxed out, try a different brain.</p>
+<p>Swapping the model broke several deadlocks for me. Once the context is maxed out, a different brain is the only variable left.</p>
 <h2>Related posts</h2>
 <ul>
-<li><a href="/blog/github-image-sync">Automating My GitHub Avatar Sync</a> — small automation, big ROI.</li>
-<li><a href="/blog/seasonal-avatar-borders">Seasonal Avatar Borders</a> — runtime flair via simple date logic.</li>
-<li><a href="/blog/ai-coding-tools">AI Coding Tools: My Journey From Frustration to Flow</a> — what I hand to automation and why.</li>
+<li><a href="/blog/github-image-sync">Automating my GitHub avatar sync</a>, a small automation with a good return.</li>
+<li><a href="/blog/seasonal-avatar-borders">Seasonal avatar borders</a>, runtime flair from simple date logic.</li>
+<li><a href="/blog/ai-coding-tools">AI coding tools: when they started earning their keep</a>, on what I hand to automation and why.</li>
 </ul>

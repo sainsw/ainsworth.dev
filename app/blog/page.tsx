@@ -7,7 +7,8 @@ import ViewCounter from './view-counter';
 
 export const metadata = {
   title: 'Blog',
-  description: 'Read my thoughts on software development, design, and more.',
+  description:
+    'Notes on software development, side projects, and the things I learn building them.',
 };
 
 // ISR so the per-row view counts refresh; see app/blog/[slug]/page.tsx.

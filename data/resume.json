@@ -12,7 +12,7 @@
     "website": "ainsworth.dev"
   },
   
-  "summary": "I am an experienced software engineer and mentor looking for a role that offers new challenges and expands my skill set, particularly within cloud services. I have 8 years of hands-on experience in software development and a BSc in Computer Science.",
+  "summary": "I am a software engineer and mentor looking for a role with new challenges, particularly in cloud services. I have 8 years of hands-on experience in software development and a BSc in Computer Science.",
 
   "experience": [
     {
@@ -20,9 +20,9 @@
       "position": "Senior Full Stack Engineer",
       "dates": "2025 - Present",
       "description": [
-        "In my current role at IBM, I focus on enterprise software development and cloud architecture solutions. I work with cutting-edge technologies to build scalable, reliable software systems that serve enterprise clients globally.",
-        "My responsibilities include applying enterprise design thinking principles, developing cloud-native applications, and implementing modern software architecture patterns. I leverage Azure cloud services, .NET Core, and various enterprise technologies to deliver robust solutions.",
-        "I hold multiple certifications including Enterprise Design Thinking Practitioner and Azure Fundamentals, reflecting my commitment to staying current with industry best practices and emerging technologies."
+        "I work on enterprise software and cloud architecture at IBM, building systems used by clients around the world.",
+        "Day to day that means enterprise design thinking, cloud-native applications, and architecture work, mostly in Azure and .NET Core.",
+        "I am certified as an Enterprise Design Thinking Practitioner and in Azure Fundamentals."
       ],
       "technologies": ["Azure", ".NET Core", "Enterprise Design Thinking", "Cloud Architecture"],
       "iconId": "ibm", 
@@ -34,9 +34,9 @@
       "dates": "2020 - 2025",
       "location": "Stockport",
       "description": [
-        "In this role, I evolved from a mid-level software engineer to a senior developer and team lead. I went from helping to rebuild and improve the company's website, to leading a team of front and back-end developers. I leveraged Azure, Terraform, ASP.NET, and more, and helped to orchestrate the integration of IdentityServer4, driving measurable improvements in load times and customer conversion.",
-        "As a senior developer, I guided a team of five through Scrum methodology while continuously researching and implementing cutting-edge technologies to optimise workflows and elevate performance. I worked hard to foster a collaborative environment in which everyone could demonstrate their strengths. Through this, my team successfully overhauled multi-national customer facing applications in React and Typescript, and moved to .Net Core RESTful APIs, Service Bus architecture and NoSQL data warehousing.",
-        "This role expanded not only my technical expertise but also essential leadership, communication, and problem-solving skills, driving the company's overall success and customer satisfaction."
+        "I joined as a mid-level engineer and left as a senior developer and team lead. I started out helping rebuild the company's website and ended up running a team of front and back-end developers. The work was mostly Azure, Terraform, and ASP.NET, including an IdentityServer4 integration that measurably improved load times and customer conversion.",
+        "As a senior developer I led a team of five under Scrum, and spent a lot of time trying to keep it a place where people could work to their strengths. We rebuilt the multi-national customer facing applications in React and TypeScript, and moved the back end onto .NET Core REST APIs, Service Bus, and NoSQL data warehousing.",
+        "It was the role where I learned to lead rather than just build."
       ],
       "technologies": [".Net Core", "CI/CD", "Azure", "Service Bus", "TDD", "Agile & Scrum", "React", "TypeScript", "Terraform", "IdentityServer4"],
       "iconId": "musicmagpie",
@@ -48,8 +48,8 @@
       "dates": "2016 - 2020", 
       "location": "Wilmslow",
       "description": [
-        "At this consumer-focused firm of solicitors, efficient, user-friendly software played a crucial role in day-to-day operations. My role was to replace system components with best practices and MVC3 under C#, to design and maintain ASP.Net Web Apps and APIs with MSSQL back-end, to implement SSRS reports and TSQL Stored Procedures, and to oversee and expand legal-specific case management systems.",
-        "Through my guidance and expertise, the business adopted industry-standard tools including Git and Jira. I also led exploratory research projects into Azure, and contributed to upgrading data warehouse security to the ISO-27001 standard."
+        "A consumer-facing firm of solicitors that ran its day-to-day operations on its own software. I replaced older system components with C# and MVC3, designed and maintained ASP.Net web apps and APIs on an MSSQL back-end, wrote SSRS reports and TSQL stored procedures, and expanded the legal case management systems.",
+        "I got the business onto Git and Jira, led its first research projects into Azure, and helped upgrade data warehouse security to the ISO-27001 standard."
       ],
       "technologies": ["C# ASP.Net", "MSSQL", "Azure", "Git", "SSRS", "TSQL"],
       "iconId": "bott",
@@ -73,8 +73,8 @@
       "dates": "2013 - 2016",
       "location": "UK",
       "description": [
-        "For my undergraduate dissertation, 'Accelerometer Games for the iOS Platform', I created a physics-based game for iPhone and iPad. This was a great opportunity to learn Swift and SpriteKit, along with the App Store submission process.",
-        "The project was well-received, with the University choosing to use my game as a learning tool and as an example of an exceptional final project during open days."
+        "For my undergraduate dissertation, 'Accelerometer Games for the iOS Platform', I built a physics-based game for iPhone and iPad. It taught me Swift and SpriteKit, and what it actually takes to get something through App Store submission.",
+        "The University kept the game as a teaching tool and showed it at open days as an example of a final project."
       ],
       "iconId": "uol",
       "url": "https://www.liverpool.ac.uk/"
@@ -111,11 +111,11 @@
   "nonTechnicalSkills": [
     "Excellent communication skills with customer- and stakeholder-facing experience.",
     "Strong experience with Agile & Scrum methodologies as a senior engineer of a product team.", 
-    "Methodic and meticulous attention to detail and a drive towards perfection."
+    "Methodical, with close attention to detail."
   ],
 
   "hobbies": [
-    "I have a keen interest in portrait and still-life photography, as it allows me to express my creativity and enjoy cutting-edge (and retro!) tech.",
-    "I'm also passionate about timeless and innovative design, which inspires both my professional and personal projects."
+    "I shoot portrait and still-life photography, which is a good excuse to use both new and very old (and retro!) kit.",
+    "I pay a lot of attention to design, and it shows up in my work and my side projects."
   ]
 }

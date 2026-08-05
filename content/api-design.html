@@ -1,23 +1,19 @@
 <template data-metadata>
-  <meta name="title" content="API Specification Design Guide with OpenAPI, Stoplight & Postman">
+  <meta name="title" content="API specification design guide: OpenAPI, Stoplight and Postman">
   <meta name="publishedAt" content="2024-02-25">
-  <meta name="summary" content="A practical, opinionated playbook for design-first APIs: OpenAPI 3.1, error envelopes, pagination, idempotency, async jobs, versioning, security, and testable contracts with Stoplight and Postman.">
+  <meta name="summary" content="How I design APIs spec-first: OpenAPI 3.1, error envelopes, pagination, idempotency, async jobs, versioning, security, and testable contracts with Stoplight and Postman.">
 </template>
 
-<p>This isn't a "click here to sign up" tutorial. It's the <strong>practical API design playbook</strong> I wish every team started with: design-first using <strong>OpenAPI 3.1</strong>, model the hard edges early (errors, pagination, idempotency), and use <strong>Stoplight</strong> to author/spec-review and <strong>Postman</strong> to test/enforce the contract.</p>
+<p>This isn't a "click here to sign up" tutorial. It's the API design guide I wish every team started with: design-first in OpenAPI 3.1, model the hard edges early (errors, pagination, idempotency), then use Stoplight to author and review the spec and Postman to test the implementation against it.</p>
 <h2>Why design-first?</h2>
 <ul>
-<li><strong>Cheaper changes</strong>: it's easier to fix a schema than to unpick a shipped endpoint.</li>
-<li><strong>Parallel work</strong>: product, back-end, and front-end can move together using mocks.</li>
-<li><strong>Living contract</strong>: the spec is the source of truth for code, docs, and tests.</li>
+<li>Changes are cheaper. It's easier to fix a schema than to unpick a shipped endpoint.</li>
+<li>Work happens in parallel. Product, back-end, and front-end can move together against mocks.</li>
+<li>The contract stays alive. The spec is the source of truth for code, docs, and tests.</li>
 </ul>
-<p><strong>Tooling roles</strong></p>
-<ul>
-<li><strong>Stoplight (or your preferred OpenAPI editor)</strong>: author the spec, validate, mock, and publish docs.</li>
-<li><strong>Postman</strong>: import the spec as a collection, write test assertions, run in CI to keep the implementation honest.</li>
-</ul>
+<p>The tools split cleanly. Stoplight, or whichever OpenAPI editor you prefer, is where you author the spec, validate it, mock it, and publish the docs. Postman imports that spec as a collection, holds the test assertions, and runs in CI to keep the implementation honest.</p>
 <h2>OpenAPI foundation (3.1)</h2>
-<p>Start with <strong>OpenAPI 3.1</strong> (JSON Schema compliant). Keep the structure predictable:</p>
+<p>Start with OpenAPI 3.1, which is JSON Schema compliant. Keep the structure predictable:</p>
 <pre><code class="language-yaml">openapi: 3.1.0
 info:
   title: Example API
@@ -120,13 +116,13 @@ paths:
         '422': { $ref: '#/components/responses/Error' }
         '400': { $ref: '#/components/responses/Error' }
 </code></pre>
-<h3>Key ideas baked in</h3>
+<h3>Ideas baked into that spec</h3>
 <ul>
-<li><strong>Error envelope</strong>: one, consistent shape for all errors (code, message, optional details[]).</li>
-<li><strong>Correlation ID</strong>: echo X-Correlation-ID in logs; include it in error responses.</li>
-<li><strong>Cursor pagination</strong>: stable iteration, better than page=N for large datasets.</li>
-<li><strong>Idempotency</strong>: Idempotency-Key header on creates to make retries safe.</li>
-<li><strong>Version in the path</strong>: /v1/... (simple and explicit).</li>
+<li>Error envelope: one consistent shape for every error, with code, message, and optional details[].</li>
+<li>Correlation ID: echo X-Correlation-ID in the logs and include it in error responses.</li>
+<li>Cursor pagination: stable iteration, and better than page=N once the dataset gets large.</li>
+<li>Idempotency: an Idempotency-Key header on creates, so retries are safe.</li>
+<li>Version in the path: /v1/..., which is simple and explicit.</li>
 </ul>
 <hr>
 <h2>Error taxonomy (make failures boring)</h2>
@@ -141,21 +137,21 @@ paths:
 </code></pre>
 <h3>Suggested codes</h3>
 <ul>
-<li><strong>validation_error</strong> (400)</li>
-<li><strong>authentication_failed</strong> (401)</li>
-<li><strong>authorization_failed</strong> (403)</li>
-<li><strong>resource_not_found</strong> (404)</li>
-<li><strong>conflict</strong> (409)</li>
-<li><strong>rate_limited</strong> (429)</li>
-<li><strong>internal_error</strong> (500)</li>
+<li><code>validation_error</code> (400)</li>
+<li><code>authentication_failed</code> (401)</li>
+<li><code>authorization_failed</code> (403)</li>
+<li><code>resource_not_found</code> (404)</li>
+<li><code>conflict</code> (409)</li>
+<li><code>rate_limited</code> (429)</li>
+<li><code>internal_error</code> (500)</li>
 </ul>
 <p>Return 409 for genuine conflicts (e.g., duplicate unique key), not for validation failures (422).</p>
 <hr>
 <h2>Pagination that won't bite you later</h2>
 <p>Prefer cursor pagination:</p>
 <ul>
-<li><strong>Request</strong>: GET /v1/things?limit=50&#x26;cursor={token}</li>
-<li><strong>Response</strong>: include next_cursor (or null).</li>
+<li>Request: GET /v1/things?limit=50&#x26;cursor={token}</li>
+<li>Response: include next_cursor, or null.</li>
 </ul>
 <p>Cursors should be opaque (base64 data you can change server-side later). If you must support sorting/filters, treat them as part of the cursor calculation so pagination remains stable.</p>
 <hr>
@@ -166,7 +162,7 @@ paths:
 <li>If the same key arrives with the same request, replay the original response (201/200).</li>
 <li>If the same key arrives with a different request body, return 409 conflict.</li>
 </ul>
-<p>This enables aggressive client-side retry without fear.</p>
+<p>That's what lets a client retry aggressively without anyone worrying about duplicates.</p>
 <hr>
 <h2>Long-running work (async jobs)</h2>
 <p>For heavy operations, respond 202 Accepted and let the client poll a job resource (or use webhooks).</p>
@@ -181,8 +177,8 @@ paths:
   API-->>Client: 303 See Other (Location: /v1/reports/{reportId}) OR 200 { status:'failed', error:{...} }
 </code></pre>
 <ul>
-<li><strong>Use Operation-Location (or Location) to point at a status resource.</strong></li>
-<li><strong>When done, 303 See Other to the final resource, or return a terminal failure with the error envelope.</strong></li>
+<li>Use Operation-Location, or Location, to point at a status resource.</li>
+<li>When it's done, 303 See Other to the final resource, or return a terminal failure using the error envelope.</li>
 </ul>
 <p>If your consumers can accept callbacks, consider webhooks:</p>
 <pre><code class="language-mermaid">flowchart TD
@@ -196,20 +192,20 @@ paths:
 <hr>
 <h2>Filtering, sorting, and sparse fields</h2>
 <ul>
-<li><strong>Filters</strong>: explicit query params (?status=active&#x26;created_after=2025-01-01).</li>
-<li><strong>Sorting</strong>: ?sort=created_at or ?sort=-created_at (descending with -).</li>
-<li><strong>Sparse fields</strong>: ?fields=thing:id,name,status to keep payloads small.</li>
+<li>Filters: explicit query params, like ?status=active&#x26;created_after=2025-01-01.</li>
+<li>Sorting: ?sort=created_at, or ?sort=-created_at to go descending.</li>
+<li>Sparse fields: ?fields=thing:id,name,status, to keep payloads small.</li>
 </ul>
 <p>Write these into the spec so code and docs stay aligned.</p>
 <hr>
-<h2>Versioning &#x26; deprecation</h2>
+<h2>Versioning and deprecation</h2>
 <ul>
-<li><strong>Major versions via the path</strong>: /v1, /v2.</li>
-<li><strong>Within a major version, changes must be backwards compatible.</strong></li>
-<li><strong>Deprecate with Deprecation and Sunset headers and a Link: <url>; rel="deprecation" to the migration guide. Set clear dates.</strong></li>
+<li>Major versions go in the path: /v1, /v2.</li>
+<li>Within a major version, every change has to be backwards compatible.</li>
+<li>Deprecate with Deprecation and Sunset headers, plus a Link: <url>; rel="deprecation" pointing at the migration guide. Give it clear dates.</li>
 </ul>
 <hr>
-<h2>Security: OAuth 2.0 (client credentials) + scopes</h2>
+<h2>Security: OAuth 2.0 client credentials, plus scopes</h2>
 <p>Model scopes in the spec and put them on operations:</p>
 <pre><code class="language-yaml">security:
   - OAuth2: [read]
@@ -217,11 +213,11 @@ paths:
 <p>Return 403 with a clear authorization_failed code if the token lacks scope.</p>
 <p>Also model rate limits:</p>
 <ul>
-<li><strong>Response headers</strong>: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After.</li>
-<li><strong>Exhausted? Return 429 with rate_limited.</strong></li>
+<li>Response headers: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After.</li>
+<li>Once the limit is exhausted, return 429 with <code>rate_limited</code>.</li>
 </ul>
 <hr>
-<h2>Stoplight + Postman workflow (enforce the contract)</h2>
+<h2>Stoplight and Postman: enforcing the contract</h2>
 <h3>In Stoplight</h3>
 <ol>
 <li>Author endpoints and schemas.</li>
@@ -248,12 +244,12 @@ pm.test("error envelope shape", () => {
 });
 </code></pre>
 <hr>
-<h2>Naming &#x26; consistency (the boring bits that matter)</h2>
+<h2>Naming and consistency, the boring bits that matter</h2>
 <ul>
-<li><strong>Nouns for resources, verbs for actions</strong> (/v1/users, not /v1/getUsers).</li>
-<li><strong>Plural collections, singular items</strong> (/v1/things vs /v1/things/{id}).</li>
-<li><strong>snake_case in JSON, kebab-case in URLs, and PascalCase only in code</strong> – pick a style and stick to it.</li>
-<li><strong>Keep timestamps UTC in RFC 3339.</strong></li>
+<li>Nouns for resources, verbs for actions: /v1/users, not /v1/getUsers.</li>
+<li>Plural collections, singular items: /v1/things against /v1/things/{id}.</li>
+<li>snake_case in JSON, kebab-case in URLs, PascalCase only in code. Pick a style and stick to it.</li>
+<li>Keep timestamps in UTC, formatted as RFC 3339.</li>
 </ul>
 <hr>
 <h2>Ship it: a small checklist</h2>
@@ -268,4 +264,4 @@ pm.test("error envelope shape", () => {
 <li>Deprecation and versioning policy documented.</li>
 </ul>
 <hr>
-<p>Good APIs make success easy and failure predictable. Start with a spec you can test, model the "unhappy paths" early, and let Stoplight + Postman keep your implementation honest.</p>
+<p>Most of the value here comes from making failures predictable rather than making the happy path elegant. Start with a spec you can test, model the unhappy paths early, and let Stoplight and Postman keep the implementation honest.</p>

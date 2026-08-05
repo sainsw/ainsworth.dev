@@ -1,115 +1,75 @@
 <template data-metadata>
-  <meta name="title" content="Simplifying My Life with iOS Shortcuts">
+  <meta name="title" content="Simplifying my life with iOS Shortcuts">
   <meta name="publishedAt" content="2024-05-05">
-  <meta name="summary" content="Hands-free capture, Focus-aware breaks, and tiny automations that actually stick. My everyday iOS Shortcuts, how they’re built, and why they work.">
+  <meta name="summary" content="The three iOS Shortcuts I actually use every day: idea capture, worry capture, and a break timer that respects Focus.">
 </template>
 
-<p>When I came back to iOS after years on Android, I didn’t want another folder full of novelty automations. I wanted <strong>micro-tools</strong> I’d use every day—under 10 seconds, hands-free when possible, and reliable.</p>
-<p>This post covers the few that stuck: <strong>Log an Idea</strong>, <strong>Log a Worry</strong>, and a <strong>Break Timer</strong> that respects Focus/DND. They’re boring on purpose—and that’s why they work.</p>
+<p>When I came back to iOS after years on Android, I didn’t want another folder full of novelty automations. I wanted micro-tools I’d use every day: under ten seconds, hands-free where possible, and reliable.</p>
+<p>This post covers the few that stuck. There’s <strong>Log an Idea</strong>, <strong>Log a Worry</strong>, and a <strong>Break Timer</strong> that respects Focus and Do Not Disturb. They’re boring on purpose, which is exactly why they’re still on my home screen.</p>
 <hr>
 <h2>Design rules that made these shortcuts stick</h2>
 <ul>
-<li><strong>≤ 10 seconds end-to-end.</strong> If it takes longer, I’ll forget to use it.</li>
-<li><strong>Hands-free first.</strong> Must work via <strong>Siri</strong>, ideally in the car or on a walk.</li>
-<li><strong>One source of truth.</strong> Each shortcut writes to a dedicated list so nothing gets lost.</li>
-<li><strong>Widget + Siri + Watch.</strong> Triggers everywhere I might need them (Home Screen, lock screen, Apple Watch complications).</li>
-<li><strong>No brittle logic.</strong> Prefer stock apps (Reminders/Notes/Calendar) over third-party dependencies.</li>
+<li>Ten seconds or less, end to end. Any longer and I forget to use it.</li>
+<li>Hands-free first. It has to work through Siri, ideally in the car or on a walk.</li>
+<li>One source of truth. Each shortcut writes to a dedicated list so nothing gets lost.</li>
+<li>Triggers everywhere: Home Screen, lock screen, and Apple Watch complications.</li>
+<li>No brittle logic. Stock apps like Reminders, Notes, and Calendar beat third-party dependencies.</li>
 </ul>
 <hr>
-<h2>Shortcut 1: Log an Idea (zero-friction capture)</h2>
-<p><strong>Goal:</strong> Capture ideas the moment they pop up—without opening an app or losing context.</p>
-<p><strong>Why it works</strong></p>
-<ul>
-<li>Dictation into <strong>Reminders</strong> is faster than opening Notes and choosing a folder.</li>
-<li>An <strong>“Ideas”</strong> list keeps capture and review separate from daily todos.</li>
-<li>Timestamping avoids “what did I mean by this?” later.</li>
-</ul>
-<p><strong>What it does</strong></p>
+<h2>Shortcut 1: Log an Idea</h2>
+<p>The goal is capturing an idea the moment it turns up, without opening an app or losing my train of thought.</p>
+<p>It works because dictating into Reminders is faster than opening Notes and picking a folder, an “Ideas” list keeps capture separate from daily todos, and a timestamp saves me from “what did I mean by this?” a week later.</p>
+<p>What it does:</p>
 <ol>
-<li>Prompt for text or <strong>dictate</strong> via Siri: “Hey Siri, Log an Idea”.</li>
-<li>Create a Reminder in a list named <strong>Ideas</strong>.</li>
-<li>Append the current <strong>time</strong> (and optionally location) to the note field.</li>
-<li>(Optional) Tag it <code>#idea</code> so you can build Smart Lists/filters later.</li>
+<li>Prompts for text, or takes dictation via Siri: “Hey Siri, Log an Idea”.</li>
+<li>Creates a Reminder in a list named Ideas.</li>
+<li>Appends the current time, and optionally the location, to the note field.</li>
+<li>Optionally tags it <code>#idea</code> so you can build Smart Lists and filters later.</li>
 </ol>
-<p><strong>Use it</strong></p>
-<ul>
-<li><a href="https://www.icloud.com/shortcuts/29b0d8a0f98148dc87b292fd080f728b">Download ‘Log an Idea’</a></li>
-</ul>
-<p><strong>Make it better</strong></p>
-<ul>
-<li>Add a <strong>daily review</strong> (Calendar event at 17:30 or a repeating Reminder) to triage ideas into tasks or notes.</li>
-<li>On Apple Watch, map it to a <strong>complication</strong> so it’s truly one tap.</li>
-</ul>
+<p><a href="https://www.icloud.com/shortcuts/29b0d8a0f98148dc87b292fd080f728b">Download ‘Log an Idea’</a></p>
+<p>To make it better, add a daily review (a calendar event at 17:30, or a repeating Reminder) to triage ideas into tasks or notes. On Apple Watch, map it to a complication so it really is one tap.</p>
 <hr>
-<h2>Shortcut 2: Log a Worry (CBT-style worry postponement)</h2>
-<p><strong>Goal:</strong> Get intrusive worries out of your head <em>now</em> and deal with them at a specific, calmer time.</p>
-<p><strong>Why it works</strong></p>
-<ul>
-<li>Based on a simple CBT technique: <strong>capture now, review later</strong>.</li>
-<li>Saying it out loud to Siri is often enough to reduce rumination.</li>
-<li>A dedicated <strong>“Worries”</strong> list prevents them from polluting everyday tasks.</li>
-</ul>
-<p><strong>What it does</strong></p>
+<h2>Shortcut 2: Log a Worry</h2>
+<p>The goal is getting an intrusive worry out of your head <em>now</em> and dealing with it at a specific, calmer time.</p>
+<p>It’s based on a simple CBT technique: capture now, review later. Saying the thing out loud to Siri is often enough on its own to stop the rumination, and a dedicated “Worries” list keeps them from polluting everyday tasks.</p>
+<p>What it does:</p>
 <ol>
-<li>Prompt for the worry (works with dictation in the car).</li>
-<li>Add a Reminder in a list named <strong>Worries</strong> with your text in the note.</li>
-<li>(Optional) Add a <strong>review time</strong> (e.g., today 19:00) so you <em>know</em> you’ll revisit it, then snooze until then.</li>
+<li>Prompts for the worry, which works with dictation in the car.</li>
+<li>Adds a Reminder in a list named Worries with your text in the note.</li>
+<li>Optionally sets a review time, say today at 19:00, so you <em>know</em> you’ll come back to it, then snoozes until then.</li>
 </ol>
-<p><strong>Use it</strong></p>
-<ul>
-<li><a href="https://www.icloud.com/shortcuts/dbf4af57c2f94a32989f709bf2a00834">Download ‘Log a Worry’</a></li>
-</ul>
-<p><strong>Make it better</strong></p>
-<ul>
-<li>Create a repeating <strong>“Worry Review”</strong> event at a consistent hour; batch-process and either resolve, schedule, or delete each item.</li>
-<li>Add a custom <strong>tag</strong> (e.g., <code>#finance</code>, <code>#health</code>) to cluster themes over time.</li>
-</ul>
+<p><a href="https://www.icloud.com/shortcuts/dbf4af57c2f94a32989f709bf2a00834">Download ‘Log a Worry’</a></p>
+<p>To make it better, create a repeating “Worry Review” event at a consistent hour and batch-process the list, resolving, scheduling, or deleting each item. Adding a tag like <code>#finance</code> or <code>#health</code> lets you see themes cluster over time.</p>
 <hr>
-<h2>Shortcut 3: Break Timer (Focus-aware pause button)</h2>
-<p><strong>Goal:</strong> Take a real break without missing important messages—or getting spammed by everything else.</p>
-<p><strong>Why it works</strong></p>
-<ul>
-<li>Toggle a Focus (or DND) <strong>with exceptions</strong> instead of going fully dark.</li>
-<li>The timer <strong>automatically restores</strong> your previous state so you can’t forget to come back.</li>
-</ul>
-<p><strong>What it does</strong></p>
+<h2>Shortcut 3: Break Timer</h2>
+<p>The goal is taking a real break without missing anything important and without being spammed by everything else.</p>
+<p>It works because it toggles a Focus (or DND) with exceptions rather than going fully dark, and because the timer restores your previous state on its own, so you can’t forget to come back.</p>
+<p>What it does:</p>
 <ol>
-<li>Ask how long you want (e.g., 10/15/25 minutes).</li>
-<li>Enable a <strong>Break</strong> Focus or DND with <strong>Allow Notifications From</strong> (favourites/urgent).</li>
-<li>Optionally set a <strong>Slack/Status</strong> message if you want visible signals.</li>
-<li><strong>Wait</strong> for the duration, then restore your normal Focus.</li>
+<li>Asks how long you want, say 10, 15, or 25 minutes.</li>
+<li>Enables a Break Focus or DND with Allow Notifications From set to favourites or urgent.</li>
+<li>Optionally sets a Slack status if you want a visible signal.</li>
+<li>Waits for the duration, then restores your normal Focus.</li>
 </ol>
-<blockquote>
-<p>Tip: Put this on your <strong>lock-screen widget</strong>; if it’s two taps away, you won’t use it.</p>
-</blockquote>
+<p>Put this one on your lock-screen widget. If it’s two taps away, you won’t use it.</p>
 <hr>
-<h2>Setup notes &#x26; troubleshooting</h2>
+<h2>Setup notes and troubleshooting</h2>
 <ul>
-<li><strong>Lists:</strong> Create <strong>Ideas</strong> and <strong>Worries</strong> in <strong>Reminders</strong> first (Shortcuts can do it, but doing it once manually avoids prompts).</li>
-<li><strong>Siri names:</strong> Keep shortcut names short and unique (“Log an Idea”, “Log a Worry”, “Break Time”).</li>
-<li><strong>Widgets:</strong> Long-press Home Screen → <strong>Edit Home Screen</strong> → <strong>+</strong> → <strong>Shortcuts</strong> → pick your shortcuts.</li>
-<li><strong>Apple Watch:</strong> In the Watch app → <strong>Complications</strong> → add Shortcuts for single-tap use.</li>
-<li><strong>Privacy:</strong> Dictations go wherever your default input goes; if sensitive, consider typing or disabling location stamps.</li>
-<li><strong>Reliability:</strong> If Siri says “You’ll need to continue in the app,” add a minimal <strong>Ask for Input</strong> action at the start—oddly, this stabilises hands-free runs.</li>
+<li>Lists: create Ideas and Worries in Reminders first. Shortcuts can do it for you, but doing it once by hand avoids the prompts.</li>
+<li>Siri names: keep shortcut names short and unique (“Log an Idea”, “Log a Worry”, “Break Time”).</li>
+<li>Widgets: long-press the Home Screen → Edit Home Screen → + → Shortcuts, then pick yours.</li>
+<li>Apple Watch: in the Watch app → Complications → add Shortcuts for single-tap use.</li>
+<li>Privacy: dictation goes wherever your default input goes. If the content is sensitive, type it instead, or drop the location stamp.</li>
+<li>Reliability: if Siri says “You’ll need to continue in the app,” add a minimal Ask for Input action at the start. Oddly, that stabilises hands-free runs.</li>
 </ul>
 <hr>
 <h2>When to prefer Shortcuts over dedicated apps</h2>
-<p>Shortcuts shine when the workflow is:</p>
-<ul>
-<li><strong>Simple</strong> (one or two steps),</li>
-<li><strong>Frequent</strong> (you’ll use it daily/weekly), and</li>
-<li><strong>Better hands-free</strong> (driving, walking, or in a queue).</li>
-</ul>
-<p>If you find yourself building 20-step trees, that’s a smell—consider a proper app or a different capture target.</p>
+<p>Shortcuts work best when the workflow is simple (one or two steps), frequent (daily or weekly), and better hands-free, like when you’re driving, walking, or standing in a queue.</p>
+<p>If you find yourself building twenty-step trees, that’s a smell. Reach for a proper app, or a different capture target.</p>
 <hr>
 <h2>Why these survive while others don’t</h2>
-<ul>
-<li>They solve <strong>one real annoyance</strong> each.</li>
-<li>They’re <strong>fast</strong> (no scrolling or mode-switching).</li>
-<li>They are <strong>reviewable</strong> (Ideas/Worries lists aren’t where tasks go to die).</li>
-<li>They’re <strong>available everywhere</strong> (Siri, widget, Watch).</li>
-</ul>
-<p>Small automations compound. The win isn’t a single clever Shortcut—it’s the <strong>friction you never feel again</strong>.</p>
+<p>Each one solves a single real annoyance. Each one is fast, with no scrolling or mode-switching. The Ideas and Worries lists are somewhere I actually go back to, rather than where tasks go to die. And all three are available from Siri, a widget, and the Watch.</p>
+<p>Small automations compound. What you notice after a few months isn’t any single clever Shortcut, it’s all the friction you stopped feeling.</p>
 <hr>
 <h3>Further reading</h3>
 <ul>

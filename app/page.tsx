@@ -48,7 +48,7 @@ export default function Page() {
         <p>I like to keep things simple and practical.</p>
       </div>
       <p className="prose dark:prose-invert">
-        {`I'm a Senior Full Stack Engineer with ${getYearsOfExperience()}+ years of experience in full-stack development and cloud solutions. I currently `}
+        {`I'm a Senior Full Stack Engineer with ${getYearsOfExperience()}+ years of experience. I currently `}
         <Link href="/work" prefetch={true}>
           work
         </Link>
@@ -58,7 +58,7 @@ export default function Page() {
             <Icon id="ibm" height={14} className="shrink-0" decorative={true} />
           </TechBadge>
         </span>
-        {` in Manchester, where I focus on enterprise software development and cloud architecture with `}
+        {` in Manchester, working on enterprise software and cloud architecture with `}
         <span className="not-prose">
           <TechBadge href="https://react.dev">
             <Icon id="react" size={14} className="shrink-0" decorative={true} />
@@ -88,15 +88,14 @@ export default function Page() {
       </p>
       <div className="prose dark:prose-invert">
         <p>
-          I'm passionate about enterprise design thinking and building scalable,
-          reliable software solutions. On my{' '}
+          Most of what I do is enterprise design thinking and getting software
+          to hold up once real traffic hits it. My{' '}
           <Link href="/blog" prefetch={true}>
             blog
-          </Link>
-          , I share insights about software development, cloud technologies,
-          .NET, Azure, and the latest in enterprise software architecture.
-          You'll find content that reflects my experience in leading development
-          teams and implementing modern software practices.
+          </Link>{' '}
+          is write-ups of things I've built and problems I've run into along the
+          way: .NET, Azure, front-end work, and whatever side project currently
+          has my attention.
         </p>
       </div>
 

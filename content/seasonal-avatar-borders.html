@@ -1,11 +1,11 @@
 <template data-metadata>
-  <meta name="title" content="Seasonal Avatar Borders: Runtime Pride Rings">
+  <meta name="title" content="Seasonal avatar borders: a Pride ring that turns itself on">
   <meta name="publishedAt" content="2025-08-07">
-  <meta name="summary" content="Client‑side date logic adds a Pride ring in June and during Manchester Pride week, using layered CSS box‑shadows. Here’s how it works, why it’s lightweight, and how to make it more robust.">
+  <meta name="summary" content="Client-side date logic adds a Pride ring in June and during Manchester Pride week, using layered CSS box-shadows.">
 </template>
 
-<p>I wanted my site to feel alive without adding another manual chore. This component adds a <strong>rainbow ring</strong> to my avatar automatically during <strong>Pride Month (June)</strong> and <strong>Manchester Pride week</strong> — all <strong>at runtime</strong> in the browser based on client date/time.</p>
-<h2>Architecture (Runtime, Not Build)</h2>
+<p>I wanted my site to feel alive without adding another manual chore. This component puts a rainbow ring around my avatar during Pride Month in June and during Manchester Pride week, and it decides at runtime in the browser from the client's date.</p>
+<h2>Architecture: runtime, not build</h2>
 <pre><code class="language-mermaid">flowchart TD
     A[Page Load] --> B[Check Current Date]
     B --> C{Month == 6?}
@@ -24,7 +24,7 @@
     style D fill:#ff69b4
     style F fill:#e1f5fe
 </code></pre>
-<h2>Core Logic (TypeScript, client-side)</h2>
+<h2>Core logic (TypeScript, client-side)</h2>
 <pre><code class="language-tsx">"use client";
 
 import { useEffect, useState } from "react";
@@ -82,16 +82,16 @@ export function PrideAvatar({ children, className = "" }: { children: React.Reac
 </code></pre>
 <h2>Why this approach works</h2>
 <ul>
-<li><strong>Zero deployment coupling.</strong> No build‑time flags or server toggles; the ring appears as soon as the calendar flips.</li>
-<li><strong>Lightweight.</strong> Six hard‑edged <code>box-shadow</code> layers around a small avatar are cheap to paint on modern GPUs.</li>
-<li><strong>Predictable behaviour.</strong> Manchester Pride is derived from the <strong>UK August bank holiday</strong>: the <strong>last Monday of August</strong>, with the ring enabled from the <strong>previous Tuesday</strong> through that Monday.</li>
+<li>There's nothing coupled to a deploy. No build-time flag, no server toggle, and the ring appears the moment the calendar flips.</li>
+<li>Six hard-edged <code>box-shadow</code> layers around a small avatar are cheap to paint on modern GPUs.</li>
+<li>The dates are predictable. Manchester Pride is derived from the UK August bank holiday, the last Monday of August, with the ring on from the previous Tuesday through that Monday.</li>
 </ul>
-<h2>Gotchas &#x26; Improvements</h2>
+<h2>Gotchas and improvements</h2>
 <ul>
-<li><strong>Timezone nuance.</strong> It currently uses the <strong>user’s local time</strong>. If you want UK‑accurate behaviour worldwide, compute dates with <code>Europe/London</code> using <code>Intl.DateTimeFormat</code> or a small helper, then compare.</li>
-<li><strong>Midnight drift.</strong> <code>setInterval(24h)</code> isn’t aligned to midnight and can drift. Optionally schedule the <strong>next run at local midnight</strong> via <code>setTimeout(nextMidnight - now)</code> and then re‑arm.</li>
-<li><strong>Testing/preview.</strong> Add a query flag or env override to force a state for screenshots: e.g., <code>?pride=1</code> or <code>NEXT_PUBLIC_FORCE_PRIDE=true</code>.</li>
-<li><strong>Accessibility.</strong> Provide a fallback ring (already in place), and ensure the avatar’s content remains distinguishable on both light/dark themes. If you animate the ring in future, guard with <code>@media (prefers-reduced-motion)</code>.</li>
+<li>Timezones. It currently uses the user’s local time. For UK-accurate behaviour worldwide, compute the dates in <code>Europe/London</code> with <code>Intl.DateTimeFormat</code> or a small helper, then compare.</li>
+<li>Midnight drift. <code>setInterval(24h)</code> isn’t aligned to midnight and will drift. You can schedule the next run at local midnight with <code>setTimeout(nextMidnight - now)</code> and re-arm each time.</li>
+<li>Testing and preview. Add a query flag or env override to force a state for screenshots, such as <code>?pride=1</code> or <code>NEXT_PUBLIC_FORCE_PRIDE=true</code>.</li>
+<li>Accessibility. There's already a fallback ring, and the avatar needs to stay distinguishable on both light and dark themes. If you animate the ring later, guard it with <code>@media (prefers-reduced-motion)</code>.</li>
 </ul>
 <h2>Usage</h2>
 <pre><code class="language-tsx">import Image from "next/image";
@@ -109,6 +109,6 @@ export default function ProfilePic() {
 <p><avatar-demo></avatar-demo></p>
 <h2>Related posts</h2>
 <ul>
-<li><a href="/blog/github-image-sync">Automating My GitHub Avatar Sync</a> — my avatar image is kept in sync with GitHub automatically.</li>
-<li><a href="/blog/ai-coding-tools">AI Coding Tools: My Journey From Frustration to Flow</a> — how I decide what to automate and why.</li>
+<li><a href="/blog/github-image-sync">Automating my GitHub avatar sync</a>, which keeps the avatar image itself up to date.</li>
+<li><a href="/blog/ai-coding-tools">AI coding tools: when they started earning their keep</a>, on how I decide what to automate.</li>
 </ul>

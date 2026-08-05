@@ -1,0 +1,68 @@
+# ainsworth.dev
+
+Personal site and blog. Next.js App Router, React 19, Tailwind 4, deployed on Vercel.
+
+## Writing prose: read the humanizer first
+
+**Before you write or edit any prose that ships on this site, read
+`.claude/skills/humanizer/SKILL.md` and apply it.** That covers:
+
+- a new post or an edit to an existing one in `content/*.html`
+- the `<meta name="title">` and `<meta name="summary">` in a post's metadata block
+- page copy in `app/**` and `components/**`, including `metadata` exports
+- `data/resume.json`, which feeds both the work page and the generated CV
+- `llms.txt`
+
+In Claude Code the skill is also invocable as `/humanizer`. Reading the file
+directly is fine and does the same job.
+
+The whole site was passed through the humanizer on 2026-08-05. New writing that
+skips it will read visibly differently from everything around it, which is worse
+than never having run it at all.
+
+### The rules that get broken most
+
+Read the skill for all 33 patterns. These four are the ones worth memorising:
+
+1. **No em dashes or en dashes in prose.** Not in posts, not in metadata, not in
+   headings. Use a full stop, a comma, a colon, or brackets. This also covers a
+   spaced hyphen (` - `) and a double hyphen (` -- `) used as a dash. Dashes
+   inside code blocks and mermaid sources are untouched.
+2. **Never invent a fact to make a sentence better.** No number, date, name,
+   benchmark, or citation that isn't already in the source or given by Sam.
+   Opinions and reactions are fine. Facts are not.
+3. **No bolded inline list headers** (`- **Thing:** explanation`) and no
+   mechanical boldface. If a list item is a real pipeline stage, plain
+   `Stage name: explanation` is fine. If the bold label just restates the
+   sentence, write it as prose instead.
+4. **No generic closer.** Don't end a post on "the future looks bright" or a
+   tidy aphorism. End on the last concrete thing you have to say.
+
+### Voice
+
+British English (`optimise`, `analyse`, `behaviour`). First person, contractions,
+specific detail over general claims. Posts are write-ups of things actually built,
+including what broke. Existing posts are the voice sample: `content/burnrate.html`
+and `content/prerendered-mermaid-diagrams.html` are good ones to match.
+
+## Content pipeline
+
+Posts are plain HTML in `content/`, read at request time. A post needs a
+`<template data-metadata>` block with `title`, `publishedAt`, and `summary`.
+
+Mermaid diagrams are pre-rendered at build time into `content/diagrams/` and
+inlined by the server. A ```mermaid block with no committed SVG **fails the
+build** by design. After adding or editing one, run:
+
+```bash
+npm run render-diagrams
+```
+
+## Checks before you call a change done
+
+```bash
+npm run typecheck && npm run lint && npm run test:run
+```
+
+`data/resume.json` also drives the LaTeX CV. Editing it does not rebuild the PDF;
+that needs `npm run update-cv` locally, which requires a LaTeX toolchain.

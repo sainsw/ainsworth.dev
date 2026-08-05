@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: 'Get in touch with Sam Ainsworth - Send a message.',
+  description: 'Send Sam Ainsworth a message.',
 };
 
 export default function ContactLayout({

@@ -12,7 +12,7 @@ const projects: PersonalProject[] = [
     title: 'Framemoji',
     emoji: '🎬',
     description:
-      'Decode the daily film in ten emoji clues. Built as a fast, joyful puzzle with shareable solve cards.',
+      'Guess the day\'s film from ten emoji clues, then share a card showing how you did.',
     href: 'https://framemoji.ainsworth.dev',
   },
   {
@@ -20,7 +20,7 @@ const projects: PersonalProject[] = [
     title: 'BurnRate',
     emoji: '💸',
     description:
-      'Privacy-first meeting cost tracker with a precise live timer, on-device math, and shareable recaps.',
+      'Works out what a meeting is costing while it runs. The maths happens in your browser, so no salary figures leave the device.',
     href: 'https://burnrate.ainsworth.dev',
   },
   {
@@ -28,7 +28,7 @@ const projects: PersonalProject[] = [
     title: 'Invoicer',
     emoji: '🧾',
     description:
-      'Generate polished PDF invoices in-browser with weekday-aware work blocks, local defaults, and offline-ready exports.',
+      'Builds PDF invoices in the browser, with work blocks that know which days are weekends. It remembers your defaults and works offline.',
     href: 'https://invoicer.ainsworth.dev',
   },
 ];

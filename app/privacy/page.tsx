@@ -35,7 +35,7 @@ export default function PrivacyPage() {
           or use the contact form.
         </p>
 
-        <h2>Cookies and Analytics</h2>
+        <h2>Cookies and analytics</h2>
         <p>
           I use a small number of tools to understand performance and usage.
           Optional analytics only run with your consent. Performance

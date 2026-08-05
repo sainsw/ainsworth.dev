@@ -18,7 +18,7 @@ import {
 } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
-const siteDescription = `Senior Software Developer with ${getYearsOfExperience()}+ years experience building scalable web applications. Expertise in .NET, Azure, React, and cloud architecture.`;
+const siteDescription = `Senior Software Developer with ${getYearsOfExperience()}+ years experience, working in .NET, Azure, React, and cloud architecture. Notes on the things I build.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -64,7 +64,7 @@ const structuredData = {
       url: SITE_URL,
       jobTitle: 'Senior Software Developer',
       description:
-        'Senior Software Developer focusing on scalable web applications, cloud architecture, and modern engineering leadership.',
+        'Senior Software Developer working on web applications and cloud architecture, and leading engineering teams.',
       email: `mailto:${SITE_AUTHOR_EMAIL}`,
       sameAs: ['https://www.linkedin.com/in/samainsworth/'],
       image: `${SITE_URL}/placeholder.jpg`,
@@ -86,7 +86,7 @@ const structuredData = {
       url: SITE_URL,
       inLanguage: 'en-GB',
       description:
-        'Senior Software Developer sharing projects, blog posts, and practical insights on building reliable cloud-first software.',
+        'Personal site of Sam Ainsworth: side projects, blog posts, and notes on building software for the cloud.',
       publisher: {
         '@type': 'Person',
         name: SITE_NAME,
