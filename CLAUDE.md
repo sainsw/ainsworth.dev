@@ -10,7 +10,6 @@ Personal site and blog. Next.js App Router, React 19, Tailwind 4, deployed on Ve
 - a new post or an edit to an existing one in `content/*.html`
 - the `<meta name="title">` and `<meta name="summary">` in a post's metadata block
 - page copy in `app/**` and `components/**`, including `metadata` exports
-- `data/resume.json`, which feeds both the work page and the generated CV
 - `llms.txt`
 
 In Claude Code the skill is also invocable as `/humanizer`. Reading the file
@@ -19,6 +18,17 @@ directly is fine and does the same job.
 The whole site was passed through the humanizer on 2026-08-05. New writing that
 skips it will read visibly differently from everything around it, which is worse
 than never having run it at all.
+
+### Do not touch: `data/resume.json`
+
+The CV is Sam's own writing and stays that way. It is out of scope for the
+humanizer and for any other prose edit. Do not rewrite it, tighten it, or run it
+through a style pass, even when its phrasing trips patterns the skill flags
+elsewhere on the site. If something in it looks wrong, say so and leave it.
+
+This is the skill's own rule about not gutting real human prose, applied to the
+one file where it matters most. It feeds both the work page and the generated
+PDF, so an edit here quietly changes a document Sam sends to people.
 
 ### The rules that get broken most
 
@@ -64,5 +74,5 @@ npm run render-diagrams
 npm run typecheck && npm run lint && npm run test:run
 ```
 
-`data/resume.json` also drives the LaTeX CV. Editing it does not rebuild the PDF;
-that needs `npm run update-cv` locally, which requires a LaTeX toolchain.
+If Sam edits `data/resume.json` himself, the PDF does not rebuild with it. That
+needs `npm run update-cv` locally, which requires a LaTeX toolchain.

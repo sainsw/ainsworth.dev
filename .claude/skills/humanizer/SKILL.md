@@ -3,8 +3,9 @@ name: humanizer
 description: |
   Remove signs of AI-generated writing from text. Use when writing or editing ANY
   prose that ships on this site: a new post in content/*.html, an edit to an
-  existing one, page copy in app/ or components/, meta titles and summaries, or
-  data/resume.json. Also use when reviewing prose anywhere. Based on Wikipedia's
+  existing one, page copy in app/ or components/, or meta titles and summaries.
+  Not data/resume.json, which is hand-written and out of scope (see CLAUDE.md).
+  Also use when reviewing prose anywhere. Based on Wikipedia's
   "Signs of AI writing" guide. Detects and fixes patterns including: inflated
   symbolism, promotional language, superficial -ing analyses, vague attributions,
   em dash overuse, rule of three, AI vocabulary words, passive voice, negative
