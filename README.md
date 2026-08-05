@@ -1,8 +1,8 @@
 # ainsworth.dev
 
-My personal site — portfolio, blog, and CV. Live at **[ainsworth.dev](https://ainsworth.dev)**.
+My personal site: portfolio, blog, and CV. Live at **[ainsworth.dev](https://ainsworth.dev)**.
 
-Originally forked from [leerob.io](https://github.com/leerob/leerob.io) — thanks to [leerob](https://github.com/leerob) for the starting point. It has since diverged substantially (Ship of Theseus under construction).
+Originally forked from [leerob.io](https://github.com/leerob/leerob.io), with thanks to [leerob](https://github.com/leerob) for the starting point. It has since diverged substantially (Ship of Theseus under construction).
 
 ## Tech stack
 
@@ -18,7 +18,7 @@ Originally forked from [leerob.io](https://github.com/leerob/leerob.io) — than
 
 ## Running locally
 
-Requires Node.js 22 (see [`.nvmrc`](.nvmrc)).
+Requires Node.js 24 (see [`.nvmrc`](.nvmrc)).
 
 ```bash
 git clone https://github.com/sainsw/ainsworth.dev.git
@@ -27,7 +27,7 @@ npm install
 npm run dev
 ```
 
-The `predev` hook runs [`scripts/ensure-env.js`](scripts/ensure-env.js), which creates a `.env.local` with safe placeholder values on first run. Fill in real values for the features you want to exercise — see [`.env.example`](.env.example):
+The `predev` hook runs [`scripts/ensure-env.js`](scripts/ensure-env.js), which creates a `.env.local` with safe placeholder values on first run. Fill in real values for the features you want to exercise, listed in [`.env.example`](.env.example):
 
 | Variable | Used for |
 | --- | --- |
@@ -74,8 +74,9 @@ Fenced ` ```mermaid ` blocks are drawn at build time by
 [`scripts/render-mermaid.mjs`](scripts/render-mermaid.mjs) and committed as SVGs
 under `content/diagrams/`, named by a hash of the chart source. Posts then ship
 the finished drawing instead of the ~196KB of mermaid it used to take to redraw
-it in the reader's browser — which was also the page's layout shift, since the
-placeholder was ~86px and the diagram replacing it is 855–1829px tall.
+it in the reader's browser. That redraw was also the page's biggest layout
+shift, since the placeholder was ~86px and the diagram replacing it is 855 to
+1829px tall.
 
 Each chart is rendered twice, once per colour scheme. The two differ only in
 colour, so the output keeps one copy of the geometry, mermaid's light stylesheet
@@ -84,7 +85,7 @@ script asserts the two renders agree on geometry and fails if they ever stop.
 Following the system theme is therefore a repaint, with no JavaScript involved.
 
 After adding or editing a diagram, run `npm run render-diagrams` and commit
-`content/diagrams/` — the same local-generation pattern as the CV. The renderer
+`content/diagrams/`, the same local-generation pattern as the CV. The renderer
 needs Playwright's Chromium (`npx playwright install chromium`), so it is not
 part of `npm run build`; a chart with no committed SVG fails the build instead
 of quietly leaving a hole in the post.

@@ -10,7 +10,7 @@ Personal site and blog. Next.js App Router, React 19, Tailwind 4, deployed on Ve
 - a new post or an edit to an existing one in `content/*.html`
 - the `<meta name="title">` and `<meta name="summary">` in a post's metadata block
 - page copy in `app/**` and `components/**`, including `metadata` exports
-- `llms.txt`
+- `README.md` and `llms.txt`
 
 In Claude Code the skill is also invocable as `/humanizer`. Reading the file
 directly is fine and does the same job.
