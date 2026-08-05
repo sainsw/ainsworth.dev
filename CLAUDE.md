@@ -70,9 +70,21 @@ npm run render-diagrams
 
 ## Checks before you call a change done
 
+Run all six, in this order. They mirror `.github/workflows/ci.yml` exactly, and
+a push to `main` runs CI whether or not you did:
+
 ```bash
-npm run typecheck && npm run lint && npm run test:run
+npm run lint && npm run format:check && npm run typecheck && npm run typecheck:tests && npm run test:run && SKIP_CV=1 npm run build-only
 ```
+
+`lint` and `format:check` are **separate Biome commands** and neither implies the
+other. Lint catches correctness, format catches quote style, spacing, and line
+breaks. Running only `lint` is how three pushes went red on 2026-08-05: a string
+written as `'day\'s'` passes lint and fails format, which wants `"day's"`.
+
+`typecheck` covers the app and `typecheck:tests` covers `tests/`, which has its
+own tsconfig. The build is the last gate and the slowest, so run it last, but do
+run it.
 
 If Sam edits `data/resume.json` himself, the PDF does not rebuild with it. That
 needs `npm run update-cv` locally, which requires a LaTeX toolchain.
