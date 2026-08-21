@@ -10,8 +10,13 @@ export function formatLongDate(date: string): string {
   });
 }
 
-export function formatRelativeDate(date: string) {
-  const currentDate = new Date();
+/**
+ * Pure on purpose: the caller passes the clock in. Reading `new Date()` here
+ * would be a build error under `cacheComponents`, which refuses to prerender a
+ * wall-clock read that has no bounded lifetime. See app/blog/relative-date.tsx
+ * for where the clock actually comes from.
+ */
+export function formatRelativeDate(date: string, currentDate: Date) {
   const targetDate = parsePostDate(date);
 
   const yearDiff = currentDate.getFullYear() - targetDate.getFullYear();

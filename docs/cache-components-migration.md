@@ -1,110 +1,114 @@
 # Migrating to Cache Components (`use cache` + `cacheLife`)
 
-Handoff document. This work was scoped out during an architecture review on
-2026-08-21 and deliberately deferred: the review's refactors kept
-`unstable_cache` so that a regression in either piece of work would be
-attributable to one of them. This is the deferred half.
+Done on 2026-08-21. This was scoped out during the architecture review the day
+before and deferred so that a regression in either piece of work would be
+attributable to one of them. This file is now the record of what the migration
+found, not a plan.
 
-## Why this was not done inline
+## The question the handoff could not answer
 
-`lib/views.ts` caches its read with `unstable_cache`, which is legacy API. The
-modern replacement is the `use cache` directive plus `cacheLife`, but that
-requires `cacheComponents: true` in `next.config.ts`, which changes rendering
-semantics for **every** route, not just the one being migrated. Bundling that
-into a refactor of the view counter would have made a rendering regression
-indistinguishable from a counter regression.
+Whether route-segment `revalidate` is rejected, ignored, or honoured once
+`cacheComponents` is on. It is **rejected**, as a hard build error:
 
-## Verified facts (checked against next@16.2.10 in this repo)
-
-- `cacheComponents` is a **top-level** `next.config.ts` key. The
-  `experimental.cacheComponents` form is deprecated, and `experimental.ppr` is
-  deprecated with a note that Partial Prerendering is now reached through
-  `cacheComponents`.
-- `next/cache` exports `cacheLife` and `cacheTag` **unprefixed**, alongside
-  `unstable_cacheLife` / `unstable_cacheTag` aliases. It also exports
-  `updateTag` and `refresh`.
-- `cacheLife` takes either a named profile (`'seconds'`, `'minutes'`, `'hours'`,
-  `'days'`, `'weeks'`, `'max'`, `'default'`) or a custom
-  `{ stale?, revalidate?, expire? }` object in seconds. Custom named profiles
-  can be declared in `next.config.ts`.
-- The built-in `'minutes'` profile is `stale: 300, revalidate: 60,
-  expire: 3600`.
-
-## Unverified — determine this first
-
-The current code sets `export const revalidate = 60` on both
-`app/blog/page.tsx` and `app/blog/[slug]/page.tsx`. I could not confirm from the
-installed package whether route-segment `revalidate` is rejected, ignored, or
-honoured once `cacheComponents` is on. **Establish this before planning the rest
-of the migration**, because it decides whether this is a config change plus two
-file edits or a rewrite of how both blog routes declare freshness.
-
-Cheapest way to find out: set `cacheComponents: true`, run
-`SKIP_CV=1 npm run build-only`, and read what the build says.
-
-## What needs migrating
-
-There is exactly one `unstable_cache` call site in the repo:
-
-- `lib/views.ts` — `cachedRows`, wrapping `SELECT slug, count FROM views`,
-  with `{ revalidate: 60 }`, deliberately aligned to the pages' ISR window.
-
-Everything else that caches is either static generation or HTTP `Cache-Control`
-headers in `next.config.ts`, and is out of scope.
-
-## Constraint that must survive the migration
-
-`lib/views.ts` catches read failures **outside** the cache wrapper, on purpose.
-A rejection thrown through the cache is not stored, so the next request retries.
-Catching inside would cache the failure and pin every count at "unavailable" for
-the whole window even after the database recovered.
-
-`tests/views.test.ts` has a test named
-`retries after a failed read instead of caching the failure` that guards this.
-It fakes the cache with a helper that memoises resolutions only. **If you change
-how caching is wired, that fake has to keep modelling "resolutions cached,
-rejections not", or the test silently stops proving anything.**
-
-Whatever `use cache` does with a throwing function needs checking against this.
-If `use cache` turns out to cache rejections, the current structure is not
-expressible and the failure policy has to be reconsidered rather than
-mechanically ported.
-
-## Suggested sequence
-
-1. Set `cacheComponents: true`, build, and record what breaks. Do not fix
-   anything yet.
-2. Resolve the `export const revalidate` question above.
-3. Migrate `lib/views.ts`'s `cachedRows` to a `use cache` function with
-   `cacheLife({ revalidate: 60 })` or the `'minutes'` profile if its
-   stale/expire values are acceptable.
-4. Re-run `tests/views.test.ts` and confirm the retry test still fails when you
-   deliberately move the catch inside the cache. If it passes with the catch in
-   the wrong place, the test fake needs updating before you trust it.
-5. Audit Suspense boundaries. `app/blog/page.tsx` already wraps its view counts;
-   `app/blog/[slug]/page.tsx` wraps both the date and the count.
-6. Check bfcache and the CDN behaviour are unchanged. There is a comment in
-   `app/blog/[slug]/page.tsx` explaining that `connection()` was removed
-   specifically to keep bfcache intact — do not reintroduce anything that opts
-   the route into fully dynamic rendering.
-
-## Gates
-
-Run all six, in this order, as `CLAUDE.md` requires:
-
-```bash
-npm run lint && npm run format:check && npm run typecheck && npm run typecheck:tests && npm run test:run && SKIP_CV=1 npm run build-only
+```
+Route segment config "revalidate" is not compatible with `nextConfig.cacheComponents`. Please remove it.
 ```
 
-`lint` and `format:check` are separate Biome commands and neither implies the
-other.
+`export const runtime` is rejected the same way, which the handoff did not
+anticipate. `app/api/og/[slug]/route.tsx` was pinning `'nodejs'`, which is the
+default anyway.
 
-Then run the e2e suite, which is the only thing that exercises the counter
-against a real database:
+So this was the larger of the two outcomes the handoff described: a rewrite of
+how both blog routes declare freshness, not a config change plus two edits.
 
-```bash
-npm run e2e
+## Does `use cache` store a rejection?
+
+No, and the failure policy in `lib/views.ts` ported over unchanged.
+
+`use-cache-wrapper.js` closes the entry's stream as errored and still calls
+`cacheHandler.set`. The default handler in
+`server/lib/cache-handlers/default.js` drains that stream inside a `try` and
+only reaches `memoryCache.set` if it drains cleanly, so an errored entry is
+never stored. That is the same property `unstable_cache` had, which is what the
+catch placement in `lib/views.ts` depends on.
+
+Verified by moving the catch inside the boundary and confirming
+`retries after a failed read instead of caching the failure` fails.
+
+## Where the 60-second window went
+
+`lib/views-cache.ts` is a new module holding the one `use cache` function, with
+`cacheLife({ stale: 300, revalidate: 60, expire: 3600 })`. Those are Next's
+built-in `'minutes'` profile written out, so the window is readable at the point
+that owns it.
+
+It is a separate module from `lib/views.ts` for a testing reason. `use cache` is
+a compiler directive and vitest does not honour it, so a directive written
+in-place would mean no caching at all under test: the retry test and the
+"caches a successful read" test would both stop proving anything, exactly the
+trap the handoff warned about. With the boundary at a module edge,
+`tests/views.test.ts` wraps the real export in a fake that memoises resolutions
+only, and both tests still bite.
+
+Confirmed with a stubbed query and a non-empty `DATABASE_URL`, since the local
+`.env.local` has `DATABASE_URL=""` and the counter never runs without it:
+
+```
+├ ○ /blog                          1m      1h
+├ ◐ /blog/[slug]                   1m      1h
 ```
 
-`e2e/api/views.spec.ts` and `e2e/view-tracking.spec.ts` are the relevant specs.
-The ones that write real counts are localhost-gated on purpose.
+That is the same freshness `export const revalidate = 60` used to give, now
+sourced from the read itself.
+
+## Three latent bugs this surfaced
+
+`cacheComponents` refuses to prerender a wall-clock read, because the value gets
+baked into the static shell and never moves again. All three of these were
+already doing that; the build just started saying so.
+
+`lib/date.ts` — `formatRelativeDate` read `new Date()` itself. On `/blog` and
+`/blog/[slug]` that was covered by the 60s ISR window, so it was fine in
+practice, but it is why the routes could not simply drop their segment config.
+It now takes the clock as an argument and gets it from `lib/current-date.ts`, a
+`use cache` function with an hourly window. The visible cost is that "Today" can
+take up to an hour to become "1d ago" after midnight.
+
+`lib/bio.ts` — `getYearsOfExperience` read the clock on `/`, which has no
+revalidate window and never did. The number was frozen at build. Same fix.
+
+`app/privacy/page.tsx` — rendered `new Date()` as the policy's "Last updated"
+date, so the page claimed it had been updated today, every day, however long it
+had actually sat unchanged. That is a false statement on a legal page rather
+than a stale one. It is now a constant, `10 August 2025`, the date of 373e5d0,
+the last commit that changed what the policy says. The 2026-08-05 humanizer pass
+reworded the page without changing its substance.
+
+`e2e/visual/pages.spec.ts` had been masking that date with a comment explaining
+that it "changes daily". The mask stays, because the paragraph's layout is still
+worth comparing, but the comment no longer claims a bug.
+
+## What is deliberately unchanged
+
+`app/layout.tsx` builds its `siteDescription` from `getYearsOfExperience` at
+module scope, and still evaluates it at build time. Static `metadata` has no
+request to hang a cached read off, the number moves at most once a year, and the
+site redeploys far more often than that. It is passed `new Date()` explicitly so
+the build-time evaluation is visible rather than hidden inside the function.
+
+`app/sitemap.ts` and `components/footer.tsx` also read the clock at module scope
+and were not flagged by the build. Neither was touched.
+
+## Tests
+
+- `tests/views-cache.test.ts` (new) pins the 60s window, the query, and the
+  numeric coercion of the driver's count.
+- `tests/blog-revalidate.test.ts` no longer asserts `export const revalidate`.
+  It asserts `cacheComponents` is still on, which is the thing that would now
+  silently refreeze the counts if it were turned off.
+- `tests/date.test.ts` (new) covers `formatRelativeDate` against fixed clocks,
+  which only became possible once it stopped reading its own.
+- `tests/privacy-page.test.tsx` (new) renders the page under two different fake
+  system times and asserts the date does not move.
+- `tests/bio.test.ts` asserts exact years across the anniversary boundary
+  instead of a one-year range.

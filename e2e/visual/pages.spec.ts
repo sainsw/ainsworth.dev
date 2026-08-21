@@ -16,7 +16,8 @@ import { prepareContext } from '../helpers';
 /**
  * Anything derived from the current date or the database, which would otherwise
  * rewrite the baseline on its own schedule:
- *   - "Last updated: 21 July 2026" on /privacy changes daily
+ *   - "Last updated" on /privacy is a fixed constant now, but the mask stays:
+ *     it costs nothing and the paragraph's layout is still compared
  *   - "2mo ago" relative dates change monthly
  *   - "N views" changes whenever anyone reads a post
  *   - "9+ years of experience" and the footer copyright change annually

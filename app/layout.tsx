@@ -11,9 +11,9 @@ import { DeferredAnalytics } from '@/components/deferred-analytics';
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/nav';
 import {
+  email as authorEmail,
   currentEmployer,
   currentJobTitle,
-  email as authorEmail,
   fullName,
   getYearsOfExperience,
   location,
@@ -21,7 +21,10 @@ import {
 import { SITE_URL } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
-const siteDescription = `Senior Software Developer with ${getYearsOfExperience()}+ years experience, working in .NET, Azure, React, and cloud architecture. Notes on the things I build.`;
+// Evaluated once, at build. Unlike the home page's visible copy, which reads a
+// cached clock, static `metadata` has no request to hang off, and the number
+// moves at most once a year. The site redeploys far more often than that.
+const siteDescription = `Senior Software Developer with ${getYearsOfExperience(new Date())}+ years experience, working in .NET, Azure, React, and cloud architecture. Notes on the things I build.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

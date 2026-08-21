@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { formatRelativeDate } from '@/lib/date';
 import type { ViewCount } from '@/lib/views';
+import { RelativeDate } from './relative-date';
 import ViewCounter from './view-counter';
 
 export type BlogRowPost = {
@@ -31,8 +31,10 @@ export function BlogRow({
         </p>
         {typeof viewCount === 'number' ? (
           <p className="text-muted-foreground">
-            <em>{formatRelativeDate(post.metadata.publishedAt)}</em> &mdash;{' '}
-            <ViewCounter count={viewCount} />
+            <em>
+              <RelativeDate date={post.metadata.publishedAt} />
+            </em>{' '}
+            &mdash; <ViewCounter count={viewCount} />
           </p>
         ) : (
           <p className="h-6" />

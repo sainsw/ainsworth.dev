@@ -75,8 +75,31 @@ unavailable: no `DATABASE_URL`, or the query failed. That is deliberately
 distinct from `0`, which is a post nobody has read yet. Callers render nothing
 for `null` rather than claiming zero views.
 
-The catch sits outside `unstable_cache` on purpose, so a failed read is retried
-rather than pinned for the full 60s window. `tests/views.test.ts` guards both.
+The catch sits outside the cache boundary on purpose, so a failed read is
+retried rather than pinned for the full 60s window. `tests/views.test.ts` guards
+both.
+
+## Cache Components is on, and it owns the freshness of the view counts
+
+`next.config.ts` sets `cacheComponents: true`. Two consequences worth knowing
+before you touch a route:
+
+Route-segment config is **rejected at build time**, not ignored. `export const
+revalidate` and `export const runtime` both fail the build. The blog routes used
+to carry `revalidate = 60` to stop the view counts freezing at build; that window
+now comes from `cacheLife` in `lib/views-cache.ts`, which is the only place left
+that declares it.
+
+Reading the wall clock in a prerendered server component is also a build error.
+A bare `new Date()` would be baked into the static shell and never move again,
+which is exactly what it was quietly doing before. Take the clock as an argument
+(`formatRelativeDate`, `getYearsOfExperience`) and get it from
+`lib/current-date.ts`, which is cached and therefore has a bounded lifetime.
+
+`lib/views-cache.ts` is a separate module from `lib/views.ts` on purpose:
+`use cache` is a compiler directive that vitest does not honour, so an in-place
+directive would leave the cache tests silently proving nothing. The module edge
+is the seam the tests fake.
 
 ## Checks before you call a change done
 

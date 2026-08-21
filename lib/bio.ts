@@ -12,9 +12,13 @@ export const currentEmployer = resumeData.experience[0].company;
 
 export const currentJobTitle = resumeData.experience[0].position;
 
-export function getYearsOfExperience(): number {
+/**
+ * Pure on purpose: the caller passes the clock in. A bare `new Date()` here is a
+ * build error under `cacheComponents`, and it was quietly wrong before that too:
+ * the home page is statically prerendered, so the number froze at build time.
+ */
+export function getYearsOfExperience(now: Date): number {
   const startDate = new Date(resumeData.careerStartDate);
-  const now = new Date();
   const years = now.getFullYear() - startDate.getFullYear();
   const hasReachedAnniversary =
     now.getMonth() > startDate.getMonth() ||

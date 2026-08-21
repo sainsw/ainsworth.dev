@@ -1,6 +1,13 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { BlogRow } from '@/app/blog/blog-row';
+
+// RelativeDate is an async server component: it awaits a cached clock, which
+// testing-library cannot render. The date it produces has its own tests in
+// tests/date.test.ts; what matters here is the row around it.
+vi.mock('@/app/blog/relative-date', () => ({
+  RelativeDate: ({ date }: { date: string }) => <span>{date}</span>,
+}));
 
 const post = {
   slug: 'first-post',

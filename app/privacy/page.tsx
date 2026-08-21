@@ -5,6 +5,13 @@ export const metadata = {
 
 import { EmailLink } from '@/components/email-link';
 
+// The date the policy's substance last changed (373e5d0), not the date this
+// file was last touched: the 2026-08-05 humanizer pass reworded the page
+// without changing what it says. Update this by hand when the policy does.
+// It used to render `new Date()`, so the page claimed it had been updated today
+// no matter how long it had actually sat unchanged.
+const LAST_UPDATED = '10 August 2025';
+
 export default function PrivacyPage() {
   return (
     <section>
@@ -14,12 +21,7 @@ export default function PrivacyPage() {
 
       <div className="prose dark:prose-invert">
         <p className="text-muted-foreground mb-6">
-          Last updated:{' '}
-          {new Date().toLocaleDateString('en-GB', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
+          Last updated: {LAST_UPDATED}
         </p>
 
         <h2>Who I am</h2>

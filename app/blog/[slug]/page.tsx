@@ -5,15 +5,19 @@ import { BlogContent } from '@/components/blog-content';
 import { ViewTracker } from '@/components/view-tracker';
 import { getBlogPost, getBlogPosts } from '@/lib/content/blog';
 import { postJsonLd, postMetadata } from '@/lib/content/post-links';
-import { formatLongDate, formatRelativeDate } from '@/lib/date';
+import { formatLongDate } from '@/lib/date';
 import { getViewCount } from '@/lib/views';
+import { RelativeDate } from '../relative-date';
 import ViewCounter from '../view-counter';
 
-// Render as ISR, not fully static. The page is still prerendered and CDN-cached
-// (so bfcache stays intact — that is why `connection()` was removed), but it now
-// regenerates at most once a minute and re-reads the view count. Without this
-// the count is frozen at build time and only moves on redeploy.
-export const revalidate = 60;
+// No route-segment config: `cacheComponents` rejects `export const revalidate`
+// at build time. Freshness moved to the read itself, which has a 60s window of
+// its own; see lib/views-cache.ts. Without a window somewhere the count freezes
+// at build time and only moves on redeploy.
+//
+// The page is still prerendered and CDN-cached, and must stay that way: bfcache
+// is why `connection()` was removed. Do not reintroduce anything that opts this
+// route into fully dynamic rendering.
 
 export async function generateStaticParams() {
   return getBlogPosts().map((post) => ({ slug: post.slug }));
@@ -32,7 +36,7 @@ export async function generateMetadata({
 function FormattedDate({ date }: { date: string }) {
   return (
     <p className="text-sm text-muted-foreground">
-      {formatLongDate(date)} ({formatRelativeDate(date)})
+      {formatLongDate(date)} (<RelativeDate date={date} />)
     </p>
   );
 }

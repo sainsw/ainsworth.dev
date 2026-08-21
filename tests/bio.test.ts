@@ -37,12 +37,26 @@ describe('bio module', () => {
     expect(currentJobTitle).toBe(resumeData.experience[0].position);
   });
 
-  it('computes years of experience from careerStartDate', () => {
+  // The clock is an argument now, so these can assert exact numbers instead of
+  // a range. careerStartDate is 2016-07-26.
+  it('counts a full year only once the anniversary has passed', () => {
     const start = new Date(resumeData.careerStartDate);
-    const now = new Date();
-    const expectedYears = now.getFullYear() - start.getFullYear();
-    const years = getYearsOfExperience();
-    expect(years).toBeGreaterThanOrEqual(expectedYears - 1);
-    expect(years).toBeLessThanOrEqual(expectedYears);
+    expect(start.toISOString().slice(0, 10)).toBe('2016-07-26');
+
+    expect(getYearsOfExperience(new Date('2024-07-25T12:00:00Z'))).toBe(7);
+    expect(getYearsOfExperience(new Date('2024-07-26T12:00:00Z'))).toBe(8);
+    expect(getYearsOfExperience(new Date('2024-07-27T12:00:00Z'))).toBe(8);
+  });
+
+  it('does not roll over early in an earlier month of the same year', () => {
+    expect(getYearsOfExperience(new Date('2024-01-15T12:00:00Z'))).toBe(7);
+    expect(getYearsOfExperience(new Date('2024-12-31T12:00:00Z'))).toBe(8);
+  });
+
+  it('reads the clock it is given rather than the real one', () => {
+    // The whole point of the signature: the home page passes a cached clock, so
+    // a bare `new Date()` in here would be both a build error and silently
+    // frozen output. See lib/current-date.ts.
+    expect(getYearsOfExperience(new Date('2030-07-26T12:00:00Z'))).toBe(14);
   });
 });

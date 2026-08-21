@@ -2,8 +2,9 @@ import { ImageResponse } from 'next/og';
 import type { NextRequest } from 'next/server';
 import { getBlogPost } from '@/lib/content/blog';
 
-// Use Node.js runtime since the blog loader reads HTML files from disk
-export const runtime = 'nodejs';
+// No `export const runtime`: `cacheComponents` rejects that route-segment
+// config, and Node.js is the default anyway. It still matters that this runs on
+// Node, because the blog loader reads HTML files from disk.
 
 export async function GET(
   _req: NextRequest,

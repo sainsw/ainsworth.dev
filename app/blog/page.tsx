@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { getBlogPosts, sortByPublishedAt } from '@/lib/content/blog';
 import { getViewCounts } from '@/lib/views';
-import { type BlogRowPost, BlogRow } from './blog-row';
+import { BlogRow, type BlogRowPost } from './blog-row';
 
 export const metadata = {
   title: 'Blog',
@@ -9,8 +9,9 @@ export const metadata = {
     'Notes on software development, side projects, and the things I learn building them.',
 };
 
-// ISR so the per-row view counts refresh; see app/blog/[slug]/page.tsx.
-export const revalidate = 60;
+// No route-segment config: `cacheComponents` rejects `export const revalidate`
+// at build time. The counts stay fresh because the read behind them has its own
+// cache window; see lib/views-cache.ts.
 
 export default function BlogPage() {
   const allBlogs = sortByPublishedAt(getBlogPosts());

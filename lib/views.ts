@@ -1,6 +1,6 @@
 import 'server-only';
-import { unstable_cache } from 'next/cache';
 import { sql } from '@/lib/db/postgres';
+import { readViewRows } from '@/lib/views-cache';
 
 /**
  * `null` means the counter is unavailable: no database configured, or the query
@@ -9,21 +9,12 @@ import { sql } from '@/lib/db/postgres';
  */
 export type ViewCount = number | null;
 
-// Aligned with the pages' ISR window (app/blog/*). A longer inner cache would
-// cap how fresh the count can be regardless of page revalidation.
-const CACHE_WINDOW_SECONDS = 60;
-
-const cachedRows = unstable_cache(
-  () => sql<{ slug: string; count: number }[]>`SELECT slug, count FROM views`,
-  ['views-count'],
-  { revalidate: CACHE_WINDOW_SECONDS },
-);
-
 /**
- * The catch sits *outside* unstable_cache on purpose. A rejection thrown
- * through the cache is not stored, so the next request retries; catching inside
- * would cache the failure and pin every count at "unavailable" for the full
- * window even after the database came back.
+ * The catch sits *outside* the cache boundary on purpose. A rejection thrown
+ * out through `use cache` is never written to the cache handler, so the next
+ * request retries; catching inside `readViewRows` would cache the failure and
+ * pin every count at "unavailable" for the full window even after the database
+ * came back.
  */
 async function readCounts(): Promise<Map<string, number> | null> {
   if (!process.env.DATABASE_URL) {
@@ -31,8 +22,8 @@ async function readCounts(): Promise<Map<string, number> | null> {
   }
 
   try {
-    const rows = await cachedRows();
-    return new Map(rows.map((row) => [row.slug, Number(row.count)]));
+    const rows = await readViewRows();
+    return new Map(rows.map((row) => [row.slug, row.count]));
   } catch (error) {
     console.error('Failed to load view counts:', error);
     return null;

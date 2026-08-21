@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   typedRoutes: true,
+  cacheComponents: true,
   experimental: {
     inlineCss: true,
   },

@@ -3,16 +3,22 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const sql = vi.fn();
 
 /**
- * A stand-in for unstable_cache that caches *resolutions only*, which is the
- * behaviour the module's catch placement depends on. A fake that also cached
- * rejections would make the "retries after a failure" test pass either way.
+ * A stand-in for the `use cache` boundary in lib/views-cache.ts that caches
+ * *resolutions only*, which is the behaviour the module's catch placement
+ * depends on. A fake that also cached rejections would make the "retries after
+ * a failure" test pass either way.
+ *
+ * Next's default cache handler drains the entry's stream inside a try/catch and
+ * only writes to the cache once the stream ends cleanly, so a `use cache`
+ * function that rejects leaves nothing behind. That is the property being
+ * modelled here.
  */
-function memoiseResolved(fn: (...args: unknown[]) => Promise<unknown>) {
-  let cached: unknown;
+function memoiseResolved<T>(fn: () => Promise<T>) {
+  let cached: T;
   let hasCached = false;
-  return async (...args: unknown[]) => {
+  return async () => {
     if (hasCached) return cached;
-    cached = await fn(...args);
+    cached = await fn();
     hasCached = true;
     return cached;
   };
@@ -25,7 +31,14 @@ beforeEach(() => {
   sql.mockReset();
   process.env = { ...origEnv };
   vi.doMock('@/lib/db/postgres', () => ({ sql }));
-  vi.doMock('next/cache', () => ({ unstable_cache: memoiseResolved }));
+  // `use cache` is a compiler directive, so under vitest lib/views-cache.ts runs
+  // with no caching at all. Wrapping the real export keeps its query and its row
+  // mapping under test while putting a fake cache boundary where the real one is.
+  vi.doMock('@/lib/views-cache', async (importOriginal) => {
+    const actual = await importOriginal<typeof import('@/lib/views-cache')>();
+    return { ...actual, readViewRows: memoiseResolved(actual.readViewRows) };
+  });
+  vi.doMock('next/cache', () => ({ cacheLife: vi.fn() }));
   vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
