@@ -68,6 +68,16 @@ build** by design. After adding or editing one, run:
 npm run render-diagrams
 ```
 
+## A view count of `null` is not zero
+
+`lib/views.ts` returns `number | null`, and `null` means the counter is
+unavailable: no `DATABASE_URL`, or the query failed. That is deliberately
+distinct from `0`, which is a post nobody has read yet. Callers render nothing
+for `null` rather than claiming zero views.
+
+The catch sits outside `unstable_cache` on purpose, so a failed read is retried
+rather than pinned for the full 60s window. `tests/views.test.ts` guards both.
+
 ## Checks before you call a change done
 
 Run all six, in this order. They mirror `.github/workflows/ci.yml` exactly, and
