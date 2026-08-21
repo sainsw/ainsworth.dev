@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { getBlogPosts } from '@/lib/content/blog';
 import { formatRelativeDate } from '@/lib/date';
-import { getViewsCount } from '@/lib/db/queries';
+import { getViewCounts, type ViewCount } from '@/lib/views';
 import ViewCounter from './view-counter';
 
 export const metadata = {
@@ -48,7 +48,7 @@ function BlogRow({
   viewCount,
 }: {
   post: { slug: string; metadata: { title: string; publishedAt: string } };
-  viewCount?: number;
+  viewCount?: ViewCount;
 }) {
   return (
     <Link
@@ -60,7 +60,7 @@ function BlogRow({
         <p className="text-foreground tracking-tight group-hover:text-muted-foreground transition-colors">
           {post.metadata.title}
         </p>
-        {viewCount !== undefined ? (
+        {typeof viewCount === 'number' ? (
           <p className="text-muted-foreground">
             <em>{formatRelativeDate(post.metadata.publishedAt)}</em> &mdash;{' '}
             <ViewCounter count={viewCount} />
@@ -81,14 +81,12 @@ async function BlogListWithViews({
     metadata: { title: string; publishedAt: string };
   }[];
 }) {
-  try {
-    const views = await getViewsCount();
-    return allBlogs.map((post) => {
-      const count = views.find((v) => v.slug === post.slug)?.count ?? 0;
-      return <BlogRow key={post.slug} post={post} viewCount={count} />;
-    });
-  } catch (error) {
-    console.error('Failed to load view count:', error);
-    return allBlogs.map((post) => <BlogRow key={post.slug} post={post} />);
-  }
+  const counts = await getViewCounts(allBlogs.map((post) => post.slug));
+  return allBlogs.map((post) => (
+    <BlogRow
+      key={post.slug}
+      post={post}
+      viewCount={counts.get(post.slug) ?? null}
+    />
+  ));
 }

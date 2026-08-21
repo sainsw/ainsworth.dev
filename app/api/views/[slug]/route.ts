@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { getBlogPost } from '@/lib/content/blog';
-import { incrementView } from '@/lib/db/views';
+import { recordView } from '@/lib/views';
 
 const VIEW_COOKIE_MAX_AGE = 60 * 60 * 24;
 
@@ -19,10 +19,7 @@ export async function POST(
     return new NextResponse(null, { status: 204 });
   }
 
-  try {
-    await incrementView(slug);
-  } catch (error) {
-    console.error('Failed to increment view count:', error);
+  if ((await recordView(slug)) === 'unavailable') {
     return new NextResponse(null, { status: 503 });
   }
 

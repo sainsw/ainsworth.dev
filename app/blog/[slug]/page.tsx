@@ -5,7 +5,7 @@ import { BlogContent } from '@/components/blog-content';
 import { ViewTracker } from '@/components/view-tracker';
 import { getBlogPost, getBlogPosts } from '@/lib/content/blog';
 import { formatLongDate, formatRelativeDate } from '@/lib/date';
-import { getViewsCount } from '@/lib/db/queries';
+import { getViewCount } from '@/lib/views';
 import { fullName } from '@/lib/bio';
 import { SITE_URL } from '@/lib/site';
 import ViewCounter from '../view-counter';
@@ -132,12 +132,7 @@ export default async function Blog({
 }
 
 async function Views({ slug }: { slug: string }) {
-  try {
-    const views = await getViewsCount();
-    const count = views.find((v) => v.slug === slug)?.count ?? 0;
-    return <ViewCounter count={count} />;
-  } catch (error) {
-    console.error('Failed to load view count:', error);
-    return <ViewCounter count={0} />;
-  }
+  const count = await getViewCount(slug);
+  // A null count means the counter is down; say nothing rather than "0 views".
+  return count === null ? null : <ViewCounter count={count} />;
 }

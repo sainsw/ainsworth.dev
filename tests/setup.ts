@@ -47,11 +47,6 @@ vi.mock('react-dom', async () => {
   };
 });
 
-// Mock database functions
-vi.mock('@/lib/db/queries', () => ({
-  getViewsCount: vi.fn().mockResolvedValue([]),
-}));
-
 vi.mock('@/lib/contact/actions', () => ({
   submitContact: vi.fn().mockResolvedValue({ success: true, message: 'ok' }),
 }));
