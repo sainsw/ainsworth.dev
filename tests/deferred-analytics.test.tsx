@@ -1,55 +1,42 @@
-import { act, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import React from 'react';
-import { DeferredAnalytics } from '@/components/deferred-analytics';
+import { vi } from 'vitest';
 
-// Mock the Analytics component to a simple marker div
+let mockStatus: 'pending' | 'accepted' | 'declined' = 'pending';
+
+vi.mock('@/lib/consent', () => ({
+  useConsent: () => ({
+    status: mockStatus,
+    accept: vi.fn(),
+    decline: vi.fn(),
+  }),
+}));
+
 vi.mock('@vercel/analytics/react', () => ({
   Analytics: () => React.createElement('div', { 'data-testid': 'analytics' }),
 }));
 
-// Polyfill requestIdleCallback/cancelIdleCallback
-beforeAll(() => {
-  global.requestIdleCallback = ((cb: any) =>
-    setTimeout(
-      () => cb({ didTimeout: false, timeRemaining: () => 50 }),
-      0,
-    )) as any;
-  global.cancelIdleCallback = ((id: any) => clearTimeout(id)) as any;
-});
+import { DeferredAnalytics } from '@/components/deferred-analytics';
 
 describe('DeferredAnalytics', () => {
-  const clearConsent = () => {
-    // Expire any existing cookie-consent cookie
-    document.cookie =
-      'cookie-consent=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-  };
-
   beforeEach(() => {
-    clearConsent();
+    mockStatus = 'pending';
   });
 
-  it('does not render when consent not given', () => {
+  it('does not render when consent is pending', () => {
     const { queryByTestId } = render(<DeferredAnalytics />);
     expect(queryByTestId('analytics')).toBeNull();
   });
 
-  it('renders when consent cookie is accepted', async () => {
-    document.cookie = 'cookie-consent=accepted';
-    const { findByTestId } = render(<DeferredAnalytics />);
-    expect(await findByTestId('analytics')).toBeInTheDocument();
+  it('renders when consent is accepted', () => {
+    mockStatus = 'accepted';
+    const { getByTestId } = render(<DeferredAnalytics />);
+    expect(getByTestId('analytics')).toBeInTheDocument();
   });
 
-  it('renders after consent acceptance event', async () => {
-    const { queryByTestId, findByTestId } = render(<DeferredAnalytics />);
-    // Ensure no cookie prior to event
-    expect(document.cookie.includes('cookie-consent=accepted')).toBe(false);
+  it('does not render when consent is declined', () => {
+    mockStatus = 'declined';
+    const { queryByTestId } = render(<DeferredAnalytics />);
     expect(queryByTestId('analytics')).toBeNull();
-
-    // Simulate user accepting cookies and dispatch event
-    act(() => {
-      document.cookie = 'cookie-consent=accepted';
-      window.dispatchEvent(new Event('cookie-consent-accepted'));
-    });
-    expect(await findByTestId('analytics')).toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import { AVATAR_VERSION } from '@/lib/version';
+import { AVATAR_SRC } from '@/lib/avatar';
 import { PrideAvatar } from './pride-avatar';
 
 const year = new Date().getFullYear();
@@ -26,13 +26,10 @@ export function Footer() {
               >
                 <PrideAvatar>
                   <picture>
-                    <source
-                      srcSet={`/images/home/avatar-${AVATAR_VERSION}.webp`}
-                      type="image/webp"
-                    />
+                    <source srcSet={AVATAR_SRC.webp} type="image/webp" />
                     <img
                       className="bg-left-bottom h-20 w-20 rounded-full"
-                      src={`/images/home/avatar-${AVATAR_VERSION}.jpg`}
+                      src={AVATAR_SRC.jpg}
                       alt="my face"
                       width={80}
                       height={80}

@@ -1,5 +1,6 @@
 import 'server-only';
-import { SITE_AUTHOR_EMAIL, SITE_CONTACT_FROM } from '@/lib/site';
+import { email as authorEmail } from '@/lib/bio';
+import { SITE_CONTACT_FROM } from '@/lib/site';
 
 function escapeHtml(value: string): string {
   return value
@@ -30,7 +31,7 @@ export async function sendContactEmail({
     },
     body: JSON.stringify({
       from: SITE_CONTACT_FROM,
-      to: SITE_AUTHOR_EMAIL,
+      to: authorEmail,
       subject: 'New Message',
       html: `<p>Email: ${escapeHtml(email)}</p><p>Message: ${escapeHtml(message)}</p>`,
     }),

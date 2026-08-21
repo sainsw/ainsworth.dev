@@ -1,23 +1,29 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
-import { CookieConsent } from '@/components/cookie-banner';
 
-// Mock document.cookie
-Object.defineProperty(document, 'cookie', {
-  writable: true,
-  value: '',
-});
+const mockAccept = vi.fn();
+const mockDecline = vi.fn();
+let mockStatus: 'pending' | 'accepted' | 'declined' = 'pending';
+
+vi.mock('@/lib/consent', () => ({
+  useConsent: () => ({
+    status: mockStatus,
+    accept: mockAccept,
+    decline: mockDecline,
+  }),
+}));
+
+import { CookieConsent } from '@/components/cookie-banner';
 
 describe('CookieConsent', () => {
   beforeEach(() => {
-    // Clear cookies before each test
-    document.cookie = '';
-    // Clear localStorage
-    localStorage.clear();
+    mockStatus = 'pending';
+    mockAccept.mockClear();
+    mockDecline.mockClear();
   });
 
-  it('renders when no consent cookie exists', () => {
-    render(<CookieConsent variant="mini" />);
+  it('renders when consent is pending', () => {
+    render(<CookieConsent />);
 
     expect(
       screen.getByText(/I use cookies to analyse traffic and provide features/),
@@ -28,11 +34,10 @@ describe('CookieConsent', () => {
     ).toBeInTheDocument();
   });
 
-  it('does not render when consent cookie exists', () => {
-    // Set cookie to accepted
-    document.cookie = 'cookie-consent=accepted';
+  it('does not render when consent is already accepted', () => {
+    mockStatus = 'accepted';
 
-    render(<CookieConsent variant="mini" />);
+    render(<CookieConsent />);
 
     expect(
       screen.queryByText(
@@ -41,48 +46,19 @@ describe('CookieConsent', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('sets cookie and hides banner when accept is clicked', () => {
-    render(<CookieConsent variant="mini" />);
+  it('calls accept() when accept button is clicked', () => {
+    render(<CookieConsent />);
 
-    const acceptButton = screen.getByRole('button', { name: /accept/i });
-    fireEvent.click(acceptButton);
+    fireEvent.click(screen.getByRole('button', { name: /accept/i }));
 
-    expect(document.cookie).toContain('cookie-consent=accepted');
-    expect(
-      screen.queryByText(
-        /I use cookies to analyse traffic and provide features/,
-      ),
-    ).not.toBeInTheDocument();
+    expect(mockAccept).toHaveBeenCalled();
   });
 
-  it('sets cookie and hides banner when decline is clicked', () => {
-    render(<CookieConsent variant="mini" />);
+  it('calls decline() when decline button is clicked', () => {
+    render(<CookieConsent />);
 
-    const declineButton = screen.getByRole('button', { name: /decline/i });
-    fireEvent.click(declineButton);
+    fireEvent.click(screen.getByRole('button', { name: /decline/i }));
 
-    expect(document.cookie).toContain('cookie-consent=declined');
-    expect(
-      screen.queryByText(
-        /I use cookies to analyse traffic and provide features/,
-      ),
-    ).not.toBeInTheDocument();
-  });
-
-  it('dispatches custom event when accept is clicked', () => {
-    const mockDispatchEvent = vi.spyOn(window, 'dispatchEvent');
-
-    render(<CookieConsent variant="mini" />);
-
-    const acceptButton = screen.getByRole('button', { name: /accept/i });
-    fireEvent.click(acceptButton);
-
-    expect(mockDispatchEvent).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'cookie-consent-accepted',
-      }),
-    );
-
-    mockDispatchEvent.mockRestore();
+    expect(mockDecline).toHaveBeenCalled();
   });
 });

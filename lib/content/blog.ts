@@ -61,19 +61,34 @@ function readContentFile(filePath: string) {
   return parseHtmlMetadata(rawContent, filePath);
 }
 
-function getContentData(dir: string) {
+export type BlogPost = {
+  metadata: Metadata;
+  slug: string;
+  content: string;
+};
+
+let cachedPosts: BlogPost[] | null = null;
+let slugIndex: Map<string, BlogPost> | null = null;
+
+function loadPosts(): BlogPost[] {
+  if (cachedPosts) return cachedPosts;
+
+  const dir = path.join(process.cwd(), 'content');
   const files = getContentFiles(dir);
-  return files.map((file) => {
+  cachedPosts = files.map((file) => {
     const { metadata, content } = readContentFile(path.join(dir, file));
     const slug = path.basename(file, path.extname(file));
-    return {
-      metadata,
-      slug,
-      content,
-    };
+    return { metadata, slug, content };
   });
+  slugIndex = new Map(cachedPosts.map((post) => [post.slug, post]));
+  return cachedPosts;
 }
 
-export function getBlogPosts() {
-  return getContentData(path.join(process.cwd(), 'content'));
+export function getBlogPosts(): BlogPost[] {
+  return loadPosts();
+}
+
+export function getBlogPost(slug: string): BlogPost | undefined {
+  loadPosts();
+  return slugIndex?.get(slug);
 }

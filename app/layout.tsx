@@ -11,11 +11,14 @@ import { DeferredAnalytics } from '@/components/deferred-analytics';
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/nav';
 import {
+  currentEmployer,
+  currentJobTitle,
+  email as authorEmail,
+  fullName,
   getYearsOfExperience,
-  SITE_AUTHOR_EMAIL,
-  SITE_NAME,
-  SITE_URL,
-} from '@/lib/site';
+  location,
+} from '@/lib/bio';
+import { SITE_URL } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
 const siteDescription = `Senior Software Developer with ${getYearsOfExperience()}+ years experience, working in .NET, Azure, React, and cloud architecture. Notes on the things I build.`;
@@ -23,15 +26,15 @@ const siteDescription = `Senior Software Developer with ${getYearsOfExperience()
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} - Senior Software Developer & Cloud Engineer`,
-    template: `%s | ${SITE_NAME}`,
+    default: `${fullName} - Senior Software Developer & Cloud Engineer`,
+    template: `%s | ${fullName}`,
   },
   description: siteDescription,
   openGraph: {
-    title: `${SITE_NAME} - Senior Software Developer & Cloud Engineer`,
+    title: `${fullName} - Senior Software Developer & Cloud Engineer`,
     description: siteDescription,
     url: SITE_URL,
-    siteName: SITE_NAME,
+    siteName: fullName,
     locale: 'en_GB',
     type: 'website',
   },
@@ -47,7 +50,7 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: `${SITE_NAME} - Senior Software Developer & Cloud Engineer`,
+    title: `${fullName} - Senior Software Developer & Cloud Engineer`,
     card: 'summary_large_image',
   },
   verification: {
@@ -60,36 +63,34 @@ const structuredData = {
   '@graph': [
     {
       '@type': 'Person',
-      name: SITE_NAME,
+      name: fullName,
       url: SITE_URL,
-      jobTitle: 'Senior Software Developer',
+      jobTitle: currentJobTitle,
       description:
         'Senior Software Developer working on web applications and cloud architecture, and leading engineering teams.',
-      email: `mailto:${SITE_AUTHOR_EMAIL}`,
+      email: `mailto:${authorEmail}`,
       sameAs: ['https://www.linkedin.com/in/samainsworth/'],
       image: `${SITE_URL}/placeholder.jpg`,
       worksFor: {
         '@type': 'Organization',
-        name: 'IBM',
-        url: 'https://www.ibm.com',
+        name: currentEmployer,
       },
       address: {
         '@type': 'PostalAddress',
-        addressLocality: 'Manchester',
-        addressRegion: 'Greater Manchester',
+        addressLocality: location,
         addressCountry: 'GB',
       },
     },
     {
       '@type': 'WebSite',
-      name: SITE_NAME,
+      name: fullName,
       url: SITE_URL,
       inLanguage: 'en-GB',
       description:
         'Personal site of Sam Ainsworth: side projects, blog posts, and notes on building software for the cloud.',
       publisher: {
         '@type': 'Person',
-        name: SITE_NAME,
+        name: fullName,
       },
     },
   ],
@@ -143,7 +144,7 @@ export default function RootLayout({
             </Suspense>
           </main>
         </div>
-        <CookieConsent variant="mini" learnMoreHref="/privacy" />
+        <CookieConsent />
         {/* Load Speed Insights unconditionally (no cookies used) */}
         <SpeedInsights />
       </body>

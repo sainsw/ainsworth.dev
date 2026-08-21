@@ -4,8 +4,9 @@ import { preload } from 'react-dom';
 import { ArrowIcon } from '@/components/arrow-icon';
 import { Icon } from '@/components/icon';
 import { PersonalProjects } from '@/components/personal-projects';
-import { getYearsOfExperience, SITE_URL } from '@/lib/site';
-import { AVATAR_VERSION } from '@/lib/version';
+import { AVATAR_SRC } from '@/lib/avatar';
+import { getYearsOfExperience } from '@/lib/bio';
+import { SITE_URL } from '@/lib/site';
 
 // Inline tech badge - more spacious for use within prose
 function TechBadge({
@@ -34,10 +35,7 @@ export default function Page() {
   // <link rel="preload">, which React hoists into <head> while also leaving the
   // authored copy behind. The original useServerInsertedHTML version was worse
   // still: it re-emitted the tag on every stream flush, ~22 copies per page.
-  preload(`/images/home/avatar-${AVATAR_VERSION}.webp`, {
-    as: 'image',
-    type: 'image/webp',
-  });
+  preload(AVATAR_SRC.webp, { as: 'image', type: 'image/webp' });
 
   return (
     <section>

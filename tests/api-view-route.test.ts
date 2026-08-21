@@ -6,7 +6,9 @@ beforeEach(() => {
   vi.resetModules();
   incrementView.mockClear();
   vi.doMock('../lib/content/blog', () => ({
-    getBlogPosts: vi.fn(() => [{ slug: 'hello-world' }]),
+    getBlogPost: vi.fn((slug: string) =>
+      slug === 'hello-world' ? { slug: 'hello-world' } : undefined,
+    ),
   }));
   vi.doMock('../lib/db/views', () => ({ incrementView }));
 });

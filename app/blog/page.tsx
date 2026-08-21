@@ -45,10 +45,10 @@ export default function BlogPage() {
 
 function BlogRow({
   post,
-  allViews,
+  viewCount,
 }: {
   post: { slug: string; metadata: { title: string; publishedAt: string } };
-  allViews?: { slug: string; count: number }[];
+  viewCount?: number;
 }) {
   return (
     <Link
@@ -60,10 +60,10 @@ function BlogRow({
         <p className="text-foreground tracking-tight group-hover:text-muted-foreground transition-colors">
           {post.metadata.title}
         </p>
-        {allViews ? (
+        {viewCount !== undefined ? (
           <p className="text-muted-foreground">
             <em>{formatRelativeDate(post.metadata.publishedAt)}</em> &mdash;{' '}
-            <ViewCounter allViews={allViews} slug={post.slug} />
+            <ViewCounter count={viewCount} />
           </p>
         ) : (
           <p className="h-6" data-testid="views-fallback" />
@@ -83,9 +83,10 @@ async function BlogListWithViews({
 }) {
   try {
     const views = await getViewsCount();
-    return allBlogs.map((post) => (
-      <BlogRow key={post.slug} post={post} allViews={views} />
-    ));
+    return allBlogs.map((post) => {
+      const count = views.find((v) => v.slug === post.slug)?.count ?? 0;
+      return <BlogRow key={post.slug} post={post} viewCount={count} />;
+    });
   } catch (error) {
     console.error('Failed to load view count:', error);
     return allBlogs.map((post) => <BlogRow key={post.slug} post={post} />);

@@ -2,181 +2,101 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useConsent } from '@/lib/consent';
 
-interface CookieConsentProps {
-  variant?: 'default' | 'small' | 'mini';
-  demo?: boolean;
-  onAcceptCallback?: () => void;
-  onDeclineCallback?: () => void;
-  description?: string;
-  learnMoreHref?: string;
-}
-
-/**
- * Builds the consent cookie, adding `Secure` only on a secure origin. WebKit
- * refuses to expose a Secure cookie to document.cookie over plain http, so
- * setting it unconditionally left consent unreadable in Safari on localhost —
- * the banner would reappear and analytics would never start. Production is
- * https, so it still gets the flag.
- */
-function consentCookie(value: 'accepted' | 'declined') {
-  const secure =
-    typeof window !== 'undefined' && window.location.protocol === 'https:'
-      ? '; Secure'
-      : '';
-  return `cookie-consent=${value}; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; SameSite=Lax${secure}`;
-}
-
-export function CookieConsent({
-  variant = 'mini',
-  demo = false,
-  onAcceptCallback = () => {},
-  onDeclineCallback = () => {},
-  description = 'I use cookies to analyse traffic and provide features',
-  learnMoreHref = '/privacy',
-}: CookieConsentProps) {
+export function CookieConsent() {
+  const { status, accept, decline } = useConsent();
   const [isOpen, setIsOpen] = useState(false);
-  const [hide, setHide] = useState(false);
+  const [hide, setHide] = useState(status !== 'pending');
   const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    if (status !== 'pending') {
+      setHide(true);
+      return;
+    }
+    if (process.env.NODE_ENV === 'test') {
+      setShouldRender(true);
+      setIsOpen(true);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setShouldRender(true);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsOpen(true);
+        });
+      });
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [status]);
 
   const handleAccept = useCallback(() => {
     setIsOpen(false);
-    document.cookie = consentCookie('accepted');
+    accept();
     if (process.env.NODE_ENV === 'test') {
       setHide(true);
     } else {
-      setTimeout(() => {
-        setHide(true);
-      }, 700);
+      setTimeout(() => setHide(true), 700);
     }
-
-    // Notify analytics component
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('cookie-consent-accepted'));
-    }
-
-    // Enable Cloudflare Zaraz tracking
-    if (typeof window !== 'undefined' && window.zaraz) {
-      window.zaraz.consent.granted();
-    }
-
-    onAcceptCallback();
-  }, [onAcceptCallback]);
+  }, [accept]);
 
   const handleDecline = useCallback(() => {
     setIsOpen(false);
-    document.cookie = consentCookie('declined');
+    decline();
     if (process.env.NODE_ENV === 'test') {
       setHide(true);
     } else {
-      setTimeout(() => {
-        setHide(true);
-      }, 700);
+      setTimeout(() => setHide(true), 700);
     }
-
-    // Ensure Zaraz tracking stays disabled
-    if (typeof window !== 'undefined' && window.zaraz) {
-      window.zaraz.consent.revoked();
-    }
-
-    onDeclineCallback();
-  }, [onDeclineCallback]);
-
-  useEffect(() => {
-    try {
-      if (document.cookie.includes('cookie-consent=') && !demo) {
-        setIsOpen(false);
-        setHide(true);
-        return;
-      }
-      // In tests, show banner immediately without delay
-      if (process.env.NODE_ENV === 'test') {
-        setShouldRender(true);
-        setIsOpen(true);
-        return;
-      }
-      // Show banner after 2 seconds delay like Vercel
-      const timer = setTimeout(() => {
-        setShouldRender(true);
-        // Trigger animation after DOM render with double rAF for Safari
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            setIsOpen(true);
-          });
-        });
-      }, 2000);
-      return () => clearTimeout(timer);
-    } catch (e) {
-      console.error('Error checking cookies:', e);
-    }
-  }, [demo]);
+  }, [decline]);
 
   if (!shouldRender || hide) {
     return null;
   }
 
-  if (variant === 'mini') {
-    return (
-      <div
-        className={`transition-all duration-700 ease-out max-w-sm transform-gpu ${
-          isOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
-        }`}
-        style={{
-          position: 'fixed',
-          left: '1rem',
-          bottom: '1rem',
-          zIndex: 9999,
-          willChange: 'transform, opacity',
-          WebkitBackfaceVisibility: 'hidden',
-          backfaceVisibility: 'hidden',
-        }}
-      >
-        <div className="bg-card border border-border rounded-none ring-1 ring-foreground/10 p-4 sm:p-5">
-          <div className="space-y-3">
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              {description}
-            </p>
-            <div className="flex items-center flex-wrap gap-3 mt-4">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleDecline}
-                aria-label="Decline"
-              >
-                Decline
-              </Button>
-              <Button size="sm" onClick={handleAccept} aria-label="Accept">
-                Accept
-              </Button>
-              {learnMoreHref && (
-                <a
-                  href={learnMoreHref}
-                  className="ms-auto text-xs underline underline-offset-2 text-foreground hover:text-muted-foreground transition-colors"
-                  aria-label="Privacy policy"
-                >
-                  Privacy policy
-                </a>
-              )}
-            </div>
+  return (
+    <div
+      className={`transition-all duration-700 ease-out max-w-sm transform-gpu ${
+        isOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+      }`}
+      style={{
+        position: 'fixed',
+        left: '1rem',
+        bottom: '1rem',
+        zIndex: 9999,
+        willChange: 'transform, opacity',
+        WebkitBackfaceVisibility: 'hidden',
+        backfaceVisibility: 'hidden',
+      }}
+    >
+      <div className="bg-card border border-border rounded-none ring-1 ring-foreground/10 p-4 sm:p-5">
+        <div className="space-y-3">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            I use cookies to analyse traffic and provide features
+          </p>
+          <div className="flex items-center flex-wrap gap-3 mt-4">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleDecline}
+              aria-label="Decline"
+            >
+              Decline
+            </Button>
+            <Button size="sm" onClick={handleAccept} aria-label="Accept">
+              Accept
+            </Button>
+            <a
+              href="/privacy"
+              className="ms-auto text-xs underline underline-offset-2 text-foreground hover:text-muted-foreground transition-colors"
+              aria-label="Privacy policy"
+            >
+              Privacy policy
+            </a>
           </div>
         </div>
       </div>
-    );
-  }
-
-  // Default/small variants can be added here if needed
-  return null;
-}
-
-// Type declaration for Zaraz
-declare global {
-  interface Window {
-    zaraz?: {
-      consent: {
-        granted: () => void;
-        revoked: () => void;
-      };
-      track: (event: string, properties?: Record<string, unknown>) => void;
-    };
-  }
+    </div>
+  );
 }

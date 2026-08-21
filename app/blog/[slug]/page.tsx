@@ -3,10 +3,11 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { BlogContent } from '@/components/blog-content';
 import { ViewTracker } from '@/components/view-tracker';
-import { getBlogPosts } from '@/lib/content/blog';
+import { getBlogPost, getBlogPosts } from '@/lib/content/blog';
 import { formatLongDate, formatRelativeDate } from '@/lib/date';
 import { getViewsCount } from '@/lib/db/queries';
-import { SITE_NAME, SITE_URL } from '@/lib/site';
+import { fullName } from '@/lib/bio';
+import { SITE_URL } from '@/lib/site';
 import ViewCounter from '../view-counter';
 
 // Render as ISR, not fully static. The page is still prerendered and CDN-cached
@@ -25,7 +26,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata | undefined> {
   const { slug } = await params;
-  const post = getBlogPosts().find((post) => post.slug === slug);
+  const post = getBlogPost(slug);
   if (!post) {
     return;
   }
@@ -81,7 +82,7 @@ export default async function Blog({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = getBlogPosts().find((post) => post.slug === slug);
+  const post = getBlogPost(slug);
 
   if (!post) {
     notFound();
@@ -106,7 +107,7 @@ export default async function Blog({
             url: `${SITE_URL}/blog/${post.slug}`,
             author: {
               '@type': 'Person',
-              name: SITE_NAME,
+              name: fullName,
             },
           }),
         }}
@@ -133,10 +134,10 @@ export default async function Blog({
 async function Views({ slug }: { slug: string }) {
   try {
     const views = await getViewsCount();
-    return <ViewCounter allViews={views} slug={slug} />;
+    const count = views.find((v) => v.slug === slug)?.count ?? 0;
+    return <ViewCounter count={count} />;
   } catch (error) {
     console.error('Failed to load view count:', error);
-    // Return empty view counter if database fails
-    return <ViewCounter allViews={[]} slug={slug} />;
+    return <ViewCounter count={0} />;
   }
 }

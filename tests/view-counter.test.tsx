@@ -3,37 +3,21 @@ import { describe, expect, it } from 'vitest';
 import ViewCounter from '../app/blog/view-counter';
 
 describe('ViewCounter Component', () => {
-  it('should display view count for existing slug', () => {
-    const mockViews = [
-      { slug: 'post-1', count: 150 },
-      { slug: 'post-2', count: 75 },
-    ];
-
-    render(<ViewCounter slug="post-1" allViews={mockViews} />);
+  it('should display the given count', () => {
+    render(<ViewCounter count={150} />);
 
     expect(screen.getByText('150 views')).toBeInTheDocument();
   });
 
-  it('should display 0 views for non-existent slug', () => {
-    const mockViews = [{ slug: 'post-1', count: 150 }];
-
-    render(<ViewCounter slug="non-existent" allViews={mockViews} />);
-
-    expect(screen.getByText('0 views')).toBeInTheDocument();
-  });
-
-  it('should handle empty views array', () => {
-    render(<ViewCounter slug="any-slug" allViews={[]} />);
+  it('should display 0 views', () => {
+    render(<ViewCounter count={0} />);
 
     expect(screen.getByText('0 views')).toBeInTheDocument();
   });
 
   it('should format large numbers with locale formatting', () => {
-    const mockViews = [{ slug: 'popular-post', count: 1234567 }];
+    render(<ViewCounter count={1234567} />);
 
-    render(<ViewCounter slug="popular-post" allViews={mockViews} />);
-
-    // Should format with commas (or locale-appropriate separators)
     const viewText = screen.getByText(/1,234,567 views|1.234.567 views/);
     expect(viewText).toBeInTheDocument();
   });

@@ -56,8 +56,8 @@ vi.mock('@/lib/contact/actions', () => ({
   submitContact: vi.fn().mockResolvedValue({ success: true, message: 'ok' }),
 }));
 
-vi.mock('@/lib/content/blog', () => ({
-  getBlogPosts: vi.fn().mockReturnValue([
+vi.mock('@/lib/content/blog', () => {
+  const posts = [
     {
       slug: 'test-post',
       metadata: {
@@ -67,8 +67,12 @@ vi.mock('@/lib/content/blog', () => ({
       },
       content: 'Test content',
     },
-  ]),
-}));
+  ];
+  return {
+    getBlogPosts: vi.fn().mockReturnValue(posts),
+    getBlogPost: vi.fn((slug: string) => posts.find((p) => p.slug === slug)),
+  };
+});
 
 // jsdom lacks ResizeObserver; provide a lightweight mock for layout-dependent components
 class MockResizeObserver {

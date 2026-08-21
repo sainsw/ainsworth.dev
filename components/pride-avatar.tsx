@@ -2,15 +2,31 @@
 
 import { useEffect, useState } from 'react';
 
+const PRIDE_RING_SHADOW = `
+  0 0 0 3px rgb(239 68 68),
+  0 0 0 6px rgb(249 115 22),
+  0 0 0 9px rgb(250 204 21),
+  0 0 0 12px rgb(34 197 94),
+  0 0 0 15px rgb(59 130 246),
+  0 0 0 18px rgb(147 51 234)
+`;
+
 interface PrideAvatarProps {
   children: React.ReactNode;
   className?: string;
+  forceState?: 'pride' | 'normal';
 }
 
-export function PrideAvatar({ children, className = '' }: PrideAvatarProps) {
-  const [isPrideTime, setIsPrideTime] = useState(false);
+export function PrideAvatar({
+  children,
+  className = '',
+  forceState,
+}: PrideAvatarProps) {
+  const [isPrideTime, setIsPrideTime] = useState(forceState === 'pride');
 
   useEffect(() => {
+    if (forceState) return;
+
     const checkPrideTime = () => {
       const now = new Date();
       const month = now.getMonth() + 1; // getMonth() is 0-indexed
@@ -71,7 +87,7 @@ export function PrideAvatar({ children, className = '' }: PrideAvatarProps) {
     }, msUntilMidnight);
 
     return () => clearTimeout(timeout);
-  }, []);
+  }, [forceState]);
 
   if (!isPrideTime) {
     return (
@@ -88,19 +104,7 @@ export function PrideAvatar({ children, className = '' }: PrideAvatarProps) {
   // From outermost to innermost: Red, Orange, Yellow, Green, Blue, Purple
   return (
     <div className={`relative ${className}`}>
-      <div
-        className="rounded-full"
-        style={{
-          boxShadow: `
-            0 0 0 3px rgb(239 68 68),   /* red-500 - outermost */
-            0 0 0 6px rgb(249 115 22),  /* orange-500 */
-            0 0 0 9px rgb(250 204 21),  /* yellow-400 */
-            0 0 0 12px rgb(34 197 94),  /* green-500 */
-            0 0 0 15px rgb(59 130 246), /* blue-500 */
-            0 0 0 18px rgb(147 51 234)  /* purple-500 - innermost */
-          `,
-        }}
-      >
+      <div className="rounded-full" style={{ boxShadow: PRIDE_RING_SHADOW }}>
         {children}
       </div>
     </div>
