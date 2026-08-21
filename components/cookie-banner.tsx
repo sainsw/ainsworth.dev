@@ -1,57 +1,33 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
+import { useRevealTimer } from '@/app/hooks/use-reveal-timer';
 import { Button } from '@/components/ui/button';
 import { useConsent } from '@/lib/consent';
 
+const REVEAL_DELAY_MS = 2000;
+// Must match the duration-700 class below, which is what actually animates.
+const EXIT_DURATION_MS = 700;
+
 export function CookieConsent() {
   const { status, accept, decline } = useConsent();
-  const [isOpen, setIsOpen] = useState(false);
-  const [hide, setHide] = useState(status !== 'pending');
-  const [shouldRender, setShouldRender] = useState(false);
-
-  useEffect(() => {
-    if (status !== 'pending') {
-      setHide(true);
-      return;
-    }
-    if (process.env.NODE_ENV === 'test') {
-      setShouldRender(true);
-      setIsOpen(true);
-      return;
-    }
-    const timer = setTimeout(() => {
-      setShouldRender(true);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setIsOpen(true);
-        });
-      });
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [status]);
+  const { shouldRender, isOpen, dismiss } = useRevealTimer({
+    enabled: status === 'pending',
+    delayMs: REVEAL_DELAY_MS,
+    exitMs: EXIT_DURATION_MS,
+  });
 
   const handleAccept = useCallback(() => {
-    setIsOpen(false);
     accept();
-    if (process.env.NODE_ENV === 'test') {
-      setHide(true);
-    } else {
-      setTimeout(() => setHide(true), 700);
-    }
-  }, [accept]);
+    dismiss();
+  }, [accept, dismiss]);
 
   const handleDecline = useCallback(() => {
-    setIsOpen(false);
     decline();
-    if (process.env.NODE_ENV === 'test') {
-      setHide(true);
-    } else {
-      setTimeout(() => setHide(true), 700);
-    }
-  }, [decline]);
+    dismiss();
+  }, [decline, dismiss]);
 
-  if (!shouldRender || hide) {
+  if (!shouldRender) {
     return null;
   }
 

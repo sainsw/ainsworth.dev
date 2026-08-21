@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 vi.unmock('../lib/content/blog');
 
-import { parseHtmlMetadata } from '../lib/content/blog';
+import { parseHtmlMetadata, sortByPublishedAt } from '../lib/content/blog';
 
 describe('parseHtmlMetadata', () => {
   it('parses required metadata and structurally removes the template', () => {
@@ -65,5 +65,38 @@ describe('parseHtmlMetadata', () => {
         </template>
       `),
     ).toThrow('invalid publishedAt date');
+  });
+});
+
+describe('sortByPublishedAt', () => {
+  const post = (slug: string, publishedAt: string) => ({
+    slug,
+    metadata: { publishedAt },
+  });
+
+  it('orders newest first', () => {
+    const sorted = sortByPublishedAt([
+      post('older', '2024-01-10'),
+      post('newest', '2024-01-20'),
+      post('middle', '2024-01-15'),
+    ]);
+
+    expect(sorted.map((p) => p.slug)).toEqual(['newest', 'middle', 'older']);
+  });
+
+  it('leaves posts published on the same day in their existing order', () => {
+    const sorted = sortByPublishedAt([
+      post('first', '2024-01-10'),
+      post('second', '2024-01-10'),
+    ]);
+
+    expect(sorted.map((p) => p.slug)).toEqual(['first', 'second']);
+  });
+
+  it('does not mutate the array it is given', () => {
+    const posts = [post('older', '2024-01-10'), post('newer', '2024-01-20')];
+    sortByPublishedAt(posts);
+
+    expect(posts.map((p) => p.slug)).toEqual(['older', 'newer']);
   });
 });

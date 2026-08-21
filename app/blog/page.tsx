@@ -1,9 +1,7 @@
-import Link from 'next/link';
 import { Suspense } from 'react';
-import { getBlogPosts } from '@/lib/content/blog';
-import { formatRelativeDate } from '@/lib/date';
-import { getViewCounts, type ViewCount } from '@/lib/views';
-import ViewCounter from './view-counter';
+import { getBlogPosts, sortByPublishedAt } from '@/lib/content/blog';
+import { getViewCounts } from '@/lib/views';
+import { type BlogRowPost, BlogRow } from './blog-row';
 
 export const metadata = {
   title: 'Blog',
@@ -15,72 +13,26 @@ export const metadata = {
 export const revalidate = 60;
 
 export default function BlogPage() {
-  const allBlogs = getBlogPosts().sort((a, b) => {
-    if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
-      return -1;
-    }
-    return 1;
-  });
-  const isTest = process.env.NODE_ENV === 'test';
+  const allBlogs = sortByPublishedAt(getBlogPosts());
 
   return (
     <section>
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">
         read my blog
       </h1>
-      {isTest ? (
-        allBlogs.map((post) => <BlogRow key={post.slug} post={post} />)
-      ) : (
-        <Suspense
-          fallback={allBlogs.map((post) => (
-            <BlogRow key={post.slug} post={post} />
-          ))}
-        >
-          <BlogListWithViews allBlogs={allBlogs} />
-        </Suspense>
-      )}
+      {/* The titles paint immediately; only the counts wait on the database. */}
+      <Suspense
+        fallback={allBlogs.map((post) => (
+          <BlogRow key={post.slug} post={post} />
+        ))}
+      >
+        <BlogListWithViews allBlogs={allBlogs} />
+      </Suspense>
     </section>
   );
 }
 
-function BlogRow({
-  post,
-  viewCount,
-}: {
-  post: { slug: string; metadata: { title: string; publishedAt: string } };
-  viewCount?: ViewCount;
-}) {
-  return (
-    <Link
-      key={post.slug}
-      className="flex flex-col space-y-1 mb-4 group"
-      href={`/blog/${post.slug}`}
-    >
-      <div className="w-full flex flex-col">
-        <p className="text-foreground tracking-tight group-hover:text-muted-foreground transition-colors">
-          {post.metadata.title}
-        </p>
-        {typeof viewCount === 'number' ? (
-          <p className="text-muted-foreground">
-            <em>{formatRelativeDate(post.metadata.publishedAt)}</em> &mdash;{' '}
-            <ViewCounter count={viewCount} />
-          </p>
-        ) : (
-          <p className="h-6" data-testid="views-fallback" />
-        )}
-      </div>
-    </Link>
-  );
-}
-
-async function BlogListWithViews({
-  allBlogs,
-}: {
-  allBlogs: {
-    slug: string;
-    metadata: { title: string; publishedAt: string };
-  }[];
-}) {
+async function BlogListWithViews({ allBlogs }: { allBlogs: BlogRowPost[] }) {
   const counts = await getViewCounts(allBlogs.map((post) => post.slug));
   return allBlogs.map((post) => (
     <BlogRow

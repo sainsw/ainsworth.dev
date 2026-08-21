@@ -88,6 +88,17 @@ export function getBlogPosts(): BlogPost[] {
   return loadPosts();
 }
 
+/** Newest first. Posts sharing a date keep their existing order. */
+export function sortByPublishedAt<
+  T extends { metadata: { publishedAt: string } },
+>(posts: T[]): T[] {
+  return [...posts].sort(
+    (a, b) =>
+      new Date(b.metadata.publishedAt).getTime() -
+      new Date(a.metadata.publishedAt).getTime(),
+  );
+}
+
 export function getBlogPost(slug: string): BlogPost | undefined {
   loadPosts();
   return slugIndex?.get(slug);
