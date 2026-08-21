@@ -4,10 +4,9 @@ import { Suspense } from 'react';
 import { BlogContent } from '@/components/blog-content';
 import { ViewTracker } from '@/components/view-tracker';
 import { getBlogPost, getBlogPosts } from '@/lib/content/blog';
+import { postJsonLd, postMetadata } from '@/lib/content/post-links';
 import { formatLongDate, formatRelativeDate } from '@/lib/date';
 import { getViewCount } from '@/lib/views';
-import { fullName } from '@/lib/bio';
-import { SITE_URL } from '@/lib/site';
 import ViewCounter from '../view-counter';
 
 // Render as ISR, not fully static. The page is still prerendered and CDN-cached
@@ -27,45 +26,7 @@ export async function generateMetadata({
 }): Promise<Metadata | undefined> {
   const { slug } = await params;
   const post = getBlogPost(slug);
-  if (!post) {
-    return;
-  }
-
-  const {
-    title,
-    publishedAt: publishedTime,
-    summary: description,
-    image,
-  } = post.metadata;
-  const ogImage = image
-    ? `${SITE_URL}${image}`
-    : `${SITE_URL}/api/og/${post.slug}`;
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: `${SITE_URL}/blog/${post.slug}`,
-    },
-    openGraph: {
-      title,
-      description,
-      type: 'article',
-      publishedTime,
-      url: `${SITE_URL}/blog/${post.slug}`,
-      images: [
-        {
-          url: ogImage,
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: [ogImage],
-    },
-  };
+  return post ? postMetadata(post) : undefined;
 }
 
 function FormattedDate({ date }: { date: string }) {
@@ -93,24 +54,7 @@ export default async function Blog({
       <script
         type="application/ld+json"
         suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'BlogPosting',
-            headline: post.metadata.title,
-            datePublished: post.metadata.publishedAt,
-            dateModified: post.metadata.publishedAt,
-            description: post.metadata.summary,
-            image: post.metadata.image
-              ? `${SITE_URL}${post.metadata.image}`
-              : `${SITE_URL}/api/og/${post.slug}`,
-            url: `${SITE_URL}/blog/${post.slug}`,
-            author: {
-              '@type': 'Person',
-              name: fullName,
-            },
-          }),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(postJsonLd(post)) }}
       />
       <h1 className="title font-medium text-2xl tracking-tighter max-w-[650px]">
         {post.metadata.title}

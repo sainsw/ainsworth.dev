@@ -1,9 +1,10 @@
 import { getBlogPosts } from '@/lib/content/blog';
+import { postUrl } from '@/lib/content/post-links';
 import { SITE_URL } from '@/lib/site';
 
 export default async function sitemap() {
   const blogs = getBlogPosts().map((post) => ({
-    url: `${SITE_URL}/blog/${post.slug}`,
+    url: postUrl(post),
     lastModified: post.metadata.publishedAt,
   }));
 

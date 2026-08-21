@@ -1,8 +1,8 @@
 import { ImageResponse } from 'next/og';
 import type { NextRequest } from 'next/server';
-import { getBlogPosts } from '@/lib/content/blog';
+import { getBlogPost } from '@/lib/content/blog';
 
-// Use Node.js runtime since getBlogPosts reads HTML files from disk
+// Use Node.js runtime since the blog loader reads HTML files from disk
 export const runtime = 'nodejs';
 
 export async function GET(
@@ -10,8 +10,7 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
-  const all = getBlogPosts();
-  const post = all.find((p) => p.slug === slug);
+  const post = getBlogPost(slug);
 
   if (!post) {
     return new Response('Not found', { status: 404 });
