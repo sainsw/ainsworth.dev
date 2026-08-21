@@ -99,6 +99,23 @@ export const isLocalhost = (baseURL: string | undefined) =>
   /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(baseURL ?? '');
 
 /**
+ * Whether this environment has a working view counter at all.
+ *
+ * lib/views.ts returns null for every slug without a DATABASE_URL, and the
+ * pages then render nothing rather than claiming zero views, so the count
+ * assertions have nothing to find and /api/views answers 503. CI runs that way
+ * on purpose: .github/workflows/e2e-on-demand.yml wires no database in, and
+ * pointing it at the real one would write real, un-undoable counts on every run.
+ *
+ * When the suite starts the server itself the two share an environment, so this
+ * is exactly what the server sees. Against an already-deployed base URL the
+ * local environment says nothing about the remote one, and the counter is taken
+ * to be present.
+ */
+export const hasViewCounter = (baseURL: string | undefined) =>
+  !isLocalhost(baseURL) || Boolean(process.env.DATABASE_URL);
+
+/**
  * Stops components/view-tracker.tsx writing a view for every post the suite
  * opens. Without this a run against a deployment inflates the real counters by
  * one per post per test — the counts are aggregate and cannot be undone.

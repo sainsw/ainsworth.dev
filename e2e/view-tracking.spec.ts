@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
+  hasViewCounter,
   isLocalhost,
   POSTS,
   prepareContext,
@@ -43,7 +44,8 @@ test.describe('with the tracker allowed through', () => {
     await suppressCookieBanner(context, baseURL ?? '');
   });
 
-  test('opening a post records a view', async ({ page }) => {
+  test('opening a post records a view', async ({ page, baseURL }, testInfo) => {
+    testInfo.skip(!hasViewCounter(baseURL), 'no counter in this environment');
     const post = POSTS[0];
     const tracked = page.waitForRequest(
       (req) =>

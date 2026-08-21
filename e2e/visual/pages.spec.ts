@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
-import { prepareContext } from '../helpers';
+import { hasViewCounter, prepareContext } from '../helpers';
 
 // Catches what no other spec can: a layout that still has every element, the
 // right colours and no overflow, but looks wrong. The theme specs read computed
@@ -42,14 +42,20 @@ function volatileRegions(page: Page): Locator[] {
 }
 
 /** Fixed slugs, not POSTS[0]: publishing a post must not invalidate a baseline. */
-const ROUTES = [
+const ROUTES: readonly {
+  name: string;
+  path: string;
+  needsViewCounter?: boolean;
+}[] = [
   { name: 'home', path: '/' },
   { name: 'work', path: '/work' },
-  { name: 'blog-index', path: '/blog' },
+  { name: 'blog-index', path: '/blog', needsViewCounter: true },
+  // blog-post is not gated: it passes without a counter, because the post page
+  // simply omits the number and the surrounding layout does not move.
   { name: 'blog-post', path: '/blog/hello-world' },
   { name: 'contact', path: '/contact' },
   { name: 'privacy', path: '/privacy' },
-] as const;
+];
 
 for (const scheme of ['light', 'dark'] as const) {
   test.describe(`${scheme} mode`, () => {
@@ -63,7 +69,14 @@ for (const scheme of ['light', 'dark'] as const) {
     });
 
     for (const route of ROUTES) {
-      test(`${route.name} looks right`, async ({ page }) => {
+      test(`${route.name} looks right`, async ({ page, baseURL }, testInfo) => {
+        // The baselines were captured with a live counter. Without one the rows
+        // render an empty spacer instead of "date — N views", which is a real
+        // layout difference and not something a mask can paint over.
+        testInfo.skip(
+          Boolean(route.needsViewCounter) && !hasViewCounter(baseURL),
+          'no counter in this environment — baseline does not apply',
+        );
         await page.goto(route.path);
 
         // Web fonts shift metrics when they swap in, so wait for them to settle

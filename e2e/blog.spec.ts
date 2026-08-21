@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { formatLongDate } from '@/lib/date';
-import { MISSING_SLUG, POSTS, prepareContext } from './helpers';
+import { hasViewCounter, MISSING_SLUG, POSTS, prepareContext } from './helpers';
 
 test.beforeEach(async ({ context, baseURL }) => {
   await prepareContext(context, baseURL);
@@ -36,7 +36,11 @@ test('blog index lists every post, newest first', async ({ page }) => {
   }
 });
 
-test('blog index renders a view count for every post', async ({ page }) => {
+test('blog index renders a view count for every post', async ({
+  page,
+  baseURL,
+}, testInfo) => {
+  testInfo.skip(!hasViewCounter(baseURL), 'no counter in this environment');
   await page.goto('/blog');
 
   // The Suspense fallback resolves into a ViewCounter per row; wait for the
@@ -44,6 +48,24 @@ test('blog index renders a view count for every post', async ({ page }) => {
   const counters = page.getByText(/^[\d,]+ views$/);
   await expect(counters.first()).toBeVisible();
   await expect(counters).toHaveCount(POSTS.length);
+});
+
+test('blog index says nothing at all when the counter is down', async ({
+  page,
+  baseURL,
+}, testInfo) => {
+  testInfo.skip(
+    hasViewCounter(baseURL),
+    'the counter is up in this environment',
+  );
+  await page.goto('/blog');
+
+  // A null count is not zero. Every post must still be listed and linked; the
+  // rows just carry no number rather than claiming nobody has read them.
+  await expect(
+    page.locator(`main a[href="/blog/${POSTS[0].slug}"]`),
+  ).toBeVisible();
+  await expect(page.getByText(/views$/)).toHaveCount(0);
 });
 
 test('home → nav to blog → open a post', async ({ page }) => {
@@ -74,17 +96,39 @@ test('blog post page renders title and content', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('blog post shows its publication date and view count', async ({
-  page,
-}) => {
+test('blog post shows its publication date', async ({ page }) => {
   const post = POSTS[0];
   await page.goto(`/blog/${post.slug}`);
 
-  // app/blog/[slug]/page.tsx renders "<long date> (<relative>)".
+  // app/blog/[slug]/page.tsx renders "<long date> (<relative>)". The relative
+  // half streams in from a cached clock, so the bracket is what proves it
+  // arrived rather than the fallback still being on screen.
   await expect(
     page.getByText(new RegExp(`${formatLongDate(post.publishedAt)}\\s*\\(`)),
   ).toBeVisible();
+});
+
+test('blog post shows its view count', async ({ page, baseURL }, testInfo) => {
+  testInfo.skip(!hasViewCounter(baseURL), 'no counter in this environment');
+  const post = POSTS[0];
+  await page.goto(`/blog/${post.slug}`);
+
   await expect(page.getByText(/^[\d,]+ views$/)).toBeVisible();
+});
+
+test('blog post omits the count rather than showing zero when it is down', async ({
+  page,
+  baseURL,
+}, testInfo) => {
+  testInfo.skip(
+    hasViewCounter(baseURL),
+    'the counter is up in this environment',
+  );
+  const post = POSTS[0];
+  await page.goto(`/blog/${post.slug}`);
+
+  await expect(page.locator('article')).toBeVisible();
+  await expect(page.getByText(/views$/)).toHaveCount(0);
 });
 
 test('blog post body renders as an article with real prose', async ({

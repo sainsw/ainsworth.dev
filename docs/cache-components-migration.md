@@ -112,3 +112,28 @@ and were not flagged by the build. Neither was touched.
   system times and asserts the date does not move.
 - `tests/bio.test.ts` asserts exact years across the anniversary boundary
   instead of a one-year range.
+
+## The e2e suite was already red, for an unrelated reason
+
+Running the suite as the handoff asked surfaced 19 failures, all of them view
+counter tests, all returning 503. They fail identically on the commit before
+this migration, so none of them are caused by it.
+
+The cause is that `.github/workflows/e2e-on-demand.yml` sets no `DATABASE_URL`.
+The write specs were gated on `isLocalhost(baseURL)`, which asks whether writing
+real counts is *safe* here. On CI the answer is yes, because the runner serves
+its own build on localhost. Nobody was asking the other question: whether there
+is a counter to write to at all. So they ran, and 503'd, on every run.
+
+`hasViewCounter()` in `e2e/helpers.ts` now answers that second question, and the
+specs that need a counter skip without one. The ones that would otherwise just
+vanish from CI have gained an opposite number that asserts the unavailable path
+instead: `/api/views` must answer 503 rather than a silent 204, and both blog
+pages must render no number at all rather than "0 views". That is the
+`null` is not `0` contract from CLAUDE.md, which had no e2e coverage before.
+
+The alternative is to give CI a real database, as a postgres service container
+plus `db/migrations/001_initial.sql`. That was not done here because
+`lib/db/postgres.ts` hardcodes `ssl: 'require'`, which a service container will
+refuse, so it means changing how production connects in order to fix a test
+environment. Worth doing deliberately rather than as a side effect of this.

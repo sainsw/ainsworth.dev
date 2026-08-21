@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { isLocalhost, MISSING_SLUG, POSTS } from '../helpers';
+import { hasViewCounter, isLocalhost, MISSING_SLUG, POSTS } from '../helpers';
 
 // app/api/views/[slug]/route.ts increments a per-slug counter, guarded by a
 // 24h `viewed-<slug>` cookie so a refresh does not inflate the count.
@@ -17,6 +17,13 @@ test.describe('writes to the counter', () => {
     testInfo.skip(
       !isLocalhost(baseURL),
       'writes real view counts — localhost only',
+    );
+    // Two separate questions. The gate above asks whether writing is safe here;
+    // this one asks whether there is anything to write to. CI answers yes to the
+    // first and no to the second, which is how these ran and 503'd on every run.
+    testInfo.skip(
+      !hasViewCounter(baseURL),
+      'no DATABASE_URL — the counter is unavailable in this environment',
     );
   });
 
@@ -72,6 +79,24 @@ test('the view counter is write-only — GET is not allowed', async ({
   request,
 }) => {
   expect((await request.get(`/api/views/${slug}`)).status()).toBe(405);
+});
+
+test('the counter reports itself unavailable rather than pretending', async ({
+  request,
+  baseURL,
+}, testInfo) => {
+  testInfo.skip(
+    hasViewCounter(baseURL),
+    'a configured counter records the view instead',
+  );
+
+  // The other half of the contract the skips above imply: with no database the
+  // route must say so, not answer 204 and silently drop the write.
+  const response = await request.post(`/api/views/${slug}`);
+  expect(response.status()).toBe(503);
+  expect(response.headers()['set-cookie'] ?? '').not.toContain(
+    `viewed-${slug}`,
+  );
 });
 
 test('slugs are matched exactly, not by prefix', async ({ request }) => {
