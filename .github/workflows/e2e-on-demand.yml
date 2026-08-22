@@ -40,12 +40,35 @@ jobs:
     name: E2E (${{ inputs.projects }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
+    # A throwaway counter, so the suite can exercise the path where the view
+    # counter works rather than only the path where it is missing. Nothing here
+    # is a secret: the container is created for this job and destroyed with it,
+    # and it is only reachable from this runner.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: views_test
+        ports:
+          - 5432:5432
+        # Without a health gate the migration below races the server's startup.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
     env:
       SKIP_CV: '1'
       # Cloudflare's published always-passes test keys (see .env.example). Not
       # secrets — they only exist so the widget renders instead of warning.
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA'
       TURNSTILE_SECRET_KEY: '1x0000000000000000000000000000000AA'
+      # localhost, so lib/db/postgres.ts connects without TLS. A managed URL
+      # still gets ssl: 'require' — see requiresTls().
+      DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/views_test'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -83,6 +106,12 @@ jobs:
         # part of the runner image.
         run: npx playwright install-deps
 
+      - name: Create the view counter schema
+        # Only when serving our own build. Against a deployed base_url the app
+        # talks to that environment's database and this container is unused.
+        if: inputs.base_url == ''
+        run: npm run init-view-counter
+
       - name: Generate version file
         run: npm run generate-version
 
@@ -109,6 +138,20 @@ jobs:
             args+=("--update-snapshots")
           fi
           npx playwright test "${args[@]}"
+
+      - name: Re-run API specs with no counter
+        # Setting DATABASE_URL above un-skips the specs that need a working
+        # counter, and by the same switch skips the ones asserting the
+        # unavailable path — 503 from /api/views, no number on either blog
+        # page. Both halves of that contract matter, and a single run can only
+        # be in one of the two states, so the cheap half runs again with the
+        # counter taken away. ~1.3 min. Browser projects are not repeated: the
+        # rendering half is covered by tests/blog-row.test.tsx.
+        if: ${{ inputs.base_url == '' && (inputs.projects == 'all' || inputs.projects == 'api') && !cancelled() }}
+        env:
+          DATABASE_URL: ''
+          PLAYWRIGHT_WEB_COMMAND: npx next start
+        run: npx playwright test --project=api
 
       - name: Upload regenerated visual baselines
         # Screenshot baselines are per-platform. There is no Linux machine in
