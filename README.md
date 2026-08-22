@@ -47,6 +47,7 @@ The `predev` hook runs [`scripts/ensure-env.js`](scripts/ensure-env.js), which c
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm test` / `npm run test:run` | Vitest (watch / single run) |
 | `npm run e2e` | Playwright E2E |
+| `npm run e2e:local` | Playwright E2E against a throwaway Postgres in Docker (`npm run db:down` to destroy it) |
 | `npm run update-cv` | Regenerate LaTeX from `data/resume.json`, rebuild the CV PDF |
 | `npm run render-diagrams` | Redraw the committed mermaid SVGs under `content/diagrams/` |
 
@@ -55,11 +56,14 @@ The `predev` hook runs [`scripts/ensure-env.js`](scripts/ensure-env.js), which c
 - **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs lint → format check → typecheck → unit tests → production build on every push and PR to `main`.
 - **E2E** ([`.github/workflows/e2e.yml`](.github/workflows/e2e.yml)) runs Playwright against a Vercel preview deployment on PRs.
 - The **Vercel build** ([`scripts/vercel-build.sh`](scripts/vercel-build.sh)) runs the unit tests before `next build`, so a failing test blocks the deploy.
+- **View counts** need a database. Without one the counter specs skip, and a matching set asserting the unavailable path runs in their place. `npm run e2e:local` starts a throwaway Postgres in Docker so the working path gets covered too; [`e2e-on-demand.yml`](.github/workflows/e2e-on-demand.yml) does the same on CI with a service container.
 
 ## Database schema
 
 Apply [`db/migrations/001_initial.sql`](db/migrations/001_initial.sql) to create
-the blog-view table.
+the blog-view table. `npm run init-view-counter` applies every migration in that
+directory to `DATABASE_URL`, and refuses any host that is not loopback so it
+cannot reach the real counter.
 
 ## Blog content
 

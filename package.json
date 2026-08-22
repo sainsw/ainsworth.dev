@@ -28,7 +28,9 @@
     "e2e:ui": "playwright test --ui",
     "e2e:report": "playwright show-report",
     "e2e:vercel": "node ./scripts/run-e2e-vercel.js",
-    "init-view-counter": "node ./scripts/init-view-counter.mjs"
+    "init-view-counter": "node ./scripts/init-view-counter.mjs",
+    "e2e:local": "node ./scripts/e2e-local.mjs",
+    "db:down": "docker compose down -v"
   },
   "dependencies": {
     "@vercel/analytics": "^1.1.3",
