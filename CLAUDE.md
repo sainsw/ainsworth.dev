@@ -101,6 +101,25 @@ which is exactly what it was quietly doing before. Take the clock as an argument
 directive would leave the cache tests silently proving nothing. The module edge
 is the seam the tests fake.
 
+## Do not try to drop the Next polyfills again
+
+Lighthouse reports about 14 KiB of "legacy JavaScript" in the main client
+chunk: `Array.prototype.at`, `Object.hasOwn`, `String.prototype.trimStart`
+and friends. That is `next/dist/build/polyfills/polyfill-module.js`, and
+`next/dist/client/app-globals.js` pulls it in with a bare `require` at the top
+of the App Router client entry. There is no target, flag or config that removes
+it. Two attempts have already failed:
+
+- `d026095` (2025-08-02) added a `.swcrc` pinned to ES2022 and a
+  `.browserslistrc`. Reverted the next day by `1effc01`.
+- `370aacc` (2026-05-31) added a `browserslist` block to `package.json`,
+  claiming a 14 KiB saving in its commit message. It saved nothing and sat
+  there dead until 2026-08-22, when it was removed.
+
+The 14 KiB is Lighthouse estimating from a table of core-js module sizes, not
+measuring. The actual file is 1,380 bytes raw and 614 bytes gzipped, so there
+is very little to win even if you did patch Next.
+
 ## Checks before you call a change done
 
 Run all six, in this order. They mirror `.github/workflows/ci.yml` exactly, and
