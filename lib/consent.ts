@@ -64,28 +64,18 @@ function getServerSnapshot(): ConsentStatus {
   return 'pending';
 }
 
-/**
- * Zaraz loads on every page, but `zaraz.consent` only exists when the Zaraz
- * consent platform is switched on in the Cloudflare dashboard, and it is not.
- * Guarding on `window.zaraz` alone therefore passed and then threw a
- * TypeError on the next line, on every accept and every decline. Guard on the
- * thing being called, and let the optional `consent` in the type below keep it
- * that way.
- */
+// The cookie is the whole mechanism. Zaraz used to be signalled here too, but
+// it was switched off at the edge on 2026-08-25 and the call went with it.
+// What consent still gates is components/deferred-analytics.tsx, which reads
+// this status before loading Vercel Analytics and Speed Insights.
 export function accept() {
   writeCookie('accepted');
   setStatus('accepted');
-  if (typeof window !== 'undefined') {
-    window.zaraz?.consent?.granted();
-  }
 }
 
 export function decline() {
   writeCookie('declined');
   setStatus('declined');
-  if (typeof window !== 'undefined') {
-    window.zaraz?.consent?.revoked();
-  }
 }
 
 export function useConsent() {
@@ -100,17 +90,4 @@ export function useConsent() {
 export function resetForTesting() {
   status = 'pending';
   listeners.clear();
-}
-
-declare global {
-  interface Window {
-    zaraz?: {
-      // Optional: present only when the Cloudflare consent platform is on.
-      consent?: {
-        granted: () => void;
-        revoked: () => void;
-      };
-      track: (event: string, properties?: Record<string, unknown>) => void;
-    };
-  }
 }
