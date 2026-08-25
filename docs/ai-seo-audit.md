@@ -1,5 +1,10 @@
 # AI SEO audit: ainsworth.dev
 
+**Status: everything code-side in the worklist was fixed in `c33e3e8`.** The
+findings below are kept as written, in the past tense where they have since been
+repaired, because the reasoning is the part worth keeping. The two open items are
+marked at the bottom.
+
 Audited 2026-08-25 against the `ai-seo` skill from
 [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills/tree/main/skills/ai-seo)
 (v2.4.0), including its `agent-readiness` reference.
@@ -108,7 +113,7 @@ groups invites exactly the kind of misreading described above.
 These are bugs, not recommendations. Each one is a file that exists and does not
 do what it looks like it does.
 
-### 1. `/llms.txt` returns 404
+### 1. `/llms.txt` returned 404 (fixed)
 
 `llms.txt` sits at the repo root. Next only serves static files from `public/`,
 and there is no route handler or rewrite for it. The build's static route list is
@@ -119,7 +124,7 @@ So the file has never been readable by anything it was written for. CLAUDE.md
 lists it alongside `README.md` as prose that ships on the site, which suggests
 the 404 was never the intent. Moving it to `public/llms.txt` fixes it.
 
-### 2. The sitewide `Person` schema points its image at a 404
+### 2. The sitewide `Person` schema pointed its image at a 404 (fixed)
 
 `app/layout.tsx` sets `image: ${SITE_URL}/placeholder.jpg`. That file is
 `app/placeholder.jpg`, and `app/` is not a static-serving directory. Only the
@@ -131,7 +136,7 @@ URL. The real avatar is already built and hashed at
 `/images/home/avatar-0bc31196.webp`, exported from `lib/avatar.ts` as
 `AVATAR_SRC`.
 
-### 3. The email obfuscation is defeated by the site's own JSON-LD
+### 3. The email obfuscation was defeated by the site's own JSON-LD (fixed)
 
 `components/email-link.tsx` builds the address on click instead of putting it in
 an `href`, with a `biome-ignore` comment saying this is "to avoid exposing the
@@ -151,7 +156,7 @@ is the only option that has no upside.
 With the crawler policy set aside, what is left in this layer is small, mostly
 config, and genuinely cheap.
 
-### Neither content signal declares `ai-input`
+### Neither content signal declared `ai-input` (fixed)
 
 Two content signals ship, and they disagree with each other.
 
@@ -182,21 +187,21 @@ Declaring `ai-input=yes` would state the position the rest of the configuration
 already implies, and it sits consistently beside `ai-train=no` and the unblocked
 search crawlers: read my work to answer questions, don't train on it.
 
-### There is no feed
+### There was no feed (fixed)
 
 No RSS, no Atom, no JSON Feed. `grep` across `app/`, `lib/` and `components/`
 finds no feed route at all. For a technical blog this is the most conventional
 discovery surface there is, and it is the one route where the content is already
 in the right shape: `getBlogPosts()` returns everything a feed needs.
 
-### No `llms-full.txt`
+### No `llms-full.txt` (fixed)
 
 The companion to `llms.txt`: the whole site's content in one file so an agent
 gets it in a single request instead of crawling 15 post URLs. The skill scores it
 as a bonus signal. Posts are already plain HTML read at request time, so
 generating it is a loop over `getBlogPosts()`.
 
-## Authority: the biggest content gap
+## Authority: the biggest content gap, and the one still open
 
 The Princeton GEO study the skill cites (KDD 2024) ranks citing sources as the
 single strongest lever, at +40% visibility, with statistics at +37%. This is
@@ -240,7 +245,7 @@ that keyword stuffing actively reduces AI visibility, at -10%. The ask is
 narrower. Where a post already makes a factual claim about something external,
 link to the thing.
 
-### Freshness cannot currently be expressed
+### Freshness could not be expressed (fixed)
 
 `postJsonLd()` sets `dateModified` to `post.metadata.publishedAt`, always. It has
 no other option, because `lib/content/blog.ts` validates metadata against a
@@ -253,7 +258,7 @@ underperformer. The fix is small: allow an optional `updatedAt`, fall back to
 `publishedAt` when it is absent, and surface it on the page as well as in the
 schema.
 
-### No visible author, and no about page
+### No visible author (byline fixed; about page still open)
 
 Post pages render the title, the date and the view count. The author's name
 appears in the JSON-LD and nowhere a reader can see it. The routes are `/`,
@@ -266,7 +271,7 @@ attached to the writing.
 
 ## Parseability
 
-### Canonical tags are missing on four of six pages
+### Canonical tags were missing on four of six pages (fixed)
 
 | Page | Canonical |
 |---|---|
@@ -280,7 +285,7 @@ attached to the writing.
 `app/page.tsx` and `lib/content/post-links.ts` both set `alternates.canonical`.
 The four layout-level `metadata` exports do not.
 
-### The schema is valid but thin
+### The schema was valid but thin (fixed)
 
 `BlogPosting` currently carries `headline`, `datePublished`, `dateModified`,
 `description`, `image`, `url` and `author`. Missing: `mainEntityOfPage`,
@@ -291,7 +296,7 @@ The blog index has no schema at all. A `Blog` or `ItemList` node listing the 15
 posts is the structure a retrieval system uses to understand what the archive
 contains without crawling each URL.
 
-### `/work` has rich entity data rendered as HTML only
+### `/work` had rich entity data rendered as HTML only (fixed)
 
 `data/resume.json` holds four roles (each with a company URL), three education
 entries (each with an institution URL), two skill categories, and a location.
@@ -351,24 +356,27 @@ search, and it has not.
 Discovery fixes first: they are small, they are mostly config, and they are the
 layer where the site is furthest from where it should be.
 
-1. Move `llms.txt` into `public/`. One file move, fixes an outright 404.
-2. Point `Person.image` at `AVATAR_SRC` instead of the unserved `placeholder.jpg`.
-3. Decide the email policy and make the DOM and the JSON-LD agree.
-4. Declare `ai-input=yes`, and drop or rename the plural `Content-Signals` header in `next.config.ts`.
-5. Move the real crawler policy into `app/robots.ts` so it is version controlled, and comment that Cloudflare prepends to it.
-6. Add `alternates.canonical` to the four layouts missing it.
-7. Add an RSS feed.
-8. Add `alumniOf`, `knowsAbout` and `hasOccupation` to the `Person` graph from `resume.json`.
-9. Allow an optional `updatedAt` in post metadata, and use it for `dateModified` and a visible "last updated".
-10. Add `mainEntityOfPage` and `publisher` to `BlogPosting`, and `Blog`/`ItemList` schema to the blog index.
-11. Add a visible author byline to post pages.
-12. Generate `llms-full.txt`.
-13. Backfill outbound citations, starting with `htmldocsforai` and `api-design`.
-14. Markdown content negotiation, if and when it stops being emerging.
+1. ~~Move `llms.txt` into `public/`.~~ Done. One file move, fixed an outright 404.
+2. ~~Point `Person.image` at `AVATAR_SRC` instead of the unserved `placeholder.jpg`.~~ Done.
+3. ~~Decide the email policy, and make the DOM and the JSON-LD agree.~~ Done: the plaintext address is out of the schema and a `contactPoint` points at `/contact`, so the obfuscation in `email-link.tsx` is no longer pointless.
+4. ~~Declare `ai-input=yes`, and drop or rename the plural `Content-Signals` header.~~ Done: renamed to `Content-Signal`, now `search=yes, ai-input=yes, ai-train=no, use=reference`.
+5. ~~Move the real crawler policy into `app/robots.ts`.~~ Done, with the eight citation crawlers named and the Cloudflare arrangement documented in a comment.
+6. ~~Add `alternates.canonical` to the four layouts missing it.~~ Done. All six pages now carry one.
+7. ~~Add an RSS feed.~~ Done, at `/rss.xml`, with a `<link rel="alternate">` in the head.
+8. ~~Add `alumniOf`, `knowsAbout` and `hasOccupation` to the `Person` graph.~~ Done. `knowsAbout` derives 31 entities from `resume.json`.
+9. ~~Allow an optional `updatedAt` in post metadata.~~ Done, validated against `publishedAt`, surfaced in `dateModified` and on the page.
+10. ~~Add `mainEntityOfPage` and `publisher` to `BlogPosting`, and `Blog` schema to the blog index.~~ Done, with the graph cross-linked by `@id`.
+11. ~~Add a visible author byline to post pages.~~ Done.
+12. ~~Generate `llms-full.txt`.~~ Done, at `/llms-full.txt`.
+13. **Open.** Backfill outbound citations, starting with `htmldocsforai` and `api-design`.
+14. **Open, and deliberately parked.** Markdown content negotiation, if and when it stops being emerging.
 
-Items 1 through 12 are code and config, and none of them touch a word of the
+Items 1 through 12 were code and config, and none of them touched a word of the
 site's prose. Item 13 is the one that needs writing, and it is also the one with
-the largest measured effect.
+the largest measured effect. It stays open on purpose: adding a reference is
+prose, and the one rule this repo states most plainly is that a citation must
+never be invented to fill a gap. Those links want Sam picking the sources, or at
+minimum checking them.
 
 ## One caution on applying this skill here
 
