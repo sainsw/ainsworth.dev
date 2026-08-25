@@ -119,6 +119,17 @@ export default async function Page() {
           </a>
         </li>
         <li>
+          <a
+            className="flex items-center hover:text-foreground transition-colors"
+            rel="noopener noreferrer"
+            target="_blank"
+            href="https://github.com/sainsw"
+          >
+            <ArrowIcon />
+            <p className="h-7 ml-2">github</p>
+          </a>
+        </li>
+        <li>
           <Link
             className="flex items-center hover:text-foreground transition-colors"
             href="/contact"

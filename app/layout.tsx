@@ -72,7 +72,10 @@ const structuredData = {
       description:
         'Senior Software Developer working on web applications and cloud architecture, and leading engineering teams.',
       email: `mailto:${authorEmail}`,
-      sameAs: ['https://www.linkedin.com/in/samainsworth/'],
+      sameAs: [
+        'https://www.linkedin.com/in/samainsworth/',
+        'https://github.com/sainsw',
+      ],
       image: `${SITE_URL}/placeholder.jpg`,
       worksFor: {
         '@type': 'Organization',
