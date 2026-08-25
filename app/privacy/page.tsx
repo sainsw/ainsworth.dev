@@ -5,12 +5,14 @@ export const metadata = {
 
 import { EmailLink } from '@/components/email-link';
 
-// The date the policy's substance last changed (373e5d0), not the date this
-// file was last touched: the 2026-08-05 humanizer pass reworded the page
-// without changing what it says. Update this by hand when the policy does.
-// It used to render `new Date()`, so the page claimed it had been updated today
-// no matter how long it had actually sat unchanged.
-const LAST_UPDATED = '10 August 2025';
+// The date the policy's substance last changed, not the date this file was
+// last touched: the 2026-08-05 humanizer pass reworded the page without
+// changing what it says. Update this by hand when the policy does. It used to
+// render `new Date()`, so the page claimed it had been updated today no matter
+// how long it had actually sat unchanged.
+// 2026-08-22: dropped Cloudflare Zaraz and Cloudflare Web Analytics, which are
+// both switched off at the edge and no longer load.
+const LAST_UPDATED = '22 August 2026';
 
 export default function PrivacyPage() {
   return (
@@ -57,10 +59,6 @@ export default function PrivacyPage() {
             LCP, CLS, INP, TTFB) via Vercel Speed Insights. These measurements
             are collected without cookies or local storage and are reported in
             an anonymised, aggregate form to help improve site performance.
-          </li>
-          <li>
-            <strong>Optional tools:</strong> Cloudflare Zaraz may load analytics
-            tools when consent is given.
           </li>
           <li>
             <strong>View counts:</strong> Aggregate counts per blog post slug in
@@ -113,10 +111,6 @@ export default function PrivacyPage() {
             reported in aggregate for performance monitoring.
           </li>
           <li>
-            Cloudflare Analytics (if enabled via Zaraz): up to 6 months (per
-            Cloudflare policy).
-          </li>
-          <li>
             Contact form emails: retained in my email account as part of
             correspondence.
           </li>
@@ -130,10 +124,6 @@ export default function PrivacyPage() {
           <li>
             <strong>Hosting & CDN:</strong> Vercel (hosting, Analytics, Speed
             Insights).
-          </li>
-          <li>
-            <strong>Tag management:</strong> Cloudflare Zaraz (loads optional
-            analytics with consent).
           </li>
           <li>
             <strong>Bot protection:</strong> Cloudflare Turnstile (contact form

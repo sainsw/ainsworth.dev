@@ -130,7 +130,6 @@ export default function RootLayout({
         {/**
          * Avoid preconnecting to third‑party analytics or APIs globally to reduce
          * baseline connection overhead before consent or when unused.
-         * - Cloudflare Insights is only enabled after consent via Zaraz.
          * - Resend is only used on the contact flow; that page preconnects locally.
          */}
         <meta property="og:logo" content={`${SITE_URL}/favicon.ico`} />
