@@ -6,7 +6,11 @@ import { BlogContent } from '@/components/blog-content';
 import { ViewTracker } from '@/components/view-tracker';
 import { fullName } from '@/lib/bio';
 import { getBlogPost, getBlogPosts } from '@/lib/content/blog';
-import { postJsonLd, postMetadata } from '@/lib/content/post-links';
+import {
+  breadcrumbJsonLd,
+  postJsonLd,
+  postMetadata,
+} from '@/lib/content/post-links';
 import { formatLongDate } from '@/lib/date';
 import { getViewCount } from '@/lib/views';
 import { RelativeDate } from '../relative-date';
@@ -66,7 +70,15 @@ export default async function Blog({
       <script
         type="application/ld+json"
         suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(postJsonLd(post)) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            postJsonLd(post),
+            breadcrumbJsonLd([
+              { name: 'Blog', path: '/blog' },
+              { name: post.metadata.title, path: `/blog/${post.slug}` },
+            ]),
+          ]),
+        }}
       />
       <h1 className="title font-medium text-2xl tracking-tighter max-w-[650px]">
         {post.metadata.title}

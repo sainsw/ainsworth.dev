@@ -1,16 +1,16 @@
 import { Suspense } from 'react';
 import { getBlogPosts, sortByPublishedAt } from '@/lib/content/blog';
-import { blogIndexJsonLd } from '@/lib/content/post-links';
-import { SITE_URL } from '@/lib/site';
+import { blogIndexJsonLd, breadcrumbJsonLd } from '@/lib/content/post-links';
+import { pageMetadata } from '@/lib/page-metadata';
 import { getViewCounts } from '@/lib/views';
 import { BlogRow, type BlogRowPost } from './blog-row';
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Blog',
   description:
     'Notes on software development, side projects, and the things I learn building them.',
-  alternates: { canonical: `${SITE_URL}/blog` },
-};
+  path: '/blog',
+});
 
 // No route-segment config: `cacheComponents` rejects `export const revalidate`
 // at build time. The counts stay fresh because the read behind them has its own
@@ -24,7 +24,10 @@ export default function BlogPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(blogIndexJsonLd(allBlogs)),
+          __html: JSON.stringify([
+            blogIndexJsonLd(allBlogs),
+            breadcrumbJsonLd([{ name: 'Blog', path: '/blog' }]),
+          ]),
         }}
       />
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">

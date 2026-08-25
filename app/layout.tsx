@@ -21,6 +21,7 @@ import {
   knowsAbout,
   location,
 } from '@/lib/bio';
+import { SITE_OG_IMAGE } from '@/lib/page-metadata';
 import { SITE_URL } from '@/lib/site';
 import { cn } from '@/lib/utils';
 
@@ -43,6 +44,10 @@ export const metadata: Metadata = {
     siteName: fullName,
     locale: 'en_GB',
     type: 'website',
+    // Next inherits this block wholesale rather than merging field by field,
+    // so a route that sets its own openGraph must restate the image; see
+    // lib/page-metadata.ts. This is the fallback for anything that does not.
+    images: [{ url: SITE_OG_IMAGE, width: 1200, height: 630 }],
   },
   robots: {
     index: true,
@@ -58,6 +63,7 @@ export const metadata: Metadata = {
   twitter: {
     title: `${fullName} - Senior Software Developer & Cloud Engineer`,
     card: 'summary_large_image',
+    images: [SITE_OG_IMAGE],
   },
   verification: {
     google: 'hej0QCp4EiTc0mN34JuMNlseT8_4jOGDLO79NcEAdWw',
@@ -152,7 +158,9 @@ export default function RootLayout({
       )}
     >
       <head>
-        <link rel="dns-prefetch" href={`//${new URL(SITE_URL).host}`} />
+        {/* Explicit https rather than a protocol-relative `//host`, which
+            resolves to whatever scheme the page was served over. */}
+        <link rel="dns-prefetch" href={SITE_URL} />
         {/**
          * Keep preconnects minimal to avoid Lighthouse warnings and unnecessary sockets.
          * We'll rely on first-use connection establishment for third parties.
@@ -169,21 +177,34 @@ export default function RootLayout({
           title={`${fullName} - Blog`}
           href="/rss.xml"
         />
+        {/* The file has existed since the llms.txt fix; nothing pointed at it. */}
+        <link rel="llms" type="text/plain" href="/llms.txt" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
       <body className="antialiased font-sans text-foreground bg-background">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-3 focus:py-2 focus:border focus:border-border focus:bg-background focus:text-foreground"
+        >
+          Skip to content
+        </a>
         <div className="max-w-2xl mb-40 flex flex-col md:flex-row mx-4 mt-8 lg:mx-auto overflow-hidden">
-          <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
-            <Navbar />
-            {children}
+          {/* This column keeps the classes the <main> used to carry, so the
+              layout is unchanged; <main> now wraps only the page content, which
+              is what makes <header> a banner landmark rather than a generic. */}
+          <div className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
+            <header>
+              <Navbar />
+            </header>
+            <main id="main-content">{children}</main>
             <Footer />
             <Suspense fallback={null}>
               <DeferredAnalytics />
             </Suspense>
-          </main>
+          </div>
         </div>
         <CookieConsent />
         {/* Load Speed Insights unconditionally (no cookies used) */}

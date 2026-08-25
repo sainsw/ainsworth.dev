@@ -43,7 +43,7 @@ export function postMetadata(post: LinkablePost): Metadata {
       publishedTime,
       ...(modifiedTime ? { modifiedTime } : {}),
       url,
-      images: [{ url: image }],
+      images: [{ url: image, width: 1200, height: 630 }],
     },
     twitter: {
       card: 'summary_large_image',
@@ -91,14 +91,45 @@ export function blogIndexJsonLd(posts: LinkablePost[]) {
       'Notes on software development, side projects, and the things I learn building them.',
     inLanguage: 'en-GB',
     publisher: { '@id': `${SITE_URL}/#person` },
-    blogPost: posts.map((post) => ({
-      '@type': 'BlogPosting',
-      headline: post.metadata.title,
-      datePublished: post.metadata.publishedAt,
-      dateModified: post.metadata.updatedAt ?? post.metadata.publishedAt,
-      description: post.metadata.summary,
-      url: postUrl(post),
-      author: { '@id': `${SITE_URL}/#person` },
-    })),
+    // Same recommended fields as the standalone BlogPosting on each post page.
+    // These entries were thinner than their per-post counterparts, which is
+    // exactly the drift postJsonLd exists to avoid.
+    blogPost: posts.map((post) => {
+      const url = postUrl(post);
+      return {
+        '@type': 'BlogPosting',
+        headline: post.metadata.title,
+        datePublished: post.metadata.publishedAt,
+        dateModified: post.metadata.updatedAt ?? post.metadata.publishedAt,
+        description: post.metadata.summary,
+        image: postSocialImage(post),
+        url,
+        mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+        author: { '@id': `${SITE_URL}/#person` },
+        publisher: { '@id': `${SITE_URL}/#person` },
+      };
+    }),
+  };
+}
+
+/**
+ * A BreadcrumbList rooted at the homepage.
+ *
+ * Pass the trail below Home, nearest-last:
+ *   breadcrumbJsonLd([{ name: 'Blog', path: '/blog' }])
+ *   breadcrumbJsonLd([{ name: 'Blog', path: '/blog' }, { name: title, path: `/blog/${slug}` }])
+ */
+export function breadcrumbJsonLd(trail: { name: string; path: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [{ name: 'Home', path: '' }, ...trail].map(
+      (crumb, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: crumb.name,
+        item: `${SITE_URL}${crumb.path}`,
+      }),
+    ),
   };
 }

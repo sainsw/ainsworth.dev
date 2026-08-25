@@ -148,6 +148,17 @@ describe('blogIndexJsonLd', () => {
     );
     expect(jsonLd.blogPost[0]['@type']).toBe('BlogPosting');
   });
+
+  it('gives nested entries the same recommended fields as a standalone post', async () => {
+    // These entries were thinner than their per-post counterparts, which the
+    // SEO audit picked up as a schema warning on /blog.
+    const { blogIndexJsonLd } = await import('@/lib/content/post-links');
+    const entry = blogIndexJsonLd([withImage]).blogPost[0];
+
+    expect(entry.image).toBe(postSocialImage(withImage));
+    expect(entry.mainEntityOfPage['@id']).toBe(entry.url);
+    expect(entry.publisher['@id']).toBe('https://ainsworth.dev/#person');
+  });
 });
 
 describe('generateMetadata', () => {

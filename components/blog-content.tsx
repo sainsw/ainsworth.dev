@@ -46,6 +46,12 @@ function addHeadingAnchors(html: string): string {
       const anchor = document.createElement('a');
       anchor.setAttribute('href', `#${id}`);
       anchor.setAttribute('class', 'anchor');
+      // The anchor renders as a glyph with no text, so without a label a
+      // screen reader announces it as an unnamed link, once per heading.
+      anchor.setAttribute(
+        'aria-label',
+        `Permalink to “${heading.textContent?.trim() ?? id}”`,
+      );
       heading.prepend(anchor);
     }
   }

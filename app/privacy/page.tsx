@@ -1,11 +1,13 @@
 import { EmailLink } from '@/components/email-link';
-import { SITE_URL } from '@/lib/site';
+import { breadcrumbJsonLd } from '@/lib/content/post-links';
+import { pageMetadata } from '@/lib/page-metadata';
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: 'Privacy Policy',
-  description: 'Privacy policy and cookie information for ainsworth.dev',
-  alternates: { canonical: `${SITE_URL}/privacy` },
-};
+  description:
+    'How ainsworth.dev handles cookies, analytics and anything you send through the contact form, including what is stored, for how long, and who processes it.',
+  path: '/privacy',
+});
 
 // The date the policy's substance last changed, not the date this file was
 // last touched: the 2026-08-05 humanizer pass reworded the page without
@@ -19,6 +21,14 @@ const LAST_UPDATED = '22 August 2026';
 export default function PrivacyPage() {
   return (
     <section>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd([{ name: 'Privacy Policy', path: '/privacy' }]),
+          ),
+        }}
+      />
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">
         Privacy Policy
       </h1>
