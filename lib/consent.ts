@@ -64,19 +64,27 @@ function getServerSnapshot(): ConsentStatus {
   return 'pending';
 }
 
+/**
+ * Zaraz loads on every page, but `zaraz.consent` only exists when the Zaraz
+ * consent platform is switched on in the Cloudflare dashboard, and it is not.
+ * Guarding on `window.zaraz` alone therefore passed and then threw a
+ * TypeError on the next line, on every accept and every decline. Guard on the
+ * thing being called, and let the optional `consent` in the type below keep it
+ * that way.
+ */
 export function accept() {
   writeCookie('accepted');
   setStatus('accepted');
-  if (typeof window !== 'undefined' && window.zaraz) {
-    window.zaraz.consent.granted();
+  if (typeof window !== 'undefined') {
+    window.zaraz?.consent?.granted();
   }
 }
 
 export function decline() {
   writeCookie('declined');
   setStatus('declined');
-  if (typeof window !== 'undefined' && window.zaraz) {
-    window.zaraz.consent.revoked();
+  if (typeof window !== 'undefined') {
+    window.zaraz?.consent?.revoked();
   }
 }
 
@@ -97,7 +105,8 @@ export function resetForTesting() {
 declare global {
   interface Window {
     zaraz?: {
-      consent: {
+      // Optional: present only when the Cloudflare consent platform is on.
+      consent?: {
         granted: () => void;
         revoked: () => void;
       };
