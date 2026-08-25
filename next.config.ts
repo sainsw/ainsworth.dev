@@ -140,10 +140,27 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=()',
   },
-  // Express the site's content preferences via HTTP header instead of robots.txt
+  /**
+   * Content Signals, the HTTP form. Cloudflare's Managed robots.txt already
+   * emits the robots.txt form of this on our behalf; this header states the
+   * same policy on every response, including ones nobody read robots.txt for.
+   *
+   * The header name is singular (`Content-Signal`). It was `Content-Signals`
+   * until 2026-08-25, which matched no spec and so said nothing to anybody.
+   *
+   * `ai-input=yes` is the load-bearing one and was the piece missing before:
+   * it covers grounding a generative answer in the page, which is the thing
+   * that produces a citation. Saying nothing is not the same as saying yes, so
+   * the omission read as "no preference" on the one use the site wants.
+   * Declaring it next to `ai-train=no` is the whole position in one line: read
+   * my work to answer questions, don't train on it.
+   *
+   * Google has said no crawler currently acts on these, so treat it as a
+   * declaration of intent rather than an enforcement mechanism.
+   */
   {
-    key: 'Content-Signals',
-    value: 'search=yes, ai-train=no',
+    key: 'Content-Signal',
+    value: 'search=yes, ai-input=yes, ai-train=no, use=reference',
   },
 ];
 

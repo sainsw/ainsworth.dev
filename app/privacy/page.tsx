@@ -1,9 +1,11 @@
+import { EmailLink } from '@/components/email-link';
+import { SITE_URL } from '@/lib/site';
+
 export const metadata = {
   title: 'Privacy Policy',
   description: 'Privacy policy and cookie information for ainsworth.dev',
+  alternates: { canonical: `${SITE_URL}/privacy` },
 };
-
-import { EmailLink } from '@/components/email-link';
 
 // The date the policy's substance last changed, not the date this file was
 // last touched: the 2026-08-05 humanizer pass reworded the page without

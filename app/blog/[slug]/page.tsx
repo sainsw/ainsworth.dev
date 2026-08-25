@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { BlogContent } from '@/components/blog-content';
 import { ViewTracker } from '@/components/view-tracker';
+import { fullName } from '@/lib/bio';
 import { getBlogPost, getBlogPosts } from '@/lib/content/blog';
 import { postJsonLd, postMetadata } from '@/lib/content/post-links';
 import { formatLongDate } from '@/lib/date';
@@ -33,10 +35,16 @@ export async function generateMetadata({
   return post ? postMetadata(post) : undefined;
 }
 
-function FormattedDate({ date }: { date: string }) {
+function FormattedDate({ date, updated }: { date: string; updated?: string }) {
   return (
     <p className="text-sm text-muted-foreground">
       {formatLongDate(date)} (<RelativeDate date={date} />)
+      {updated ? (
+        <>
+          {' · updated '}
+          <RelativeDate date={updated} />
+        </>
+      ) : null}
     </p>
   );
 }
@@ -65,7 +73,10 @@ export default async function Blog({
       </h1>
       <div className="flex justify-between items-center mt-2 mb-8 text-sm max-w-[650px]">
         <Suspense fallback={<p className="h-5" />}>
-          <FormattedDate date={post.metadata.publishedAt} />
+          <FormattedDate
+            date={post.metadata.publishedAt}
+            updated={post.metadata.updatedAt}
+          />
         </Suspense>
         <Suspense fallback={<p className="h-5" />}>
           <Views slug={post.slug} />
@@ -74,6 +85,19 @@ export default async function Blog({
       <article className="prose prose-quoteless dark:prose-invert">
         <BlogContent source={post.content} />
       </article>
+      {/*
+        The author was asserted in the JSON-LD and stated nowhere a reader could
+        see it. On a single-author site that feels redundant from the inside,
+        but a visible byline is what both E-E-A-T and entity resolution want
+        attached to the writing.
+      */}
+      <p className="mt-10 pt-6 border-t border-border text-sm text-muted-foreground">
+        Written by{' '}
+        <Link href="/work" className="text-foreground hover:underline">
+          {fullName}
+        </Link>
+        .
+      </p>
       <ViewTracker slug={post.slug} />
     </section>
   );

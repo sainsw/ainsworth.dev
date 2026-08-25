@@ -2,10 +2,13 @@ import { describe, expect, it } from 'vitest';
 import resumeData from '../data/resume.json';
 import {
   currentEmployer,
+  currentEmployerUrl,
   currentJobTitle,
+  education,
   email,
   fullName,
   getYearsOfExperience,
+  knowsAbout,
   linkedIn,
   location,
 } from '../lib/bio';
@@ -35,6 +38,48 @@ describe('bio module', () => {
 
   it('derives currentJobTitle from the first experience entry', () => {
     expect(currentJobTitle).toBe(resumeData.experience[0].position);
+  });
+
+  it('derives currentEmployerUrl from the first experience entry', () => {
+    expect(currentEmployerUrl).toBe(resumeData.experience[0].url);
+  });
+
+  it('maps every education entry for alumniOf', () => {
+    expect(education).toHaveLength(resumeData.education.length);
+    expect(education[0]).toEqual({
+      name: resumeData.education[0].institution,
+      url: resumeData.education[0].url,
+    });
+  });
+
+  describe('knowsAbout', () => {
+    it('splits on commas and spaced slashes', () => {
+      // "MySQL, MSSQL, NoSQL" and "React / Vue" are single CV entries.
+      expect(knowsAbout).toContain('MySQL');
+      expect(knowsAbout).toContain('MSSQL');
+      expect(knowsAbout).toContain('NoSQL');
+      expect(knowsAbout).toContain('React');
+      expect(knowsAbout).toContain('Vue');
+    });
+
+    it('leaves bare slashes alone so it cannot shred CI/CD', () => {
+      // The reason the split is timid: a bare / separator would turn "CI/CD"
+      // into two meaningless entities, and take Git (Github/Azure DevOps)
+      // with it.
+      expect(knowsAbout).toContain('CI/CD');
+      expect(knowsAbout).toContain('Python/Go/Swift');
+    });
+
+    it('pulls in technologies from the experience entries too', () => {
+      expect(knowsAbout).toContain('Terraform');
+      expect(knowsAbout).toContain('TypeScript');
+    });
+
+    it('dedupes case-insensitively and holds no blanks', () => {
+      const lowered = knowsAbout.map((entry) => entry.toLowerCase());
+      expect(new Set(lowered).size).toBe(lowered.length);
+      expect(knowsAbout.every((entry) => entry.trim().length > 0)).toBe(true);
+    });
   });
 
   // The clock is an argument now, so these can assert exact numbers instead of

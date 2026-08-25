@@ -21,4 +21,22 @@ describe('next config security headers', () => {
       'strict-origin-when-cross-origin',
     );
   });
+
+  it('declares content signals under the spec name, including ai-input', async () => {
+    const rules = await nextConfig.headers?.();
+    const siteWideRule = rules?.find((rule) => rule.source === '/(.*)');
+    const headers = new Map(
+      siteWideRule?.headers.map(({ key, value }) => [key, value]),
+    );
+
+    // Singular. The plural spelling matched no spec and signalled nothing.
+    expect(headers.has('Content-Signals')).toBe(false);
+
+    const signal = headers.get('Content-Signal');
+    // ai-input is the signal that governs citation; omitting it reads as
+    // "no preference expressed", not as consent.
+    expect(signal).toContain('ai-input=yes');
+    expect(signal).toContain('ai-train=no');
+    expect(signal).toContain('search=yes');
+  });
 });

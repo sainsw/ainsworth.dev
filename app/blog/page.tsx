@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 import { getBlogPosts, sortByPublishedAt } from '@/lib/content/blog';
+import { blogIndexJsonLd } from '@/lib/content/post-links';
+import { SITE_URL } from '@/lib/site';
 import { getViewCounts } from '@/lib/views';
 import { BlogRow, type BlogRowPost } from './blog-row';
 
@@ -7,6 +9,7 @@ export const metadata = {
   title: 'Blog',
   description:
     'Notes on software development, side projects, and the things I learn building them.',
+  alternates: { canonical: `${SITE_URL}/blog` },
 };
 
 // No route-segment config: `cacheComponents` rejects `export const revalidate`
@@ -18,6 +21,12 @@ export default function BlogPage() {
 
   return (
     <section>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(blogIndexJsonLd(allBlogs)),
+        }}
+      />
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">
         read my blog
       </h1>

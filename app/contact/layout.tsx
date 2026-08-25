@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: 'Contact',
   description: 'Send Sam Ainsworth a message.',
+  alternates: { canonical: `${SITE_URL}/contact` },
 };
 
 export default function ContactLayout({

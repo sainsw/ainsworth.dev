@@ -10,12 +10,15 @@ import { CookieConsent } from '@/components/cookie-banner';
 import { DeferredAnalytics } from '@/components/deferred-analytics';
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/nav';
+import { AVATAR_SRC } from '@/lib/avatar';
 import {
-  email as authorEmail,
   currentEmployer,
+  currentEmployerUrl,
   currentJobTitle,
+  education,
   fullName,
   getYearsOfExperience,
+  knowsAbout,
   location,
 } from '@/lib/bio';
 import { SITE_URL } from '@/lib/site';
@@ -66,21 +69,50 @@ const structuredData = {
   '@graph': [
     {
       '@type': 'Person',
+      '@id': `${SITE_URL}/#person`,
       name: fullName,
       url: SITE_URL,
       jobTitle: currentJobTitle,
       description:
         'Senior Software Developer working on web applications and cloud architecture, and leading engineering teams.',
-      email: `mailto:${authorEmail}`,
+      /**
+       * No `email` here, deliberately. components/email-link.tsx builds the
+       * address on click specifically to keep it out of the markup, and this
+       * block used to hand it to every scraper in plain text on every page,
+       * which made that effort pointless. The contact page is the published
+       * route in, so it is the one advertised.
+       */
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'Enquiries',
+        url: `${SITE_URL}/contact`,
+      },
       sameAs: [
         'https://www.linkedin.com/in/samainsworth/',
         'https://github.com/sainsw',
       ],
-      image: `${SITE_URL}/placeholder.jpg`,
+      // Was /placeholder.jpg, which lives in app/ and so was never served at
+      // all: Next only serves static files from public/. Every page carried a
+      // Person whose image 404d. This one is real and content-hashed.
+      image: `${SITE_URL}${AVATAR_SRC.jpg}`,
       worksFor: {
         '@type': 'Organization',
         name: currentEmployer,
+        url: currentEmployerUrl,
       },
+      hasOccupation: {
+        '@type': 'Occupation',
+        name: currentJobTitle,
+      },
+      // Both from data/resume.json, which already renders as HTML on /work but
+      // reached no structured data before. This is the entity answer to "who is
+      // this person and what do they know".
+      alumniOf: education.map(({ name, url }) => ({
+        '@type': 'EducationalOrganization',
+        name,
+        url,
+      })),
+      knowsAbout,
       address: {
         '@type': 'PostalAddress',
         addressLocality: location,
@@ -89,15 +121,13 @@ const structuredData = {
     },
     {
       '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
       name: fullName,
       url: SITE_URL,
       inLanguage: 'en-GB',
       description:
         'Personal site of Sam Ainsworth: side projects, blog posts, and notes on building software for the cloud.',
-      publisher: {
-        '@type': 'Person',
-        name: fullName,
-      },
+      publisher: { '@id': `${SITE_URL}/#person` },
     },
   ],
 };
@@ -133,6 +163,12 @@ export default function RootLayout({
          * - Resend is only used on the contact flow; that page preconnects locally.
          */}
         <meta property="og:logo" content={`${SITE_URL}/favicon.ico`} />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={`${fullName} - Blog`}
+          href="/rss.xml"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}

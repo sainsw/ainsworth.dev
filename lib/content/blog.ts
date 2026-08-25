@@ -7,12 +7,22 @@ type Metadata = {
   publishedAt: string;
   summary: string;
   image?: string;
+  /**
+   * Optional. When a post is revised, this is what `dateModified` reports and
+   * what the page shows as "last updated". Without it the schema had to claim
+   * every post was last modified on the day it was published, which is a
+   * freshness signal that can only ever get staler.
+   */
+  updatedAt?: string;
 };
+
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}(?:T.*)?$/;
 
 const REQUIRED_METADATA = ['title', 'publishedAt', 'summary'] as const;
 const ALLOWED_METADATA = new Set<keyof Metadata>([
   ...REQUIRED_METADATA,
   'image',
+  'updatedAt',
 ]);
 
 export function parseHtmlMetadata(fileContent: string, source = 'blog post') {
@@ -39,8 +49,18 @@ export function parseHtmlMetadata(fileContent: string, source = 'blog post') {
     }
   }
 
-  if (!/^\d{4}-\d{2}-\d{2}(?:T.*)?$/.test(metadata.publishedAt ?? '')) {
+  if (!DATE_PATTERN.test(metadata.publishedAt ?? '')) {
     throw new Error(`${source}: invalid publishedAt date`);
+  }
+
+  if (metadata.updatedAt !== undefined) {
+    if (!DATE_PATTERN.test(metadata.updatedAt)) {
+      throw new Error(`${source}: invalid updatedAt date`);
+    }
+    // A post revised before it was published is a typo every time.
+    if (metadata.updatedAt < (metadata.publishedAt ?? '')) {
+      throw new Error(`${source}: updatedAt is earlier than publishedAt`);
+    }
   }
 
   const content = fileContent

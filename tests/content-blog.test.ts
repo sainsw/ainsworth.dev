@@ -25,6 +25,54 @@ describe('parseHtmlMetadata', () => {
     });
   });
 
+  it('accepts an optional updatedAt', () => {
+    const result = parseHtmlMetadata(`
+      <template data-metadata>
+        <meta name="title" content="Example post">
+        <meta name="publishedAt" content="2026-05-31">
+        <meta name="updatedAt" content="2026-08-25">
+        <meta name="summary" content="Example summary">
+      </template>
+      <p>Body</p>
+    `);
+
+    expect(result.metadata.updatedAt).toBe('2026-08-25');
+  });
+
+  it('rejects a malformed updatedAt', () => {
+    expect(() =>
+      parseHtmlMetadata(
+        `
+        <template data-metadata>
+          <meta name="title" content="Example post">
+          <meta name="publishedAt" content="2026-05-31">
+          <meta name="updatedAt" content="last Tuesday">
+          <meta name="summary" content="Example summary">
+        </template>
+      `,
+        'bad-update.html',
+      ),
+    ).toThrow('bad-update.html: invalid updatedAt date');
+  });
+
+  it('rejects an updatedAt that precedes publishedAt', () => {
+    // Always a typo, and it would report a dateModified older than the
+    // datePublished sitting next to it in the same schema block.
+    expect(() =>
+      parseHtmlMetadata(
+        `
+        <template data-metadata>
+          <meta name="title" content="Example post">
+          <meta name="publishedAt" content="2026-05-31">
+          <meta name="updatedAt" content="2024-01-01">
+          <meta name="summary" content="Example summary">
+        </template>
+      `,
+        'backwards.html',
+      ),
+    ).toThrow('backwards.html: updatedAt is earlier than publishedAt');
+  });
+
   it('requires a metadata template', () => {
     expect(() => parseHtmlMetadata('<p>Body</p>', 'missing.html')).toThrow(
       'missing.html: missing metadata template',

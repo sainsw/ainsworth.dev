@@ -26,6 +26,7 @@ export function postMetadata(post: LinkablePost): Metadata {
   const {
     title,
     publishedAt: publishedTime,
+    updatedAt: modifiedTime,
     summary: description,
   } = post.metadata;
   const url = postUrl(post);
@@ -40,6 +41,7 @@ export function postMetadata(post: LinkablePost): Metadata {
       description,
       type: 'article',
       publishedTime,
+      ...(modifiedTime ? { modifiedTime } : {}),
       url,
       images: [{ url: image }],
     },
@@ -53,18 +55,50 @@ export function postMetadata(post: LinkablePost): Metadata {
 }
 
 export function postJsonLd(post: LinkablePost) {
+  const url = postUrl(post);
+
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.metadata.title,
     datePublished: post.metadata.publishedAt,
-    dateModified: post.metadata.publishedAt,
+    // Falls back to the publish date, which is what this always used to be.
+    // A post that declares `updatedAt` now reports the revision instead.
+    dateModified: post.metadata.updatedAt ?? post.metadata.publishedAt,
     description: post.metadata.summary,
     image: postSocialImage(post),
-    url: postUrl(post),
-    author: {
-      '@type': 'Person',
-      name: fullName,
-    },
+    url,
+    // Ties the schema to the page it describes. Without it the graph asserts a
+    // BlogPosting exists but never says this page is it.
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    author: { '@type': 'Person', '@id': `${SITE_URL}/#person`, name: fullName },
+    publisher: { '@id': `${SITE_URL}/#person` },
+  };
+}
+
+/**
+ * The blog index as a `Blog` node listing its posts. Lets a retrieval system
+ * see what the archive holds without crawling every post URL.
+ */
+export function blogIndexJsonLd(posts: LinkablePost[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    '@id': `${SITE_URL}/blog#blog`,
+    url: `${SITE_URL}/blog`,
+    name: `${fullName} - Blog`,
+    description:
+      'Notes on software development, side projects, and the things I learn building them.',
+    inLanguage: 'en-GB',
+    publisher: { '@id': `${SITE_URL}/#person` },
+    blogPost: posts.map((post) => ({
+      '@type': 'BlogPosting',
+      headline: post.metadata.title,
+      datePublished: post.metadata.publishedAt,
+      dateModified: post.metadata.updatedAt ?? post.metadata.publishedAt,
+      description: post.metadata.summary,
+      url: postUrl(post),
+      author: { '@id': `${SITE_URL}/#person` },
+    })),
   };
 }

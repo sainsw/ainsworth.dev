@@ -106,6 +106,48 @@ describe('postJsonLd', () => {
   it('names the author', () => {
     expect(postJsonLd(plain).author.name).toBe('Sam Ainsworth');
   });
+
+  it('ties the schema to the page via mainEntityOfPage', () => {
+    const jsonLd = postJsonLd(plain);
+    expect(jsonLd.mainEntityOfPage['@id']).toBe(jsonLd.url);
+  });
+
+  it('points author and publisher at the sitewide Person node', () => {
+    const jsonLd = postJsonLd(plain);
+    expect(jsonLd.author['@id']).toBe('https://ainsworth.dev/#person');
+    expect(jsonLd.publisher['@id']).toBe('https://ainsworth.dev/#person');
+  });
+
+  it('reports dateModified as the publish date when a post has no update', () => {
+    const jsonLd = postJsonLd(plain);
+    expect(jsonLd.dateModified).toBe(jsonLd.datePublished);
+  });
+
+  it('reports dateModified as updatedAt once a post declares one', () => {
+    const revised = {
+      ...plain,
+      metadata: { ...plain.metadata, updatedAt: '2026-08-25' },
+    };
+    const jsonLd = postJsonLd(revised);
+
+    expect(jsonLd.dateModified).toBe('2026-08-25');
+    expect(jsonLd.datePublished).toBe('2024-01-15');
+  });
+});
+
+describe('blogIndexJsonLd', () => {
+  it('lists every post as a BlogPosting under a Blog node', async () => {
+    const { blogIndexJsonLd } = await import('@/lib/content/post-links');
+    const jsonLd = blogIndexJsonLd([plain, withImage]);
+
+    expect(jsonLd['@type']).toBe('Blog');
+    expect(jsonLd.url).toBe('https://ainsworth.dev/blog');
+    expect(jsonLd.blogPost).toHaveLength(2);
+    expect(jsonLd.blogPost[0].url).toBe(
+      'https://ainsworth.dev/blog/hello-world',
+    );
+    expect(jsonLd.blogPost[0]['@type']).toBe('BlogPosting');
+  });
 });
 
 describe('generateMetadata', () => {
