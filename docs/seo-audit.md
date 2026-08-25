@@ -3,8 +3,13 @@
 Run 2026-08-25 with [SEOmator CLI](https://github.com/seo-skills/seo-audit-skill)
 v3.0 (251 rules, 20 categories), crawling 19 pages.
 
-**Score: 95, grade A.** The site is in good shape. Most of what follows is small,
-and one item is not.
+**Score: 95, grade A** at the time of the audit. **96 after the fixes in
+`44840eb`**, with accessibility 92 to 97, AI/GEO readiness 87 to 94, social 90 to
+94, and security 95 to 97.
+
+Everything code-side below is fixed. Two items are deliberately still open and
+are marked at the bottom. The findings are kept in place rather than deleted,
+because the reasoning is the part worth keeping.
 
 ## Read the method before the numbers
 
@@ -206,19 +211,26 @@ only image, and it is below the fold.
 
 ## Worklist
 
-1. Decide the `inlineCss` trade on real-world LCP numbers. It is worth about 34KB gzipped per page.
-2. Give `/`, `/blog`, `/work` and `/contact` their own `openGraph` blocks with a title, description, correct `url` and an image.
-3. Link `/privacy` from the footer.
-4. Give the heading anchors an `aria-label`.
-5. Add `image`, `publisher` and `mainEntityOfPage` to the blog index's nested `blogPost` entries.
-6. Add a skip link and a `<header>` landmark.
-7. Make the `dns-prefetch` URL explicitly `https://`.
-8. Advertise `/llms.txt` with a `<link rel="llms">`.
-9. Add `BreadcrumbList` schema to non-homepage routes.
-10. Give post summaries a length budget so they survive as meta descriptions.
+1. **Still open.** Decide the `inlineCss` trade on real-world LCP numbers. It is worth about 34KB gzipped per page, and choosing needs a measurement this sandbox cannot take.
+2. ~~Give `/`, `/blog`, `/work` and `/contact` their own `openGraph` blocks.~~ Done, via `lib/page-metadata.ts` and a new `/api/og` site card.
+3. ~~Link `/privacy` from the footer.~~ Done.
+4. ~~Give the heading anchors an `aria-label`.~~ Done.
+5. ~~Add `image`, `publisher` and `mainEntityOfPage` to the blog index's nested entries.~~ Done.
+6. ~~Add a skip link and a `<header>` landmark.~~ Done, with before-and-after screenshots byte-identical across four routes at two widths.
+7. ~~Make the `dns-prefetch` URL explicitly `https://`.~~ Done.
+8. ~~Advertise `/llms.txt` with a `<link rel="llms">`.~~ Done.
+9. ~~Add `BreadcrumbList` schema to non-homepage routes.~~ Done.
+10. **Still open.** Give post summaries a length budget so they survive as meta descriptions. This is prose, and writing fifteen summaries to a character count is the kind of flattening the humanizer skill exists to prevent. The two descriptions I wrote myself (`/contact`, `/privacy`) were set inside the 120 to 160 window.
 
-Items 2 through 9 are small and mechanical. Item 1 is the one worth actual
-thought, and item 10 is prose.
+One thing the fixes changed about the numbers: linking `/privacy` from the footer
+means the crawler now finds it, so the crawl covers 20 pages rather than 19, and
+every per-page rule count rises by one. The `perf` category dips a point purely
+from that arithmetic rather than from any regression.
+
+A single new item surfaced rather than broke: with `<main>` no longer wrapping
+the nav, `perf-lcp-hints` can finally identify an LCP candidate, and flags two
+pages whose first image has no `fetchpriority="high"`. The images did not
+change; the rule can just see them now.
 
 ## Re-running this
 
