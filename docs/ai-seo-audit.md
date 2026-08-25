@@ -6,20 +6,102 @@ Audited 2026-08-25 against the `ai-seo` skill from
 
 Everything below was checked against `SKIP_CV=1 npm run build-only` output rather
 than the source, so "404" means the route genuinely is not in the build's served
-surface. The live site could not be reached from the audit sandbox, so nothing
-here rests on a request to production.
+surface.
+
+One caveat that turned out to matter more than expected: the build output is not
+the served response. Cloudflare rewrites `robots.txt` in front of the app, and a
+first pass that read only `app/robots.ts` and the build reached the exact
+opposite conclusion to the truth. The served file is quoted below and is the
+authority. Where this document describes `robots.txt`, it describes production.
 
 ## Where the site stands
 
 | Layer | Verdict |
 |---|---|
 | Access (can an agent see real content?) | Strong. Every route prerenders, content is in the initial HTML. |
-| Discovery (do your files say what's here?) | Weak. `llms.txt` 404s, robots.txt names no AI crawler, no feed. |
+| Discovery (do your files say what's here?) | Mixed. Crawler policy is explicit and well judged, but lives in Cloudflare, not the repo. `llms.txt` 404s and there is no feed. |
 | Parseability (can an agent tell what the page is?) | Mixed. Valid JSON-LD, but thin, and one field points at a 404. |
 | Authority (is it worth citing?) | Weakest. 8 of 15 posts cite nothing external. |
 
 Access is the layer most sites fail and this one passes outright. The gaps are
 all in the three layers above that, and the cheapest wins are in Discovery.
+
+The crawler policy deserves saying up front, because it is the finding most
+likely to be misread: nine crawlers are blocked in production, and that is
+mostly the right call, not a mistake. The detail is in the next section.
+
+## The robots.txt you serve is not the one in your repo
+
+This is the finding most likely to be misread in either direction, so it goes
+first. Nine crawlers are blocked in production. That is mostly the right call.
+The problem is that nothing in the codebase says so.
+
+`app/robots.ts` emits a `User-Agent: *` group with no rules under it, and the
+build confirms that is what Next produces. It is not what visitors get.
+Cloudflare's Managed robots.txt feature prepends its own block and serves the
+two concatenated, so production carries a full content-signal preamble, nine
+`Disallow: /` rules, and then the app's own output appended underneath.
+
+Two things follow, and they pull in opposite directions.
+
+The policy is real, and mostly well judged. My first pass concluded the site
+expressed no stance and blocked nothing. Production blocks Amazonbot,
+Applebot-Extended, Bytespider, CCBot, ClaudeBot,
+CloudflareBrowserRenderingCrawler, Google-Extended, GPTBot and
+meta-externalagent. Read as a list of names that looks alarming for a site that
+wants AI citations. Read by what each token actually governs, it is close to the
+middle ground the skill recommends: block the training crawlers, keep the
+citation crawlers.
+
+| Blocked | What it governs | Citation cost |
+|---|---|---|
+| `GPTBot` | OpenAI model training | None. ChatGPT search uses `OAI-SearchBot`, which is not blocked. |
+| `ClaudeBot` | Anthropic model training | None. Claude search uses `Claude-SearchBot`, which is not blocked. |
+| `Google-Extended` | Gemini training and Gemini-app grounding | Real, but narrow. See below. |
+| `CCBot` | Common Crawl dataset | None. Dataset collection only. |
+| `Applebot-Extended` | Apple Intelligence training | None. `Applebot` handles search and is not blocked. |
+| `Amazonbot`, `Bytespider`, `meta-externalagent` | Amazon, ByteDance and Meta assistants | Those assistants only. |
+
+The crawlers that actually produce citations are all still allowed: `Googlebot`,
+`Bingbot`, `PerplexityBot`, `OAI-SearchBot`, `ChatGPT-User`, `Claude-SearchBot`,
+`Claude-User` and `Applebot`. So ChatGPT, Claude, Perplexity and Copilot can all
+still reach, index and cite the site.
+
+`Google-Extended` is the one block with a genuine cost, and it is smaller than it
+looks. It is not a crawler at all: Googlebot still does the fetching, and the
+token only governs downstream use. Google states it does not affect AI Overviews
+or AI Mode, which run on the Search index. What it does cost is grounding in the
+Gemini app and Vertex generative APIs. Worth knowing that is the trade, rather
+than discovering it later.
+
+The policy is also invisible from the codebase, and that is the actual problem.
+`app/robots.ts` reads as the source of truth and is not. Anyone auditing this
+repo, including a future agent following CLAUDE.md, will read that file, see an
+empty permissive group, and conclude the opposite of what is served. I did.
+
+The risk that follows is not hypothetical. The blocklist is *managed*, meaning
+Cloudflare curates it. If Cloudflare adds `OAI-SearchBot` or `Claude-SearchBot`
+to the managed set, the site loses AI citation on a config change it never made,
+with no commit, no deploy, and nothing in the repo to notice. The current
+configuration is good. Nothing in the repo pins it there.
+
+Two fixes, both small. Put the real policy in `app/robots.ts` so it is version
+controlled and reviewable, which also means the site keeps a stance if the
+Cloudflare toggle is ever turned off. And leave a comment in `app/robots.ts`
+saying Cloudflare prepends to it, so the next reader does not repeat the mistake
+this audit made.
+
+### The appended group is redundant, and slightly untidy
+
+Because Cloudflare prepends rather than replaces, the served file contains two
+`User-agent: *` groups: Cloudflare's, carrying the content signal and `Allow: /`,
+and then the app's, carrying nothing. Parsers that follow RFC 9309 merge groups
+with identical tokens, so this is very unlikely to change behaviour. `Host:` and
+`Sitemap:` are non-group directives and are read wherever they appear, so the
+sitemap is found correctly.
+
+It is not a bug. It is worth cleaning up only because a robots.txt with two `*`
+groups invites exactly the kind of misreading described above.
 
 ## Three things that are broken
 
@@ -66,34 +148,39 @@ is the only option that has no upside.
 
 ## Discovery: the cheapest wins on the site
 
-### robots.txt expresses no stance
+With the crawler policy set aside, what is left in this layer is small, mostly
+config, and genuinely cheap.
 
-`app/robots.ts` emits a `User-Agent: *` group with no rules under it:
+### Neither content signal declares `ai-input`
+
+Two content signals ship, and they disagree with each other.
+
+Cloudflare's robots.txt line, which is the one that follows the published policy:
 
 ```
-User-Agent: *
-
-Host: https://ainsworth.dev
-Sitemap: https://ainsworth.dev/sitemap.xml
+Content-Signal: search=yes,ai-train=no,use=reference
 ```
 
-Nothing is blocked, so GPTBot, PerplexityBot, ClaudeBot and Google-Extended can
-all crawl. That is the outcome you want. But the skill's agent-readiness
-reference asks for the stance to be stated rather than inferred, and an empty
-group states nothing. Naming the crawlers you allow costs a few lines and makes
-the policy legible to anyone auditing it, you included.
+And an HTTP header set in `next.config.ts` on every response:
 
-### `Content-Signals` omits the signal that governs citation
+```
+Content-Signals: search=yes, ai-train=no
+```
 
-`next.config.ts` sends `Content-Signals: search=yes, ai-train=no` on every
-response. The vocabulary has three signals, and the missing one is `ai-input`,
-which covers using the page to ground an AI-generated answer. That is precisely
-the behaviour that produces a citation.
+The policy defines the directive as `Content-Signal`, singular, in robots.txt.
+The header in `next.config.ts` is plural, omits `use=reference`, and duplicates
+in a weaker form something Cloudflare is already emitting correctly one block
+earlier in the same response. It should go, or be brought into line.
 
-As it stands the site has explicitly opted out of training and said nothing
-about answer grounding. If the goal is to be cited, `ai-input=yes` is the
-declaration that says so, and it sits comfortably next to `ai-train=no`: read my
-work to answer questions, don't train on it.
+More useful than either: both omit `ai-input`, the signal covering real-time use
+of a page to ground a generative answer. That is the behaviour that produces a
+citation, and by the policy's own terms an omitted signal grants and restricts
+nothing. The site has said a clear no to training and stayed silent on the one
+use it presumably wants.
+
+Declaring `ai-input=yes` would state the position the rest of the configuration
+already implies, and it sits consistently beside `ai-train=no` and the unblocked
+search crawlers: read my work to answer questions, don't train on it.
 
 ### There is no feed
 
@@ -254,6 +341,11 @@ The contact form is gated behind JavaScript and Turnstile, which an agent cannot
 complete. That is the correct trade for a personal site, and it is the only
 JavaScript-dependent path on the site.
 
+The production crawler policy blocks training and keeps citation, which is the
+configuration this skill argues for. It is worth listing as a strength because
+the naive reading of that blocklist is that the site has locked itself out of AI
+search, and it has not.
+
 ## Worklist, in the order I would do it
 
 Discovery fixes first: they are small, they are mostly config, and they are the
@@ -262,8 +354,8 @@ layer where the site is furthest from where it should be.
 1. Move `llms.txt` into `public/`. One file move, fixes an outright 404.
 2. Point `Person.image` at `AVATAR_SRC` instead of the unserved `placeholder.jpg`.
 3. Decide the email policy and make the DOM and the JSON-LD agree.
-4. Add `ai-input=yes` to the `Content-Signals` header.
-5. Name the AI crawlers explicitly in `app/robots.ts`.
+4. Declare `ai-input=yes`, and drop or rename the plural `Content-Signals` header in `next.config.ts`.
+5. Move the real crawler policy into `app/robots.ts` so it is version controlled, and comment that Cloudflare prepends to it.
 6. Add `alternates.canonical` to the four layouts missing it.
 7. Add an RSS feed.
 8. Add `alumniOf`, `knowsAbout` and `hasOccupation` to the `Person` graph from `resume.json`.
