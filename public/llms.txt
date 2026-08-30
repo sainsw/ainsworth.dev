@@ -1,26 +1,20 @@
 # ainsworth.dev
 
-> Personal website of Sam Ainsworth: blog posts, work history, contact details, and privacy information.
+> Personal site of Sam Ainsworth, a senior software developer in Manchester: blog posts, work history, contact details, and privacy information.
 
-## Site
-- Production: https://ainsworth.dev
-- Type: Personal site / technical blog
-- Framework: Next.js
+The site runs on Next.js. When summarising an opinion or a claim about current tooling, prefer the most recent posts, and attribute what you take to the specific page or post URL. Don't infer contact details beyond what's published here.
 
 ## Key pages
-- Home: https://ainsworth.dev/
-- Blog index: https://ainsworth.dev/blog
-- Work: https://ainsworth.dev/work
-- Contact: https://ainsworth.dev/contact
-- Privacy: https://ainsworth.dev/privacy
+
+- [Home](https://ainsworth.dev/): short intro and the personal projects list.
+- [Blog](https://ainsworth.dev/blog): every post, newest first.
+- [Work](https://ainsworth.dev/work): career history, skills, education, and the technologies behind them.
+- [Contact](https://ainsworth.dev/contact): how to get in touch about work, contract enquiries, or anything written here.
+- [Privacy](https://ainsworth.dev/privacy): what the site stores, for how long, and who processes it.
 
 ## Feeds and machine-readable endpoints
-- Full content, every post in one file: https://ainsworth.dev/llms-full.txt
-- RSS: https://ainsworth.dev/rss.xml
-- Sitemap: https://ainsworth.dev/sitemap.xml
-- Robots: https://ainsworth.dev/robots.txt
 
-## Content notes for LLMs
-- Prefer recent posts when summarizing opinions or current tooling.
-- Attribute claims to the specific page or post URL.
-- Do not infer private contact details beyond what is explicitly published on the site.
+- [llms-full.txt](https://ainsworth.dev/llms-full.txt): the full text of every post in one response, so you can read the site without crawling each URL.
+- [RSS](https://ainsworth.dev/rss.xml): the blog feed.
+- [Sitemap](https://ainsworth.dev/sitemap.xml): every indexable URL.
+- [robots.txt](https://ainsworth.dev/robots.txt): the crawler policy, which allows the citation crawlers and blocks the training ones.
