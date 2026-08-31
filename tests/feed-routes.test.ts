@@ -22,13 +22,13 @@ const posts = [
   },
 ];
 
-function mockPosts() {
+function mockPosts(list: typeof posts = posts) {
   vi.doMock('@/lib/content/blog', async () => {
     const actual =
       await vi.importActual<typeof import('@/lib/content/blog')>(
         '@/lib/content/blog',
       );
-    return { ...actual, getBlogPosts: vi.fn(() => posts) };
+    return { ...actual, getBlogPosts: vi.fn(() => list) };
   });
 }
 
@@ -112,5 +112,75 @@ describe('/llms-full.txt', () => {
 
     expect(text).toContain('Last updated: August 25, 2026');
     expect(text.match(/Last updated:/g)).toHaveLength(1);
+  });
+});
+
+describe('/llms.txt', () => {
+  it('is llmstxt.org v2: an H1, a blockquote, then H2 link lists', async () => {
+    vi.resetModules();
+    mockPosts();
+    const { GET } = await import('@/app/llms.txt/route');
+    const res = await GET();
+    const text = await res.text();
+
+    expect(res.headers.get('Content-Type')).toContain('text/plain');
+    expect(text.startsWith('# ainsworth.dev\n')).toBe(true);
+    expect(text).toContain('\n> Personal site of Sam Ainsworth');
+    expect(text).toContain('\n## Posts\n');
+  });
+
+  it('writes every list item as a markdown link', async () => {
+    vi.resetModules();
+    mockPosts();
+    const { GET } = await import('@/app/llms.txt/route');
+    const text = await (await GET()).text();
+
+    // The bug that started this: bare `- Name: https://...` entries left a
+    // parser looking for [text](url) with no links in the whole file.
+    const items = text.split('\n').filter((line) => line.startsWith('- '));
+    expect(items.length).toBeGreaterThan(0);
+    for (const item of items) {
+      expect(item).toMatch(/^- \[[^\]]+\]\(https:\/\/[^)]+\)/);
+    }
+  });
+
+  it('lists a link per post, newest first, dated', async () => {
+    vi.resetModules();
+    mockPosts();
+    const { GET } = await import('@/app/llms.txt/route');
+    const text = await (await GET()).text();
+
+    expect(text).toContain(
+      '- [Hello World](https://ainsworth.dev/blog/hello-world): A first post Published January 1, 2024.',
+    );
+    expect(text.indexOf('/blog/second')).toBeLessThan(
+      text.indexOf('/blog/hello-world'),
+    );
+    // Only the post carrying updatedAt says it was revised.
+    expect(text).toContain(', updated August 25, 2026.');
+    expect(text.match(/, updated /g)).toHaveLength(1);
+  });
+
+  it('survives a title with brackets and a summary across lines', async () => {
+    vi.resetModules();
+    mockPosts([
+      {
+        slug: 'awkward',
+        metadata: {
+          title: 'A [bracketed] title',
+          publishedAt: '2024-03-03',
+          summary: 'Wrapped\nacross   lines',
+        },
+        content: '<p>Body.</p>',
+      },
+    ] as typeof posts);
+    const { GET } = await import('@/app/llms.txt/route');
+    const text = await (await GET()).text();
+
+    // An unescaped ] would close the link text early and the URL would render
+    // as prose; a raw newline would end the list item mid-summary.
+    expect(text).toContain(
+      '- [A \\[bracketed\\] title](https://ainsworth.dev/blog/awkward): Wrapped across lines Published March 3, 2024.',
+    );
   });
 });

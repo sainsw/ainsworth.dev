@@ -5,8 +5,8 @@ import { SITE_URL } from '@/lib/site';
 
 /**
  * Every post's full text in one response, so an agent can read the site in a
- * single request instead of crawling fifteen URLs. Companion to
- * /llms.txt, which is the hand-written index and lives in public/.
+ * single request instead of crawling fifteen URLs. Companion to /llms.txt,
+ * which is the index: the same posts as links, with a summary each.
  *
  * Posts are authored as HTML, and the tags are noise to a model that only
  * wants the prose, so they come out stripped. Code blocks keep their content
