@@ -113,6 +113,96 @@ describe('/llms-full.txt', () => {
     expect(text).toContain('Last updated: August 25, 2026');
     expect(text.match(/Last updated:/g)).toHaveLength(1);
   });
+
+  it('fences a code block and keeps its indentation', async () => {
+    vi.resetModules();
+    mockPosts([
+      {
+        slug: 'coded',
+        metadata: {
+          title: 'Coded',
+          publishedAt: '2024-04-04',
+          summary: 'Has a code block',
+        },
+        content:
+          '<p>Before.</p><pre><code class="language-json">{\n  "a": {\n    "b": 1\n  }\n}</code></pre><p>After.</p>',
+      },
+    ] as typeof posts);
+    const { GET } = await import('@/app/llms-full.txt/route');
+    const text = await (await GET()).text();
+
+    // Nothing used to say where a code block started or stopped, and the
+    // prose cleanup flattened every line in it to column zero.
+    expect(text).toContain('```json\n{\n  "a": {\n    "b": 1\n  }\n}\n```');
+    expect(text).toContain('Before.');
+    expect(text).toContain('After.');
+  });
+
+  it('ships a diagram as its mermaid source, indentation intact', async () => {
+    vi.resetModules();
+    mockPosts([
+      {
+        slug: 'drawn',
+        metadata: {
+          title: 'Drawn',
+          publishedAt: '2024-05-05',
+          summary: 'Has a diagram',
+        },
+        content:
+          '<pre><code class="language-mermaid">flowchart TD\n    A[Start] --> B[End]</code></pre>',
+      },
+    ] as typeof posts);
+    const { GET } = await import('@/app/llms-full.txt/route');
+    const text = await (await GET()).text();
+
+    expect(text).toContain(
+      '```mermaid\nflowchart TD\n    A[Start] --> B[End]\n```',
+    );
+  });
+
+  it('decodes numeric escapes as well as named ones', async () => {
+    vi.resetModules();
+    mockPosts([
+      {
+        slug: 'escaped',
+        metadata: {
+          title: 'Escaped',
+          publishedAt: '2024-06-06',
+          summary: 'Has hex entities',
+        },
+        content:
+          '<pre><code class="language-ts">const a = `x&#x26;y`;\nif (a &#x3C; b) {}</code></pre><p>Prose with &#x60;ticks&#x60; too.</p>',
+      },
+    ] as typeof posts);
+    const { GET } = await import('@/app/llms-full.txt/route');
+    const text = await (await GET()).text();
+
+    expect(text).toContain('const a = `x&y`;');
+    expect(text).toContain('if (a < b) {}');
+    expect(text).toContain('Prose with `ticks` too.');
+    expect(text).not.toContain('&#x');
+  });
+
+  it('leaves an escaped entity escaped', async () => {
+    vi.resetModules();
+    mockPosts([
+      {
+        slug: 'double',
+        metadata: {
+          title: 'Double',
+          publishedAt: '2024-07-07',
+          summary: 'Writes an entity as text',
+        },
+        content: '<p>Write it as &amp;lt; in the source.</p>',
+      },
+    ] as typeof posts);
+    const { GET } = await import('@/app/llms-full.txt/route');
+    const text = await (await GET()).text();
+
+    // & resolves last, so this stays the literal text `&lt;` instead of
+    // decoding a second time into `<`.
+    expect(text).toContain('Write it as &lt; in the source.');
+  });
 });
 
 describe('/llms.txt', () => {
