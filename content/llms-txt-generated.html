@@ -1,0 +1,58 @@
+<template data-metadata>
+  <meta name="title" content="Generating llms.txt instead of writing it">
+  <meta name="publishedAt" content="2026-08-31">
+  <meta name="summary" content="Lighthouse fails an llms.txt whose entries are bare URLs rather than markdown links. Mine was, and before that it had been quietly returning a 404. Both it and llms-full.txt are now built from the posts.">
+</template>
+
+<p><code>llms.txt</code> is a convention for handing models and agents a readable map of a site. The reasoning behind it is that a web page is built for a person, so the content arrives wrapped in navigation and markup, pulling it back out is imprecise work, and a context window will not hold an entire site regardless. The proposal is one markdown file at a known location, small enough to be read in full, holding a short description of the site and a curated set of links to the parts worth fetching. It is closer to a hand written index than to a sitemap, which lists everything a search engine should crawl rather than the few pages that answer most questions about you. Nothing is required to read it, and Lighthouse still treats publishing one as optional, but it costs a few kilobytes, and the spec page notes that OpenAI, Anthropic and Gemini all publish one for their own developer documentation.</p>
+<p>Lighthouse has a check for <code>llms.txt</code> now, and this site failed it:</p>
+<blockquote>
+<p>llms.txt does not follow recommendations. The llms.txt file should be a Markdown file containing at least one H1 header.</p>
+<p>Error: File does not appear to contain any links.</p>
+</blockquote>
+<p>Half of that message was irrelevant. The H1 was there. The second line was the actual finding, and it took me a moment to believe it, because the file was almost entirely URLs:</p>
+<pre><code class="language-text">## Key pages
+- Home: https://ainsworth.dev/
+- Blog index: https://ainsworth.dev/blog</code></pre>
+<p>Ten URLs, none of them written as markdown links, so a parser looking for <code>[text](url)</code> found nothing at all. The format is specific about this and I had never checked.</p>
+<h2>What the format requires</h2>
+<p>The proposal is at <a href="https://llmstxt.org/">llmstxt.org</a>. It is short, and the version currently published is v2, dated August 2026 after two years of people adopting the first one. A conforming file is an H1 with the site name, which is the only required element, then optionally a blockquote summary, then any amount of prose that is not under a heading, then H2 sections each containing a list of files.</p>
+<p>The part I had skipped is the definition of a list item. Each one needs "a required markdown hyperlink", after which a colon and some notes are optional. The URL on its own does not count.</p>
+<pre><code class="language-text">## Key pages
+
+- [Home](https://ainsworth.dev/): short intro and the personal projects list.
+- [Blog](https://ainsworth.dev/blog): every post, newest first.</code></pre>
+<p>My file had a second problem in the opposite direction. It ended with a section called <code>## Content notes for LLMs</code>, four bullets of advice about attributing quotes to the right URL. Useful content, wrong place: an H2 section is meant to be a list of files, and free prose belongs above the first heading. Moving those four lines up made the rest of the file parse.</p>
+<h2>A broken file scores worse than no file</h2>
+<p>Chrome documents the audit at <a href="https://developer.chrome.com/docs/lighthouse/agentic-browsing/llms-txt">developer.chrome.com</a>, and there is a detail there worth knowing before anyone adds one of these files to tick a box. A 404 marks the audit not applicable, because publishing <code>llms.txt</code> is currently optional. Publishing one that does not parse gets you a failure.</p>
+<p>This site had managed both states in sequence. The file was committed in May, at the root of the repository next to <code>README.md</code>, where Next never serves it, because static files come out of <code>public/</code>. It returned a 404 from the end of May until the end of August. Then I moved it into <code>public/</code>, at which point it started serving and started failing. Making it reachable made the score worse.</p>
+<p>The check belongs to a category called Agentic Browsing, which does not report a weighted score out of 100 like the rest of Lighthouse. It reports <a href="https://developer.chrome.com/docs/lighthouse/agentic-browsing/scoring">the fraction of its checks that passed</a>, on the reasoning that the conventions here are still unsettled and a single number would imply more certainty than exists. Running it needs Chrome 150 or later. The other checks in the category look at whether the accessibility tree is well formed, whether the page moves around after it renders, and WebMCP.</p>
+<h2>Why generate it</h2>
+<p>A valid file was not the same as a useful one. Mine listed five pages, and no posts. Anything that wanted a specific post had to fetch the blog index and parse HTML, or pull the whole of <code>llms-full.txt</code>, which was 76KB at the time.</p>
+<p><a href="https://platform.claude.com/llms.txt">Anthropic's llms.txt</a> is a good contrast. It is 758 lines and 688 links, one for each documentation page, and every link points at a <code>.md</code> version of the page rather than the HTML one. Request it and the response comes back as <code>text/markdown</code>. That is the shape the format is designed around: an index small enough to read in full, with the detail behind the links and fetched only when it is needed.</p>
+<p>Sixteen posts is not 688 pages, but a hand written index is a step in publishing that nothing enforces, and the only symptom of forgetting it is a file that quietly falls behind. So the file stopped being a file. <code>llms.txt</code> is now a route that reads the same posts as the rest of the site:</p>
+<pre><code class="language-mermaid">flowchart TD
+    A["content/*.html
+    one file per post"] --> B[getBlogPosts]
+    B --> C["/blog
+    and each post page"]
+    B --> D["/rss.xml"]
+    B --> E["/llms.txt
+    index, one link per post"]
+    B --> F["/llms-full.txt
+    every post in full"]
+
+    style E fill:#e8f5e8
+    style F fill:#e1f5fe
+</code></pre>
+<p>It prerenders to a static file during the build, so nothing is computed per request, and the index is 5.4KB with every post in it.</p>
+<p>Building link syntax out of post metadata introduced two ways to reproduce the original bug. A <code>]</code> in a title closes the link text early and leaves the URL sitting in the page as prose. A newline in a summary ends the list item partway through and turns the remainder into a stray paragraph. Neither raises an error; both degrade into exactly the unparseable text I had started with. Titles are escaped, summaries are collapsed onto one line, and a test checks that every line of the output starting with <code>- </code> matches a markdown link, which is the assertion I actually trust, because it tests the failure rather than my memory of it.</p>
+<h2>The companion file</h2>
+<p><code>llms-full.txt</code> holds every post's text in one response, so a single request covers the whole site. Posts here are written as HTML, which the route strips back to text.</p>
+<p>It was stripping more than the tags. I only noticed after reading the output properly rather than checking that it returned a 200. All three problems were the same mistake: the cleanup written for prose was running across the code blocks as well.</p>
+<p>Nothing marked where a code block began or ended. There were 32 of them, arriving as undifferentiated text that a reader would have to identify by its syntax. Indentation was gone, because the cleanup collapses repeated spaces and trims each line, which is correct for a paragraph and ruinous for a YAML sample. Not a single line in the file began with whitespace. Numeric HTML escapes were never decoded either: the route handled <code>&#x26;lt;</code> and its named siblings but not the hex forms, so <code>&#x26;#x3C;</code> appeared 44 times, <code>&#x26;#x26;</code> nine times and <code>&#x26;#x60;</code> three times, sitting in the middle of code samples.</p>
+<p>One change fixes all three. Split the post into code and prose before doing anything else, then run the prose cleanup on prose only and re-emit each code block inside a fence carrying its language. The output now has 479 lines that start with whitespace, and each block says what it is.</p>
+<h2>Diagrams as text</h2>
+<p>Seven of those 32 blocks are Mermaid diagrams, which raised a question I had not expected to have to answer. The route's own comment claimed the diagrams were being discarded. They were not. The comment described stripping inlined SVG, and the SVG is produced later, when the post renders, so the code doing the stripping could never encounter one. The Mermaid had been shipping the whole time, unlabelled, by accident.</p>
+<p>Having found it, I could remove it deliberately or keep it deliberately. It stays. Mermaid is a compact and legible description of a picture, and the alternative on offer is not a better description but no description. The diagram further up this page is a 24KB SVG by the time it reaches your browser. Its source, which is what goes into the text file, is under 400 bytes. The preamble now states that a <code>mermaid</code> fence is a diagram, instead of leaving that to be worked out.</p>
+<p>One piece of tidying I had to abandon. There are two functions on this site that decode HTML entities, and they disagree deliberately. The one used for diagrams resolves <code>&#x26;amp;</code> partway through its sequence of replacements; the one used for text resolves it last, so that an entity written as an escape stays escaped rather than decoding a second time. Merging them looks like an afternoon's work and would break the site, because the committed diagram filenames are content hashes of the first function's output. Change what it returns and every SVG on disk is at the wrong name, and a missing diagram is a build failure by design. Both stay where they are, with comments saying why.</p>
