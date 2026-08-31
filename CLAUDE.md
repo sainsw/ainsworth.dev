@@ -32,7 +32,7 @@ PDF, so an edit here quietly changes a document Sam sends to people.
 
 ### The rules that get broken most
 
-Read the skill for all 33 patterns. These four are the ones worth memorising:
+Read the skill for all 35 patterns. These four are the ones worth memorising:
 
 1. **No em dashes or en dashes in prose.** Not in posts, not in metadata, not in
    headings. Use a full stop, a comma, a colon, or brackets. This also covers a
