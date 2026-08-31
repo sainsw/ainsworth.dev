@@ -67,7 +67,7 @@ describe('bio module', () => {
       // into two meaningless entities, and take Git (Github/Azure DevOps)
       // with it.
       expect(knowsAbout).toContain('CI/CD');
-      expect(knowsAbout).toContain('Python/Go/Swift');
+      expect(knowsAbout).toContain('Go/Swift');
     });
 
     it('pulls in technologies from the experience entries too', () => {

@@ -69,21 +69,20 @@ export default async function Page() {
         </span>
         {`, `}
         <span className="not-prose">
-          <TechBadge href="https://dotnet.microsoft.com">
+          <TechBadge href="https://www.python.org">
             <Icon
-              id="dotnet"
+              id="python"
               size={14}
               className="shrink-0"
               decorative={true}
             />
-            .NET
+            Python
           </TechBadge>
         </span>
         {`, and `}
         <span className="not-prose">
-          <TechBadge href="https://azure.microsoft.com/en-gb">
-            <Icon id="azure" size={14} className="shrink-0" decorative={true} />
-            Azure
+          <TechBadge href="https://aws.amazon.com" aria-label="AWS">
+            <Icon id="aws" height={14} className="shrink-0" decorative={true} />
           </TechBadge>
         </span>
         .
