@@ -13,7 +13,7 @@ Originally forked from [leerob.io](https://github.com/leerob/leerob.io), with th
 - **Lint/format**: [Biome](https://biomejs.dev/)
 - **Tests**: [Vitest](https://vitest.dev/) (unit) and [Playwright](https://playwright.dev/) (E2E)
 - **Email**: [Resend](https://resend.com/) (contact form), with [Cloudflare Turnstile](https://www.cloudflare.com/products/turnstile/) bot protection
-- **Analytics**: [Vercel Analytics](https://vercel.com/analytics) + Speed Insights, and Cloudflare (loaded with consent)
+- **Analytics**: [Vercel Analytics](https://vercel.com/analytics) (loaded with consent) + Speed Insights (no cookies, always on)
 - **Hosting**: [Vercel](https://vercel.com)
 
 ## Running locally

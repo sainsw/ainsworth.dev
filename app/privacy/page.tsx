@@ -62,19 +62,19 @@ export default function PrivacyPage() {
         <h3>What I collect</h3>
         <ul>
           <li>
-            <strong>Analytics (consent):</strong> Page views, session duration,
-            device and browser info via Vercel Analytics (aggregated; runs only
-            after consent).
+            Analytics (consent): Page views, session duration, device and
+            browser info via Vercel Analytics (aggregated; runs only after
+            consent).
           </li>
           <li>
-            <strong>Performance (no cookies):</strong> Core Web Vitals (e.g.
-            LCP, CLS, INP, TTFB) via Vercel Speed Insights. These measurements
-            are collected without cookies or local storage and are reported in
-            an anonymised, aggregate form to help improve site performance.
+            Performance (no cookies): Core Web Vitals (e.g. LCP, CLS, INP, TTFB)
+            via Vercel Speed Insights. These measurements are collected without
+            cookies or local storage and are reported in an anonymised,
+            aggregate form to help improve site performance.
           </li>
           <li>
-            <strong>View counts:</strong> Aggregate counts per blog post slug in
-            my database (no IPs or identifiers).
+            View counts: Aggregate counts per blog post slug in my database (no
+            IPs or identifiers).
           </li>
         </ul>
 
@@ -133,39 +133,28 @@ export default function PrivacyPage() {
 
         <h2>Service providers</h2>
         <ul>
+          <li>Hosting & CDN: Vercel (hosting, Analytics, Speed Insights).</li>
           <li>
-            <strong>Hosting & CDN:</strong> Vercel (hosting, Analytics, Speed
-            Insights).
+            Bot protection: Cloudflare Turnstile (contact form abuse
+            prevention).
           </li>
+          <li>Email delivery: Resend (contact form notifications).</li>
           <li>
-            <strong>Bot protection:</strong> Cloudflare Turnstile (contact form
-            abuse prevention).
-          </li>
-          <li>
-            <strong>Email delivery:</strong> Resend (contact form
-            notifications).
-          </li>
-          <li>
-            <strong>External data:</strong> Google YouTube API for public
-            subscriber counts (no personal data).
+            External data: Google YouTube API for public subscriber counts (no
+            personal data).
           </li>
         </ul>
 
         <h2>Legal basis</h2>
         <ul>
+          <li>Consent: Optional analytics via cookie banner.</li>
           <li>
-            <strong>Consent:</strong> Optional analytics via cookie banner.
-          </li>
-          <li>
-            <strong>Legitimate interests:</strong> Operating the site,
-            preventing abuse, measuring aggregate interest (view counters), and
+            Legitimate interests: Operating the site, preventing abuse,
+            measuring aggregate interest (view counters), and
             measuring/improving site performance (Vercel Speed Insights; no
             cookies).
           </li>
-          <li>
-            <strong>Contract/consent:</strong> Responding to contact requests
-            you submit.
-          </li>
+          <li>Contract/consent: Responding to contact requests you submit.</li>
         </ul>
 
         <h2>Your rights</h2>
