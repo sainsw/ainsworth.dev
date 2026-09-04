@@ -67,11 +67,14 @@ test('home prose links point at the work and blog pages', async ({ page }) => {
 test('home tech badges link out to the right vendors', async ({ page }) => {
   await page.goto('/');
 
+  // Mirrors the TechBadge row in app/page.tsx. d8ef58d moved the IBM role from
+  // .NET and Azure to Python and AWS and the badges changed with it; this list
+  // did not, and had been failing since.
   const badges = [
     { name: 'IBM', href: 'https://www.ibm.com' },
     { name: 'React', href: 'https://react.dev' },
-    { name: '.NET', href: 'https://dotnet.microsoft.com' },
-    { name: 'Azure', href: 'https://azure.microsoft.com/en-gb' },
+    { name: 'Python', href: 'https://www.python.org' },
+    { name: 'AWS', href: 'https://aws.amazon.com' },
   ];
 
   for (const badge of badges) {
