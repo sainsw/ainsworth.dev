@@ -7,6 +7,18 @@ import { POSTS } from '../helpers';
 
 const SITE = 'https://ainsworth.dev';
 
+/** One JSON-LD node, as loosely as this spec needs to read it. */
+type LdBlock = {
+  '@type'?: string;
+  '@graph'?: LdBlock[];
+  headline?: string;
+  description?: string;
+  datePublished?: string;
+  url?: string;
+  image?: string;
+  author?: { name?: string };
+};
+
 const decode = (s: string) =>
   s
     .replace(/&amp;/g, '&')
@@ -64,28 +76,34 @@ for (const post of POSTS) {
   }) => {
     const html = await (await request.get(`/blog/${post.slug}`)).text();
 
+    // A post ships one script holding an array of blocks (the posting and the
+    // breadcrumb trail), and the layout ships another holding a @graph. This
+    // used to look for `@type` on whatever each script parsed to, which never
+    // matches an array, so it had found nothing since the breadcrumb was added.
     const blocks = [
       ...html.matchAll(
         /<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g,
       ),
     ]
-      .map((m) => {
+      .flatMap((m): LdBlock[] => {
         try {
-          return JSON.parse(m[1]);
+          const parsed = JSON.parse(m[1]) as LdBlock | LdBlock[];
+          return Array.isArray(parsed) ? parsed : [parsed];
         } catch {
-          return null;
+          return [];
         }
       })
+      .flatMap((block) => block['@graph'] ?? [block])
       .filter(Boolean);
 
     const posting = blocks.find((b) => b['@type'] === 'BlogPosting');
     expect(posting, 'BlogPosting block').toBeDefined();
-    expect(posting.headline).toBe(post.title);
-    expect(posting.description).toBe(post.summary);
-    expect(posting.datePublished).toBe(post.publishedAt);
-    expect(posting.url).toBe(`${SITE}/blog/${post.slug}`);
-    expect(posting.image).toBe(`${SITE}/api/og/${post.slug}`);
-    expect(posting.author?.name).toBe('Sam Ainsworth');
+    expect(posting?.headline).toBe(post.title);
+    expect(posting?.description).toBe(post.summary);
+    expect(posting?.datePublished).toBe(post.publishedAt);
+    expect(posting?.url).toBe(`${SITE}/blog/${post.slug}`);
+    expect(posting?.image).toBe(`${SITE}/api/og/${post.slug}`);
+    expect(posting?.author?.name).toBe('Sam Ainsworth');
   });
 }
 

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { PAGE_ROUTES, POSTS, prepareContext } from './helpers';
+import { NAV_ITEMS, PAGE_ROUTES, POSTS, prepareContext } from './helpers';
 
 const ROUTES = [...PAGE_ROUTES, `/blog/${POSTS[0].slug}`];
 
@@ -98,9 +98,11 @@ test('the navbar keeps all four links reachable on a narrow phone', async ({
   await page.setViewportSize({ width: MIN_SUPPORTED_WIDTH, height: 640 });
   await page.goto('/');
 
+  // Four words plus the GitHub icon, which 3af743c added; this asserted four
+  // for long enough that the icon could have fallen off the edge unnoticed.
   const links = page.locator('#nav a');
-  await expect(links).toHaveCount(4);
-  for (let i = 0; i < 4; i++) {
+  await expect(links).toHaveCount(NAV_ITEMS.length + 1);
+  for (let i = 0; i < (await links.count()); i++) {
     await expect(links.nth(i)).toBeInViewport();
   }
 });

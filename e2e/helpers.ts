@@ -157,6 +157,10 @@ export const SECURITY_HEADERS: Record<string, string | RegExp> = {
   'referrer-policy': 'strict-origin-when-cross-origin',
   'x-dns-prefetch-control': 'on',
   'permissions-policy': 'camera=(), microphone=(), geolocation=()',
-  'content-signals': 'search=yes, ai-train=no',
+  // Singular, and the full policy. next.config.ts renamed the header from
+  // `Content-Signals` on 2026-08-25 (the plural matched no spec) and added
+  // ai-input and use; this still asserted the old plural name and the old
+  // two-clause value, so it had been failing ever since.
+  'content-signal': 'search=yes, ai-input=yes, ai-train=no, use=reference',
   'strict-transport-security': /max-age=\d+.*includeSubDomains/i,
 };
