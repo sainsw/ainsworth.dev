@@ -25,7 +25,7 @@ export default function WorkLayout({
         }}
       />
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">
-        work & experience 💼
+        work & experience <span aria-hidden="true">💼</span>
       </h1>
       {children}
     </div>

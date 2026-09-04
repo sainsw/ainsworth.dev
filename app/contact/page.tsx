@@ -81,14 +81,22 @@ export default function Page() {
 
   return (
     <div className="max-w-[500px]">
-      <form className="space-y-4" ref={formRef} onSubmit={handleSubmit}>
+      <form
+        className="space-y-4"
+        aria-label="Contact"
+        ref={formRef}
+        onSubmit={handleSubmit}
+      >
         <div className="space-y-2">
           <Label htmlFor="email">Email (optional)</Label>
+          {/* autoComplete lets a browser or assistive tech fill this from the
+              user's own details, which is WCAG 2.1 SC 1.3.5. */}
           <Input
             id="email"
             placeholder="email address (if you want a response)"
             type="email"
             name="email"
+            autoComplete="email"
           />
         </div>
         <div className="space-y-2">
@@ -104,7 +112,10 @@ export default function Page() {
         <div className="flex items-center justify-between gap-4 pt-1">
           <Turnstile ref={turnstileRef} invisible />
           <div className="flex items-center gap-4">
+            {/* role="status" as well as aria-live: VoiceOver is markedly more
+                reliable at announcing a region that has a role. */}
             <p
+              role="status"
               aria-live="polite"
               className={cn(
                 'text-sm',

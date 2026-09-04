@@ -16,10 +16,12 @@ describe('EmailLink', () => {
       />,
     );
 
-    const link = screen.getByRole('link', {
+    // A button, not a link: it has no destination, it runs script. See the
+    // note in components/email-link.tsx.
+    const trigger = screen.getByRole('button', {
       name: /email sam at example.com/i,
     });
-    fireEvent.click(link);
+    fireEvent.click(trigger);
 
     expect(window.location.href).toBe(
       'mailto:sam@example.com?subject=Hello%20There',

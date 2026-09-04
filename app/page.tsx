@@ -44,7 +44,7 @@ export default async function Page() {
   return (
     <section>
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">
-        hello, I'm Sam 👋
+        hello, I'm Sam <span aria-hidden="true">👋</span>
       </h1>
       <div className="prose dark:prose-invert">
         <p>I like to keep things simple and practical.</p>
@@ -104,7 +104,7 @@ export default async function Page() {
         id="personal-projects-heading"
         className="font-medium text-2xl mt-8 mb-2 tracking-tighter text-foreground"
       >
-        personal projects 👨‍💻
+        personal projects <span aria-hidden="true">👨‍💻</span>
       </h2>
       <PersonalProjects />
 

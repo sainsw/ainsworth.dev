@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { PAGE_ROUTES, POSTS, prepareContext } from './helpers';
+import { PAGE_ROUTES, POSTS, POSTS_WITH_CODE, prepareContext } from './helpers';
 
 const ROUTES = [...PAGE_ROUTES, `/blog/${POSTS[0].slug}`];
 
@@ -12,7 +12,7 @@ test('every page declares British English as its language', async ({
 }) => {
   for (const route of ROUTES) {
     await page.goto(route);
-    await expect(page.locator('html'), route).toHaveAttribute('lang', 'en');
+    await expect(page.locator('html'), route).toHaveAttribute('lang', 'en-GB');
   }
 });
 
@@ -79,8 +79,9 @@ test('every link has an accessible name', async ({ page }) => {
           const hasImageAlt = Array.from(el.querySelectorAll('img')).some(
             (img) => !!img.getAttribute('alt')?.trim(),
           );
-          // Heading anchor links are decorative and hidden from the a11y tree
-          // by their empty content; they are keyboard-reachable by id instead.
+          // Heading anchor links render as a "#" from CSS and are
+          // visibility:hidden until their heading is hovered, which keeps them
+          // out of the a11y tree and out of the heading's own name.
           const isHeadingAnchor = el.classList.contains('anchor');
           return (
             !isHeadingAnchor &&
@@ -196,4 +197,79 @@ test('the keyboard-focused element is visibly distinguishable', async ({
   const hasOutline = styles.outline !== 'none' && styles.width !== '0px';
   const hasShadow = styles.shadow !== 'none';
   expect(hasOutline || hasShadow).toBe(true);
+});
+
+test('the current page is marked in the navigation', async ({ page }) => {
+  for (const { path } of [
+    { path: '/' },
+    { path: '/work' },
+    { path: '/blog' },
+    { path: '/contact' },
+  ]) {
+    await page.goto(path);
+
+    // Without aria-current the four nav links are announced identically and a
+    // screen reader user is never told which one they are on.
+    const current = page.locator('#nav a[aria-current="page"]');
+    await expect(current, `${path} marks one link current`).toHaveCount(1);
+    await expect(current).toHaveAttribute('href', path);
+  }
+
+  // A post counts as being under /blog.
+  await page.goto(`/blog/${POSTS[0].slug}`);
+  await expect(page.locator('#nav a[aria-current="page"]')).toHaveAttribute(
+    'href',
+    '/blog',
+  );
+});
+
+test('the site navigation is not inside a complementary landmark', async ({
+  page,
+}) => {
+  await page.goto('/');
+
+  // It used to sit in an <aside>, so the only navigation on the site was
+  // announced as "complementary".
+  expect(
+    await page.locator('#nav').evaluate((el) => !!el.closest('aside')),
+  ).toBe(false);
+});
+
+test('the skip link moves focus, not just the scroll position', async ({
+  page,
+}) => {
+  await page.goto('/');
+
+  // Focus and Enter, not click: the link is sr-only until it has focus, so
+  // there is nothing on screen to click — which is also the only way a real
+  // user ever reaches it.
+  const skip = page.locator('a[href="#main-content"]');
+  await skip.focus();
+  await expect(skip).toBeFocused();
+  await page.keyboard.press('Enter');
+
+  // <main> carries tabindex="-1" for this. Chrome and Firefox would move the
+  // sequential focus starting point on their own; Safari would not.
+  await expect(page.locator('#main-content')).toBeFocused();
+});
+
+test('scrollable code blocks can be reached from the keyboard', async ({
+  page,
+}) => {
+  const withCode = POSTS_WITH_CODE[0];
+  test.skip(!withCode, 'no post contains a code block');
+
+  await page.goto(`/blog/${withCode}`);
+
+  // Chromium focuses overflowing scrollers by itself; Firefox and Safari do
+  // not, so without an explicit tabindex the rest of a long line is
+  // unreachable there.
+  const pres = page.locator('article pre');
+  expect(await pres.count()).toBeGreaterThan(0);
+  for (let i = 0; i < (await pres.count()); i++) {
+    await expect(pres.nth(i)).toHaveAttribute('tabindex', '0');
+    expect(
+      (await pres.nth(i).getAttribute('aria-label'))?.length,
+    ).toBeGreaterThan(0);
+  }
 });

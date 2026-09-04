@@ -24,7 +24,7 @@
     --destructive: oklch(0.58 0.22 27);
     --border: oklch(0.88 0.003 85);
     --input: oklch(0.88 0.003 85);
-    --ring: oklch(0.708 0.02 85);
+    --ring: oklch(0.55 0.03 85); /* 4.28:1 on --background, 4.48:1 on --card */
     --chart-1: oklch(0.809 0.105 251.813);
     --chart-2: oklch(0.623 0.214 259.815);
     --chart-3: oklch(0.546 0.245 262.881);
@@ -72,7 +72,7 @@
         --destructive: oklch(0.704 0.191 22.216);
         --border: oklch(1 0 0 / 10%);
         --input: oklch(1 0 0 / 15%);
-        --ring: oklch(0.556 0 0);
+        --ring: oklch(0.70 0 0); /* 7.39:1 on --background, 6.69:1 on --card */
         --chart-1: oklch(0.809 0.105 251.813);
         --chart-2: oklch(0.623 0.214 259.815);
         --chart-3: oklch(0.546 0.245 262.881);
@@ -220,9 +220,10 @@ body {
     content: "" !important;
 }
 
-.prose h2,
-h3,
-h4 { font-weight: 500 !important; letter-spacing: -0.05em !important; }
+/* `:is(...)`, not `.prose h2, h3, h4` — the comma form matched every bare h3
+   and h4 on the site, so headings outside a post silently inherited prose
+   tracking and overrode their own `tracking-*` class with !important. */
+.prose :is(h2, h3, h4) { font-weight: 500 !important; letter-spacing: -0.05em !important; }
 
 .prose strong {
     font-weight: 500;
@@ -233,13 +234,21 @@ h4 { font-weight: 500 !important; letter-spacing: -0.05em !important; }
     margin-bottom: 1.25em !important;
 }
 
-pre::-webkit-scrollbar {
-    display: none;
+/* A code block that scrolls used to hide its own scrollbar, so there was no
+   sign it had more to the right. `scrollbar-width` is supported in all three
+   engines (Safari 18.2), and `scrollbar-color` in Safari 26.2; older Safari
+   falls back to its default scrollbar, which is still better than none. */
+pre {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) transparent;
 }
 
-pre {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+/* Paired with tabindex="0" in components/blog-content.tsx, which is what makes
+   an overflowing block scrollable from the keyboard in Firefox and Safari.
+   Chromium focuses scrollers on its own; the other two do not. */
+pre:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
 }
 
 .scrollbar-hide {
@@ -444,5 +453,50 @@ table {
         stroke: rgba(17, 16, 16, 0.85);
         stroke-width: 2px;
         stroke-linejoin: round;
+    }
+}
+
+/* Motion: honour the OS setting. The cookie banner slides up over 700ms and
+   the project rows nudge their arrow on hover; neither conveys anything, so
+   both can simply stop. Colour transitions are left alone. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Forced colours (Windows High Contrast, and Safari 16+). The focus ring on the
+   form controls is a box-shadow, and box-shadows are not painted in this mode,
+   so the indicator vanished completely. An outline is painted. */
+@media (forced-colors: active) {
+    :focus-visible {
+        outline: 3px solid CanvasText;
+        outline-offset: 2px;
+    }
+
+    .prose pre,
+    .prose code {
+        border: 1px solid CanvasText;
+    }
+}
+
+/* Users asking the OS for more contrast get the darker end of the palette
+   rather than the muted greys. Supported in all three engines since 2022. */
+@media (prefers-contrast: more) {
+    :root {
+        --muted-foreground: oklch(0.42 0.02 85);
+        --border: oklch(0.62 0.01 85);
+    }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+    :root {
+        --muted-foreground: oklch(0.85 0 0);
+        --border: oklch(1 0 0 / 45%);
     }
 }

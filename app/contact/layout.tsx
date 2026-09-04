@@ -25,7 +25,7 @@ export default function ContactLayout({
         }}
       />
       <h1 className="font-medium text-2xl mb-8 tracking-tighter">
-        get in touch 📮
+        get in touch <span aria-hidden="true">📮</span>
       </h1>
       {children}
     </div>

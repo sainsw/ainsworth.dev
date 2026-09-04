@@ -148,9 +148,12 @@ export default function RootLayout({
   // put, so the tag shipped twice on every page.
   preload('/sprite.svg', { as: 'image', type: 'image/svg+xml' });
 
+  // en-GB rather than en: the copy is British English, and both the JSON-LD
+  // (inLanguage) and the OpenGraph locale already said so. A screen reader
+  // picks its voice and its pronunciation from the lang attribute.
   return (
     <html
-      lang="en"
+      lang="en-GB"
       className={cn(
         'text-foreground bg-background',
         GeistSans.variable,
@@ -199,7 +202,17 @@ export default function RootLayout({
             <header>
               <Navbar />
             </header>
-            <main id="main-content">{children}</main>
+            {/* tabIndex={-1} so the skip link actually moves focus. Chrome
+                and Firefox will move the sequential focus starting point to a
+                non-focusable fragment target, but Safari does not, so without
+                this the skip link only scrolls there. */}
+            <main
+              id="main-content"
+              tabIndex={-1}
+              className="focus:outline-none"
+            >
+              {children}
+            </main>
             <Footer />
             <Suspense fallback={null}>
               <DeferredAnalytics />

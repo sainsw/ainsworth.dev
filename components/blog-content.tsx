@@ -90,6 +90,29 @@ function loadDiagram(chart: string): string {
   return svg;
 }
 
+/** Names the language for the code block's accessible name. */
+const LANGUAGE_NAMES: Record<string, string> = {
+  bash: 'Shell',
+  css: 'CSS',
+  diff: 'Diff',
+  html: 'HTML',
+  js: 'JavaScript',
+  json: 'JSON',
+  jsx: 'JSX',
+  latex: 'LaTeX',
+  md: 'Markdown',
+  py: 'Python',
+  python: 'Python',
+  sh: 'Shell',
+  sql: 'SQL',
+  swift: 'Swift',
+  ts: 'TypeScript',
+  tsx: 'TSX',
+  txt: 'Text',
+  yaml: 'YAML',
+  yml: 'YAML',
+};
+
 function highlightCodeBlocks(html: string): string {
   return html.replace(
     /<pre><code class="language-(\w+)">([\s\S]*?)<\/code><\/pre>/g,
@@ -98,7 +121,13 @@ function highlightCodeBlocks(html: string): string {
         return _match;
       }
       const highlighted = highlight(decodeEntities(code));
-      return `<pre><code class="language-${lang}">${highlighted}</code></pre>`;
+      // A long line makes the block scroll sideways, and a scrollable box with
+      // nothing focusable inside it cannot be scrolled from the keyboard.
+      // Chromium focuses such scrollers by itself; Firefox and Safari do not,
+      // so the tabindex is what makes the rest of the line reachable there at
+      // all. The role and label stop it landing as an unnamed stop.
+      const label = LANGUAGE_NAMES[lang] ?? lang;
+      return `<pre tabindex="0" role="group" aria-label="${label} code"><code class="language-${lang}">${highlighted}</code></pre>`;
     },
   );
 }
@@ -139,6 +168,18 @@ function splitContent(html: string): Segment[] {
   return segments;
 }
 
+/**
+ * Mermaid gives the SVG `aria-roledescription="flowchart-v2"` and no name at
+ * all, so a screen reader reached it as an unnamed document and then read the
+ * node labels as a flat run of paragraphs with no hint of what they belonged
+ * to. Naming the figure at least announces that a diagram starts here and lets
+ * the reader skip it. It is not a text alternative: the diagrams still need a
+ * written description each, and only their author can write one.
+ */
+function diagramLabel(ordinal: number) {
+  return `Diagram ${ordinal}`;
+}
+
 export function BlogContent({ source }: { source: string }) {
   let processed = addHeadingAnchors(source);
   processed = highlightCodeBlocks(processed);
@@ -150,6 +191,10 @@ export function BlogContent({ source }: { source: string }) {
     return <div dangerouslySetInnerHTML={{ __html: processed }} />;
   }
 
+  // Counts diagrams, not segments: the label has to match what a reader would
+  // count down the page, and most segments are prose.
+  let diagramOrdinal = 0;
+
   return (
     <div>
       {segments.map((segment, i) => {
@@ -158,9 +203,16 @@ export function BlogContent({ source }: { source: string }) {
             return (
               <div key={i} dangerouslySetInnerHTML={{ __html: segment.html }} />
             );
-          case 'mermaid':
+          case 'mermaid': {
+            diagramOrdinal += 1;
             return (
-              <div key={i} className="my-6">
+              // `not-prose` keeps the typography plugin's own figure margins
+              // off it, so naming the diagram does not move it.
+              <figure
+                key={i}
+                className="my-6 not-prose"
+                aria-label={diagramLabel(diagramOrdinal)}
+              >
                 {/* The SVG carries its own viewBox and width:100%/height:auto,
                     so it takes its final height on the first layout pass. */}
                 <div
@@ -171,8 +223,9 @@ export function BlogContent({ source }: { source: string }) {
                     __html: loadDiagram(segment.chart),
                   }}
                 />
-              </div>
+              </figure>
             );
+          }
           case 'avatar-demo':
             return <AvatarDemo key={i} />;
           default:

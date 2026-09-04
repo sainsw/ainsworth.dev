@@ -1,5 +1,8 @@
+'use client';
+
 import type { Route } from 'next';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Icon } from '@/components/icon';
 
 const navItems: Array<{ path: Route; name: string; prefetch: boolean }> = [
@@ -26,20 +29,33 @@ const navItems: Array<{ path: Route; name: string; prefetch: boolean }> = [
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
+
   return (
-    <aside className="-ml-[8px] mb-16 tracking-tight">
+    // A plain div, not <aside>. An <aside> is a complementary landmark, so the
+    // site's only navigation was announced as "complementary" sitting inside
+    // the banner, which is not what it is.
+    <div className="-ml-[8px] mb-16 tracking-tight">
       <div className="lg:sticky lg:top-20">
         <nav
+          aria-label="Main"
           className="flex flex-row items-start relative px-0 pb-0 fade md:overflow-auto scroll-pr-6 md:relative"
           id="nav"
         >
           <div className="flex flex-row space-x-0 pr-10">
             {navItems.map(({ path, name, prefetch }) => {
+              // Nested routes count as being under their section, so a post
+              // marks /blog as current. Without this a screen reader reads the
+              // four links identically and never says which page you are on.
+              const isCurrent =
+                path === '/' ? pathname === '/' : pathname.startsWith(path);
+
               return (
                 <Link
                   key={path}
                   href={path}
                   prefetch={prefetch}
+                  aria-current={isCurrent ? 'page' : undefined}
                   className="transition-colors hover:text-foreground text-muted-foreground flex align-middle relative py-1 px-2 text-base"
                 >
                   {name}
@@ -71,6 +87,6 @@ export function Navbar() {
           </div>
         </nav>
       </div>
-    </aside>
+    </div>
   );
 }

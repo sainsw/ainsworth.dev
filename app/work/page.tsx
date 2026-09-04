@@ -24,9 +24,12 @@ function ExperienceCard({
     <div className="border border-border bg-card ring-1 ring-foreground/10 px-4 py-5 w-full flex flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <p className="text-lg font-medium text-foreground tracking-tight">
+          {/* An h3, not a <p>. Every job and school sat under the section h2 as
+              undifferentiated paragraphs, so a screen reader had no way to move
+              between them: the whole history was one run of ~30 paragraphs. */}
+          <h3 className="text-lg font-medium text-foreground tracking-tight">
             {name}
-          </p>
+          </h3>
           <p className="text-base italic text-muted-foreground">{post}</p>
           <p className="text-sm text-muted-foreground">{dates}</p>
         </div>
@@ -59,8 +62,23 @@ function ExperienceCard({
           ))}
           {technologies && technologies.length > 0 && (
             <div className="mt-3 pt-3 border-t border-border">
+              {/* The bullet is punctuation, so it is hidden and a comma is
+                  substituted for it: hiding it on its own also swallowed the
+                  spaces either side, and the list ran together as one word
+                  ("PythonAWS LambdaDynamoDB"). */}
               <p className="text-xs text-muted-foreground italic">
-                {technologies.join(' • ')}
+                <span className="sr-only">Technologies: </span>
+                {technologies.map((tech, index) => (
+                  <span key={tech}>
+                    {index > 0 ? (
+                      <>
+                        <span aria-hidden="true">{' • '}</span>
+                        <span className="sr-only">, </span>
+                      </>
+                    ) : null}
+                    {tech}
+                  </span>
+                ))}
               </p>
             </div>
           )}
@@ -72,19 +90,26 @@ function ExperienceCard({
 
 function SkillTag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex border border-border bg-card ring-1 ring-foreground/10 px-2.5 py-1 text-sm text-foreground whitespace-nowrap">
+    <li className="inline-flex border border-border bg-card ring-1 ring-foreground/10 px-2.5 py-1 text-sm text-foreground whitespace-nowrap">
       {children}
-    </span>
+    </li>
   );
 }
 
+/**
+ * A list, not a row of spans. As spans the whole cloud reached the screen
+ * reader as one unbroken string ("Python AWS Azure C# .Net Core ASP.Net Entity
+ * Framework MySQL, MSSQL, NoSQL OAuth2 / Identity Server React / Vue ..."),
+ * which is unusable. As list items each skill is announced on its own and the
+ * reader is told up front how many there are.
+ */
 function SkillCloud({ skills }: { skills: string[] }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <ul className="flex flex-wrap gap-2 list-none p-0 m-0">
       {skills.map((skill, index) => (
         <SkillTag key={index}>{skill}</SkillTag>
       ))}
-    </div>
+    </ul>
   );
 }
 
@@ -99,14 +124,14 @@ export default function Page() {
     <section>
       <div className="mb-12">
         <h2 className="font-medium text-2xl mb-6 tracking-tighter">
-          skills & technologies 💻
+          skills & technologies <span aria-hidden="true">💻</span>
         </h2>
         <SkillCloud skills={allSkills} />
       </div>
 
       <div className="mt-12">
         <h2 className="font-medium text-2xl mb-6 tracking-tighter">
-          work 👨‍💻
+          work <span aria-hidden="true">👨‍💻</span>
         </h2>
         <div className="flex flex-col gap-4">
           {resumeData.experience.map((job, index) => (
@@ -126,7 +151,7 @@ export default function Page() {
 
       <div className="mt-12">
         <h2 className="font-medium text-2xl mb-6 tracking-tighter">
-          education 👨‍🎓
+          education <span aria-hidden="true">👨‍🎓</span>
         </h2>
         <div className="flex flex-col gap-4">
           {resumeData.education.map((school, index) => (
@@ -145,7 +170,7 @@ export default function Page() {
 
       <div className="mt-12">
         <h2 className="font-medium text-2xl mb-6 tracking-tighter">
-          non-technical skills 🤝
+          non-technical skills <span aria-hidden="true">🤝</span>
         </h2>
         <div className="border border-border bg-card ring-1 ring-foreground/10 px-4 py-5">
           <ul className="space-y-2">
@@ -163,7 +188,7 @@ export default function Page() {
 
       <div className="mt-12">
         <h2 className="font-medium text-2xl mb-6 tracking-tighter">
-          hobbies 🎨
+          hobbies <span aria-hidden="true">🎨</span>
         </h2>
         <div className="border border-border bg-card ring-1 ring-foreground/10 px-4 py-5">
           <div className="space-y-2">

@@ -141,7 +141,12 @@ export function Icon({
       height={svgHeight}
       className={svgClassName}
       aria-label={decorative ? undefined : altText}
-      role={decorative ? 'presentation' : 'img'}
+      // aria-hidden rather than role="presentation": presentation leaves the
+      // node in the tree with its children still exposed, and every decorative
+      // logo showed up as an empty node next to the link that wrapped it.
+      aria-hidden={decorative ? true : undefined}
+      focusable="false"
+      role={decorative ? undefined : 'img'}
       {...(restProps as React.SVGProps<SVGSVGElement>)}
     >
       <use href={`/sprite.svg?v=${SPRITE_VERSION}#${id}`} />

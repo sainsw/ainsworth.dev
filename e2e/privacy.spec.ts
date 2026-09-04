@@ -46,19 +46,21 @@ test('privacy page shows a last-updated date', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('the email links never expose the address to scrapers', async ({
+test('the email triggers never expose the address to scrapers', async ({
   page,
 }) => {
   await page.goto('/privacy');
 
-  const emailLinks = page.getByRole('link', { name: /email privacy at/i });
-  expect(await emailLinks.count()).toBeGreaterThan(0);
+  // Buttons, not links: they have no destination, they run script. An
+  // <a href="#"> announced a link that went nowhere.
+  const emailButtons = page.getByRole('button', { name: /email privacy at/i });
+  expect(await emailButtons.count()).toBeGreaterThan(0);
 
   // components/email-link.tsx keeps the address out of the markup and builds
   // the mailto: on click instead, so the rendered HTML must not contain it.
-  for (let i = 0; i < (await emailLinks.count()); i++) {
-    await expect(emailLinks.nth(i)).toHaveAttribute('href', '#');
-    await expect(emailLinks.nth(i)).toHaveAttribute(
+  for (let i = 0; i < (await emailButtons.count()); i++) {
+    await expect(emailButtons.nth(i)).not.toHaveAttribute('href', /.*/);
+    await expect(emailButtons.nth(i)).toHaveAttribute(
       'aria-label',
       'Email privacy at ainsworth.dev',
     );
@@ -66,13 +68,13 @@ test('the email links never expose the address to scrapers', async ({
   expect(await page.content()).not.toContain('privacy@ainsworth.dev');
 });
 
-test('clicking an email link does not navigate away', async ({ page }) => {
+test('clicking an email trigger does not navigate away', async ({ page }) => {
   await page.goto('/privacy');
 
-  // The handler calls preventDefault() before assigning window.location, so the
-  // href="#" must never take effect and strand the reader at /privacy#.
+  // A button submits nothing and follows nothing, so the reader must still be
+  // on /privacy with no stray fragment afterwards.
   await page
-    .getByRole('link', { name: /email privacy at/i })
+    .getByRole('button', { name: /email privacy at/i })
     .first()
     .click();
 

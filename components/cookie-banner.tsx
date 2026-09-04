@@ -32,7 +32,12 @@ export function CookieConsent() {
   }
 
   return (
-    <div
+    // A named region, not a bare div. The banner renders last in <body>, so
+    // outside every landmark: axe flags the content as unreachable by landmark
+    // navigation, and there was nothing to tell a screen reader user what the
+    // two buttons at the end of the page were for.
+    <section
+      aria-label="Cookie consent"
       className={`transition-all duration-700 ease-out max-w-sm transform-gpu ${
         isOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
       }`}
@@ -52,27 +57,23 @@ export function CookieConsent() {
             I use cookies to analyse traffic and provide features
           </p>
           <div className="flex items-center flex-wrap gap-3 mt-4">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleDecline}
-              aria-label="Decline"
-            >
+            {/* No aria-label: the visible text is already the name, and a
+                label that duplicates it only goes stale. */}
+            <Button size="sm" variant="outline" onClick={handleDecline}>
               Decline
             </Button>
-            <Button size="sm" onClick={handleAccept} aria-label="Accept">
+            <Button size="sm" onClick={handleAccept}>
               Accept
             </Button>
             <a
               href="/privacy"
               className="ms-auto text-xs underline underline-offset-2 text-foreground hover:text-muted-foreground transition-colors"
-              aria-label="Privacy policy"
             >
               Privacy policy
             </a>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
