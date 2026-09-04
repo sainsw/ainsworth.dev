@@ -3,8 +3,15 @@ import path from 'node:path';
 import { parseHTML } from 'linkedom';
 import { highlight } from 'sugar-high';
 import {
+  type DiagramGraph,
+  type DiagramText,
+  stepDomId,
+  toDiagramText,
+} from '@/lib/content/diagram-text';
+import {
   DIAGRAM_DIR,
   decodeEntities,
+  diagramGraphFile,
   diagramHash,
   MERMAID_BLOCK_SOURCE,
 } from '@/lib/content/mermaid.mjs';
@@ -88,6 +95,34 @@ function loadDiagram(chart: string): string {
 
   diagramCache.set(hash, svg);
   return svg;
+}
+
+const graphCache = new Map<string, DiagramText>();
+
+/**
+ * The parsed graph beside the SVG. Missing is not fatal the way a missing SVG
+ * is: the drawing still renders, it just has no text equivalent, and failing
+ * the build over it would block a post on a file that only assistive
+ * technology reads. The renderer writes both in the same pass, so it only
+ * happens if one was deleted by hand.
+ */
+function loadDiagramText(chart: string): DiagramText {
+  const hash = diagramHash(chart);
+  const cached = graphCache.get(hash);
+  if (cached) return cached;
+
+  const file = path.join(process.cwd(), DIAGRAM_DIR, diagramGraphFile(hash));
+  let text: DiagramText;
+  try {
+    text = toDiagramText(
+      JSON.parse(fs.readFileSync(file, 'utf8')) as DiagramGraph,
+    );
+  } catch {
+    text = { kind: 'none' };
+  }
+
+  graphCache.set(hash, text);
+  return text;
 }
 
 /** Names the language for the code block's accessible name. */
@@ -180,6 +215,97 @@ function diagramLabel(ordinal: number) {
   return `Diagram ${ordinal}`;
 }
 
+/** One edge, as a link the reader can actually follow to the other node. */
+function EdgeLink({
+  hash,
+  link,
+  verb,
+}: {
+  hash: string;
+  link: { id: string; label: string; edgeLabel: string; dashed: boolean };
+  verb: 'Go to' | 'Reached from';
+}) {
+  return (
+    <li>
+      {verb} <a href={`#${stepDomId(hash, link.id)}`}>{link.label}</a>
+      {link.edgeLabel ? `, when ${link.edgeLabel}` : null}
+      {/* Reported, not interpreted. The line style is something the author
+          drew and it distinguishes these edges from the others, but what it
+          means is not in the source. */}
+      {link.dashed ? ' (drawn as a dashed line)' : null}
+    </li>
+  );
+}
+
+/**
+ * The walkable equivalent. In a <details> so it is available to everyone
+ * rather than hidden behind a screen reader, which is what the W3C complex
+ * images guidance asks for.
+ */
+function DiagramTextEquivalent({
+  hash,
+  ordinal,
+  text,
+}: {
+  hash: string;
+  ordinal: number;
+  text: DiagramText;
+}) {
+  if (text.kind === 'none') return null;
+
+  return (
+    <details className="diagram-text">
+      <summary>{`${diagramLabel(ordinal)} as text`}</summary>
+      <p>{text.summary}</p>
+
+      {text.kind === 'sequence' ? (
+        <ol>
+          {text.messages.map((message, i) => (
+            <li key={`${message.from}-${message.to}-${i}`}>
+              {`${message.from} to ${message.to}: ${message.text}`}
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <ul>
+          {text.steps.map((step) => (
+            <li key={step.id} id={stepDomId(hash, step.id)}>
+              <p>
+                {step.isDecision ? 'Decision: ' : null}
+                {step.label}
+                {step.group ? ` (inside ${step.group})` : null}
+                {step.isStart ? ' (a starting point)' : null}
+              </p>
+
+              {/* Both directions in one list, so a screen reader announces a
+                  single item count for the step rather than two. */}
+              <ul>
+                {step.outgoing.map((link) => (
+                  <EdgeLink
+                    key={`out-${link.id}-${link.edgeLabel}`}
+                    hash={hash}
+                    link={link}
+                    verb="Go to"
+                  />
+                ))}
+                {step.isEnd ? <li>Nothing leads out of this step.</li> : null}
+                {step.incoming.map((link) => (
+                  <EdgeLink
+                    key={`in-${link.id}-${link.edgeLabel}`}
+                    hash={hash}
+                    link={link}
+                    verb="Reached from"
+                  />
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      )}
+    </details>
+  );
+}
+
 export function BlogContent({ source }: { source: string }) {
   let processed = addHeadingAnchors(source);
   processed = highlightCodeBlocks(processed);
@@ -205,23 +331,37 @@ export function BlogContent({ source }: { source: string }) {
             );
           case 'mermaid': {
             diagramOrdinal += 1;
+            const label = diagramLabel(diagramOrdinal);
             return (
               // `not-prose` keeps the typography plugin's own figure margins
-              // off it, so naming the diagram does not move it.
-              <figure
-                key={i}
-                className="my-6 not-prose"
-                aria-label={diagramLabel(diagramOrdinal)}
-              >
-                {/* The SVG carries its own viewBox and width:100%/height:auto,
+              // off it, so the drawing does not move. The figure is what
+              // announces that a diagram is here; the details below it is what
+              // a reader walks. No <figcaption>, because a figcaption becomes
+              // the figure's accessible name and the whole equivalent would
+              // have become the name.
+              <figure key={i} className="my-6 not-prose" aria-label={label}>
+                {/* Hidden outright rather than role="img": Chrome does not
+                    prune the descendants of role="img" on an inline SVG, so
+                    mermaid's labels stayed in the tree and were read as a
+                    jumble ("Yes No No Yes Yes No, Page Load, ...") alongside
+                    the equivalent. Everything the drawing conveys is in the
+                    list below it.
+
+                    The SVG carries its own viewBox and width:100%/height:auto,
                     so it takes its final height on the first layout pass. */}
                 <div
                   className="mermaid-diagram flex justify-center"
+                  aria-hidden="true"
                   data-testid="mermaid"
                   data-chart={segment.chart}
                   dangerouslySetInnerHTML={{
                     __html: loadDiagram(segment.chart),
                   }}
+                />
+                <DiagramTextEquivalent
+                  hash={diagramHash(segment.chart)}
+                  ordinal={diagramOrdinal}
+                  text={loadDiagramText(segment.chart)}
                 />
               </figure>
             );

@@ -1,0 +1,221 @@
+{
+  "kind": "graph",
+  "type": "flowchart-v2",
+  "title": "",
+  "description": "",
+  "nodes": [
+    {
+      "id": "A",
+      "text": "GitHub API",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "B",
+      "text": "Download Avatar",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "C",
+      "text": "Sharp Available?",
+      "shape": "diamond",
+      "group": null
+    },
+    {
+      "id": "D",
+      "text": "Sharp Processing",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "E",
+      "text": "Copy Original",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "F",
+      "text": "Generate WebP",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "G",
+      "text": "Generate JPG",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "H",
+      "text": "Content Hash",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "I",
+      "text": "Versioned Files\n    avatar-{hash}.webp\n    avatar-{hash}.jpg",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "J",
+      "text": "Update Version File\n    lib/version.js",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "K",
+      "text": "Next.js Build",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "L",
+      "text": "Preload Resources",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "M",
+      "text": "Picture Elements",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "N",
+      "text": "Build Failure",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "O",
+      "text": "Use Existing Files",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "P",
+      "text": "Generate Fallback Hash",
+      "shape": "square",
+      "group": null
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "C",
+      "to": "D",
+      "label": "Yes",
+      "stroke": "normal"
+    },
+    {
+      "from": "C",
+      "to": "E",
+      "label": "No",
+      "stroke": "normal"
+    },
+    {
+      "from": "D",
+      "to": "F",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "D",
+      "to": "G",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "E",
+      "to": "G",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "F",
+      "to": "H",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "G",
+      "to": "H",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "H",
+      "to": "I",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "I",
+      "to": "J",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "J",
+      "to": "K",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "K",
+      "to": "L",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "K",
+      "to": "M",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "N",
+      "to": "O",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "O",
+      "to": "P",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "P",
+      "to": "J",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "N",
+      "label": "Network Error",
+      "stroke": "dotted"
+    },
+    {
+      "from": "D",
+      "to": "N",
+      "label": "Sharp Error",
+      "stroke": "dotted"
+    }
+  ],
+  "groups": []
+}

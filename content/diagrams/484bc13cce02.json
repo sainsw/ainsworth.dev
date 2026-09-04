@@ -1,0 +1,143 @@
+{
+  "kind": "graph",
+  "type": "flowchart-v2",
+  "title": "",
+  "description": "",
+  "nodes": [
+    {
+      "id": "A",
+      "text": "A mermaid block\n    in a post",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "B",
+      "text": "render-mermaid.mjs",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "C",
+      "text": "Render light theme",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "D",
+      "text": "Render dark theme",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "E",
+      "text": "Same geometry?",
+      "shape": "diamond",
+      "group": null
+    },
+    {
+      "id": "F",
+      "text": "Fail the build",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "G",
+      "text": "One SVG:\n    light + dark styles",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "H",
+      "text": "Commit to content/diagrams",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "I",
+      "text": "Post ships the finished SVG",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "J",
+      "text": "Reader's browser",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "K",
+      "text": "prefers-color-scheme\n    picks the palette",
+      "shape": "square",
+      "group": null
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "D",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "C",
+      "to": "E",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "D",
+      "to": "E",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "E",
+      "to": "F",
+      "label": "No",
+      "stroke": "normal"
+    },
+    {
+      "from": "E",
+      "to": "G",
+      "label": "Yes",
+      "stroke": "normal"
+    },
+    {
+      "from": "G",
+      "to": "H",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "H",
+      "to": "I",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "I",
+      "to": "J",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "J",
+      "to": "K",
+      "label": "",
+      "stroke": "normal"
+    }
+  ],
+  "groups": []
+}

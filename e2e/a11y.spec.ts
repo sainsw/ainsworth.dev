@@ -1,5 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { PAGE_ROUTES, POSTS, POSTS_WITH_CODE, prepareContext } from './helpers';
+import {
+  PAGE_ROUTES,
+  POSTS,
+  POSTS_WITH_CODE,
+  POSTS_WITH_MERMAID,
+  prepareContext,
+} from './helpers';
 
 const ROUTES = [...PAGE_ROUTES, `/blog/${POSTS[0].slug}`];
 
@@ -272,4 +278,34 @@ test('scrollable code blocks can be reached from the keyboard', async ({
       (await pres.nth(i).getAttribute('aria-label'))?.length,
     ).toBeGreaterThan(0);
   }
+});
+
+test('a diagram can be traversed rather than only described', async ({
+  page,
+}) => {
+  const withDiagram = POSTS_WITH_MERMAID[0];
+  test.skip(!withDiagram, 'no post contains a diagram');
+
+  await page.goto(`/blog/${withDiagram}`);
+
+  // The drawing carries its structure in geometry, so it is hidden and the
+  // equivalent below it carries the same information as links.
+  await expect(page.locator('[data-testid="mermaid"]').first()).toHaveAttribute(
+    'aria-hidden',
+    'true',
+  );
+
+  const details = page.locator('details.diagram-text').first();
+  await details.locator('summary').click();
+
+  // Following an edge has to land on a step that is really there. This is the
+  // whole point: a description can be read, a graph has to be walked.
+  const edge = details.locator('li a').first();
+  const href = await edge.getAttribute('href');
+  expect(href).toMatch(/^#diagram-/);
+  await edge.click();
+
+  const landed = page.locator(href as string);
+  await expect(landed).toBeVisible();
+  await expect(landed).toHaveText(/Go to|Nothing leads out/);
 });

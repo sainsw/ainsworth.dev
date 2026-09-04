@@ -1,0 +1,48 @@
+{
+  "kind": "sequence",
+  "type": "sequence",
+  "title": "",
+  "description": "",
+  "actors": [
+    {
+      "id": "Client",
+      "text": "Client"
+    },
+    {
+      "id": "API",
+      "text": "API"
+    }
+  ],
+  "messages": [
+    {
+      "from": "Client",
+      "to": "API",
+      "text": "POST /v1/reports"
+    },
+    {
+      "from": "API",
+      "to": "Client",
+      "text": "202 Accepted + Operation-Location: /v1/operations/{id}"
+    },
+    {
+      "from": "Client",
+      "to": "API",
+      "text": "GET /v1/operations/{id}"
+    },
+    {
+      "from": "API",
+      "to": "Client",
+      "text": "200 { status: 'running' | 'succeeded' | 'failed' }"
+    },
+    {
+      "from": "Client",
+      "to": "API",
+      "text": "GET /v1/operations/{id}"
+    },
+    {
+      "from": "API",
+      "to": "Client",
+      "text": "303 See Other (Location: /v1/reports/{reportId}) OR 200 { status:'failed', error:{...} }"
+    }
+  ]
+}

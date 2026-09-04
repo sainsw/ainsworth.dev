@@ -1,0 +1,137 @@
+{
+  "kind": "graph",
+  "type": "flowchart-v2",
+  "title": "",
+  "description": "",
+  "nodes": [
+    {
+      "id": "A",
+      "text": "Page Load",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "B",
+      "text": "Check Current Date",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "C",
+      "text": "Month == 6?",
+      "shape": "diamond",
+      "group": null
+    },
+    {
+      "id": "D",
+      "text": "Pride Month!\n    🏳️‍🌈 Rainbow Border",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "E",
+      "text": "Month == 8?",
+      "shape": "diamond",
+      "group": null
+    },
+    {
+      "id": "F",
+      "text": "Normal Border",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "G",
+      "text": "Calculate Bank Holiday",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "H",
+      "text": "Find Last Monday of August",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "I",
+      "text": "Pride Week = 7 Days Before",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "J",
+      "text": "Current Date in\n    Pride Week?",
+      "shape": "diamond",
+      "group": null
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "C",
+      "to": "D",
+      "label": "Yes",
+      "stroke": "normal"
+    },
+    {
+      "from": "C",
+      "to": "E",
+      "label": "No",
+      "stroke": "normal"
+    },
+    {
+      "from": "E",
+      "to": "F",
+      "label": "No",
+      "stroke": "normal"
+    },
+    {
+      "from": "E",
+      "to": "G",
+      "label": "Yes",
+      "stroke": "normal"
+    },
+    {
+      "from": "G",
+      "to": "H",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "H",
+      "to": "I",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "I",
+      "to": "J",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "J",
+      "to": "D",
+      "label": "Yes",
+      "stroke": "normal"
+    },
+    {
+      "from": "J",
+      "to": "F",
+      "label": "No",
+      "stroke": "normal"
+    }
+  ],
+  "groups": []
+}

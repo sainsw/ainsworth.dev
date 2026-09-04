@@ -500,3 +500,65 @@ table {
         --border: oklch(1 0 0 / 45%);
     }
 }
+
+
+/* The walkable text equivalent for a diagram (components/blog-content.tsx).
+   It sits inside a `not-prose` figure so the typography plugin does not move
+   the drawing, which also means none of its list styling reaches here. */
+.diagram-text {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.diagram-text > summary {
+    cursor: pointer;
+    color: var(--foreground);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
+.diagram-text > summary:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+}
+
+.diagram-text p {
+    margin: 0.5rem 0;
+}
+
+.diagram-text ul,
+.diagram-text ol {
+    margin: 0.5rem 0;
+    padding-left: 1.25rem;
+    list-style: disc;
+}
+
+.diagram-text ol {
+    list-style: decimal;
+}
+
+.diagram-text > ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+/* Each step is a landing place for the links that point at it, so it gets a
+   rule to separate it from the next one and somewhere to show focus. */
+.diagram-text > ul > li {
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--border);
+}
+
+.diagram-text > ul > li:target {
+    /* Following an edge lands here, so say so visually as well as moving the
+       reading position. */
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+}
+
+.diagram-text a {
+    color: var(--foreground);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}

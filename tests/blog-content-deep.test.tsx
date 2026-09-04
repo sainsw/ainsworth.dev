@@ -63,6 +63,49 @@ describe('BlogContent deep rendering', () => {
       expect(container.innerHTML).toContain('var(--mmd-c0)');
     });
 
+    it('hides the drawing and ships a walkable equivalent beside it', () => {
+      const html = `<pre><code class="language-mermaid">${chart
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')}</code></pre>`;
+      const { container } = render(<BlogContent source={html} />);
+
+      // The SVG conveys its structure by geometry, so on its own a screen
+      // reader gets the labels in document order and none of the branching.
+      // Chrome does not prune role="img" descendants on an inline SVG, so it
+      // is hidden outright and the list below carries the same information.
+      expect(
+        container
+          .querySelector('[data-testid="mermaid"]')
+          ?.getAttribute('aria-hidden'),
+      ).toBe('true');
+      expect(
+        container.querySelector('figure')?.getAttribute('aria-label'),
+      ).toBe('Diagram 1');
+
+      const details = container.querySelector('details.diagram-text');
+      expect(details).not.toBeNull();
+
+      // Every edge is a link to another step on the page, which is what makes
+      // the chart traversable rather than merely described.
+      const hash = diagramHash(chart);
+      const targets = [...details!.querySelectorAll('a')].map((a) =>
+        a.getAttribute('href'),
+      );
+      expect(targets.length).toBeGreaterThan(0);
+      for (const href of targets) {
+        expect(href).toMatch(new RegExp(`^#diagram-${hash}-`));
+        // The step it points at has to exist, or following the edge goes
+        // nowhere.
+        expect(details!.querySelector(href!)).not.toBeNull();
+      }
+
+      // The join two branches converge on appears once, with both routes in.
+      const pride = details!.querySelector(`#diagram-${hash}-D`);
+      expect(pride?.textContent).toContain('Reached from');
+    });
+
     it('fails loudly when a chart has no committed SVG', () => {
       const html =
         '<pre><code class="language-mermaid">flowchart TD\n  A --&gt; B</code></pre>';

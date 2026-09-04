@@ -1,0 +1,119 @@
+{
+  "kind": "graph",
+  "type": "flowchart-v2",
+  "title": "",
+  "description": "",
+  "nodes": [
+    {
+      "id": "A",
+      "text": "Spot issue on site",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "B",
+      "text": "Write intent + constraints as a prompt",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "C",
+      "text": "AI proposes a patch",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "D",
+      "text": "Push to main",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "E",
+      "text": "Prod deploy",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "F",
+      "text": "Measure: Lighthouse/UX check",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "G",
+      "text": "Good?",
+      "shape": "diamond",
+      "group": null
+    },
+    {
+      "id": "H",
+      "text": "Revise prompt with concrete diffs/errors",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "I",
+      "text": "Keep moving",
+      "shape": "square",
+      "group": null
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "C",
+      "to": "D",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "D",
+      "to": "E",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "E",
+      "to": "F",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "F",
+      "to": "G",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "G",
+      "to": "H",
+      "label": "No",
+      "stroke": "normal"
+    },
+    {
+      "from": "H",
+      "to": "C",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "G",
+      "to": "I",
+      "label": "Yes",
+      "stroke": "normal"
+    }
+  ],
+  "groups": []
+}

@@ -1,0 +1,77 @@
+{
+  "kind": "graph",
+  "type": "flowchart-v2",
+  "title": "",
+  "description": "",
+  "nodes": [
+    {
+      "id": "A",
+      "text": "content/*.html\n    one file per post",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "B",
+      "text": "getBlogPosts",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "C",
+      "text": "/blog\n    and each post page",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "D",
+      "text": "/rss.xml",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "E",
+      "text": "/llms.txt\n    index, one link per post",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "F",
+      "text": "/llms-full.txt\n    every post in full",
+      "shape": "square",
+      "group": null
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "D",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "E",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "F",
+      "label": "",
+      "stroke": "normal"
+    }
+  ],
+  "groups": []
+}

@@ -1,0 +1,77 @@
+{
+  "kind": "graph",
+  "type": "flowchart-v2",
+  "title": "",
+  "description": "",
+  "nodes": [
+    {
+      "id": "A",
+      "text": "Client registers webhook",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "B",
+      "text": "POST /v1/webhooks {url, secret}",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "C",
+      "text": "POST /v1/reports",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "D",
+      "text": "API completes job",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "E",
+      "text": "API POSTs event to webhook URL (HMAC signed)",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "F",
+      "text": "Client acknowledges 2xx",
+      "shape": "square",
+      "group": null
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "C",
+      "to": "D",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "D",
+      "to": "E",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "E",
+      "to": "F",
+      "label": "",
+      "stroke": "normal"
+    }
+  ],
+  "groups": []
+}

@@ -1,0 +1,178 @@
+{
+  "kind": "graph",
+  "type": "flowchart-v2",
+  "title": "",
+  "description": "",
+  "nodes": [
+    {
+      "id": "D",
+      "text": "What changed?",
+      "shape": "diamond",
+      "group": null
+    },
+    {
+      "id": "A",
+      "text": "Edit resume.json",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "G",
+      "text": "generate-latex.js builds main.tex",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "O",
+      "text": "Draft in Overleaf – new or updated template",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "O2",
+      "text": "Export main.tex back to repo",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "P",
+      "text": "pdflatex local outputs public/files/cv-CV_VERSION.pdf",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "K",
+      "text": "Keep old PDFs in public/files",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "U",
+      "text": "git add, commit and push",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "V1",
+      "text": "Install dependencies",
+      "shape": "square",
+      "group": "VercelBuild"
+    },
+    {
+      "id": "V2",
+      "text": "Skip LaTeX build",
+      "shape": "square",
+      "group": "VercelBuild"
+    },
+    {
+      "id": "V3",
+      "text": "generate-version.js computes CV_VERSION from main.tex and class file",
+      "shape": "square",
+      "group": "VercelBuild"
+    },
+    {
+      "id": "V4",
+      "text": "Next build links to /files/cv-CV_VERSION.pdf",
+      "shape": "square",
+      "group": "VercelBuild"
+    },
+    {
+      "id": "S",
+      "text": "Users download latest PDF - cache busted by filename",
+      "shape": "square",
+      "group": null
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "G",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "D",
+      "to": "A",
+      "label": "Minor content or layout",
+      "stroke": "normal"
+    },
+    {
+      "from": "O",
+      "to": "O2",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "O2",
+      "to": "G",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "D",
+      "to": "O",
+      "label": "Theme overhaul",
+      "stroke": "normal"
+    },
+    {
+      "from": "G",
+      "to": "P",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "P",
+      "to": "K",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "P",
+      "to": "U",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "V1",
+      "to": "V2",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "V2",
+      "to": "V3",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "V3",
+      "to": "V4",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "U",
+      "to": "V1",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "V4",
+      "to": "S",
+      "label": "",
+      "stroke": "normal"
+    }
+  ],
+  "groups": [
+    {
+      "id": "VercelBuild",
+      "text": "Vercel build - no LaTeX",
+      "nodes": [
+        "V2",
+        "V1",
+        "V3",
+        "V4"
+      ]
+    }
+  ]
+}
