@@ -100,7 +100,10 @@ export default async function Page() {
         </p>
       </div>
 
-      <h2 className="font-medium text-2xl mt-8 mb-2 tracking-tighter text-foreground">
+      <h2
+        id="personal-projects-heading"
+        className="font-medium text-2xl mt-8 mb-2 tracking-tighter text-foreground"
+      >
         personal projects 👨‍💻
       </h2>
       <PersonalProjects />

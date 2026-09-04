@@ -35,7 +35,7 @@ const projects: PersonalProject[] = [
 
 export function PersonalProjects() {
   return (
-    <section className="mt-6">
+    <section className="mt-6" aria-labelledby="personal-projects-heading">
       <div className="flex flex-col gap-0">
         {projects.map((project, _index) => (
           <a
@@ -43,7 +43,7 @@ export function PersonalProjects() {
             href={project.href}
             target="_blank"
             rel="noreferrer"
-            className="group relative flex items-start gap-4 border-t border-border px-4 py-6 transition-colors hover:bg-secondary first:border-t-0 -mx-4"
+            className="group relative flex items-start gap-4 border-t border-border px-4 py-6 transition-colors hover:bg-secondary first:border-t-0 -mx-4 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ring"
           >
             {/* Number */}
             <span className="font-mono text-xs text-muted-foreground tabular-nums">
