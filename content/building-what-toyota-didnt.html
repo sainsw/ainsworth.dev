@@ -1,0 +1,113 @@
+<template data-metadata>
+  <meta name="title" content="Building what Toyota didn’t: a home screen widget for my car">
+  <meta name="publishedAt" content="2026-09-28">
+  <meta name="summary" content="The MyToyota app has no widgets, so I built one in Scriptable on top of the app’s own unofficial API. It shows charge and fuel, the locks, where the car’s parked and how I’ve been driving, on the home screen and the lock screen.">
+</template>
+
+<p>My car is a Toyota C-HR plug-in hybrid, and the MyToyota app knows a lot about it: how much charge is left, whether I locked it, where it’s parked, how far I drove this month. None of that is on my home screen, because the app has no widgets. To find out if I locked the car I have to open the app, wait for it to load, and tap through to the status page.</p>
+<p>So I built the widget Toyota didn’t. It runs in <a href="https://scriptable.app">Scriptable</a>, talks to the same backend the MyToyota app does, and comes in every size iOS offers: small, medium and large on the home screen, and circular, rectangular and inline on the lock screen. I built it with Claude Code doing most of the typing. This is how it went, including the parts that were wrong on the first try.</p>
+<figure class="widget-stage not-prose">
+  <div><img src="/images/blog/toyota-widget/small.webp" width="375" height="354" alt="Small widget: the car’s photo with an amber house and a blue lock beside it, 86% in large type over a green battery bar and an empty fuel bar, and 387 mi range, 37 mi EV underneath."><span>Small</span></div>
+  <div><img src="/images/blog/toyota-widget/small-driving.webp" width="373" height="354" alt="Small driving widget: September, 282 mi, a bar about two thirds green and one third orange, 66% electric · 63 mpg, then the last drive: 1.1 mi, 7 min, all EV."><span>Small, driving</span></div>
+  <div class="wide"><img src="/images/blog/toyota-widget/medium.webp" width="794" height="353" alt="Medium widget: Toyota C-HR and the time it last reported, the car’s photo on the left, 86% with its battery and fuel bars on the right, and Locked · All shut and Parked at home along the bottom."><span>Medium</span></div>
+  <figcaption>On my phone. Both small widgets are the same script; the second has its parameter set to trips.</figcaption>
+</figure>
+<hr>
+<h2>Scriptable</h2>
+<p>Scriptable is a free iOS app by Simon B. Støvring that runs JavaScript on your phone, with bridges into the parts of iOS a script would want: HTTP requests, the Keychain, files, location, and, most usefully here, widgets. A script builds a <code>ListWidget</code> out of stacks, text, images and SF Symbols, and Scriptable hands it to iOS. There’s no Xcode, no signing, no developer account, and nothing to deploy. If you can write a web page you can write a widget.</p>
+<ul>
+<li><a href="https://apps.apple.com/app/scriptable/id1405459188">Download Scriptable from the App Store</a> (free, no ads, no subscription).</li>
+<li><a href="https://docs.scriptable.app">docs.scriptable.app</a> documents every API. The same docs are built into the app’s editor, offline.</li>
+</ul>
+<p>Getting a script onto the phone is easier than it looks. Scriptable keeps its scripts as plain <code>.js</code> files in iCloud Drive, so from a Mac on the same account I copy them into <code>~/Library/Mobile Documents/iCloud~dk~simonbs~Scriptable/Documents</code> and they turn up on the phone a minute or so later. I have a small <code>install.sh</code> that does the copy. It names each script from its filename, and keeps the few comment lines Scriptable writes at the top of each file to remember its icon and colour, so reinstalling doesn’t reset them.</p>
+<p>Adding it to the home screen is the usual iOS dance: long-press, add a Scriptable widget, then long-press it, choose <strong>Edit Widget</strong> and pick the script. That same menu has a <strong>Parameter</strong> field, which the script can read. I use it later to turn one script into two different widgets.</p>
+<p>Two limits are worth knowing up front. iOS decides when widgets refresh, usually somewhere between every 15 and 60 minutes, so a widget is for a glance rather than a live view. And a Scriptable widget can’t have buttons. Tapping it opens a URL, and that’s all it can do.</p>
+<hr>
+<h2>Finding an API that isn’t there</h2>
+<p>Toyota doesn’t publish an API. But the MyToyota app has to get its data from somewhere, and other people have already done the work of finding out where. <a href="https://github.com/pytoyoda/pytoyoda">pytoyoda</a> is the Python library behind the Home Assistant Toyota integration, it talks to the European backend the app uses (which covers the UK), and it was updated two days before I started. It was the map for everything that follows.</p>
+<p>Reading its source gave me four endpoints that between them cover what I wanted on a widget:</p>
+<table>
+<thead><tr><th>Endpoint</th><th>What it gives</th></tr></thead>
+<tbody>
+<tr><td><code>/v3/telemetry</code></td><td>Fuel and battery level, charging status, mileage, range</td></tr>
+<tr><td><code>/v1/vehicle/electric/status</code></td><td>Charge, electric range, fuel range, charging status</td></tr>
+<tr><td><code>/v1/vehicle/status</code></td><td>Locks, and every door, window, the boot and the bonnet</td></tr>
+<tr><td><code>/v1/location</code></td><td>Where the car is</td></tr>
+</tbody>
+</table>
+<p>The catch is that it’s unofficial. pytoyoda’s own notes record Toyota moving or locking down endpoints in July and September 2026, so this will break now and then, and pytoyoda’s recent commits will be the first place to look when it does.</p>
+<p>There were two ways to build it. One was a syncer on my server that stores readings in Postgres and serves them to the widget. That gets you history, and keeps the password off the phone. The other was one self-contained script on the phone. I only wanted a glance at the car, so I went with the phone.</p>
+<hr>
+<h2>Logging in like the app</h2>
+<p>Toyota’s login is ForgeRock, followed by OAuth. ForgeRock works as a conversation: you post an empty body, it replies with a list of “callbacks” asking for things, you fill them in and post them back, and you repeat until it hands you a session token. It asks for a locale first (left blank), then the email and password.</p>
+<pre><code class="language-js">let data = {}
+for (let i = 0; i &lt; 10 &amp;&amp; !data.tokenId; i++) {
+  for (const cb of data.callbacks ?? []) {
+    const prompt = cb.output?.[0]?.value
+    if (cb.type === "NameCallback" &amp;&amp; prompt === "User Name") cb.input[0].value = l.username
+    else if (cb.type === "PasswordCallback") cb.input[0].value = l.password
+  }
+  const req = new Request(`${REALM}/authenticate?authIndexType=service&amp;authIndexValue=oneapp`)
+  req.method = "POST"
+  req.headers = { "Content-Type": "application/json" }
+  req.body = JSON.stringify(data)
+  data = await req.loadJSON()
+}
+</code></pre>
+<p>That session token is then traded for an OAuth code. The code arrives as a redirect back to the app, at <code>com.toyota.oneapp:/oauth2Callback?code=…</code>. On a phone, following that redirect would try to open the MyToyota app, so the script catches the redirect with Scriptable’s <code>onRedirect</code> hook, pulls the code out of the URL and stops there. The code is traded for an access token and a long-lived refresh token.</p>
+<p>The email and password go in the iOS Keychain the first time you run the script in the app, never in the file. After that the widget reuses the access token, refreshes it when it expires, and only sends the password again if the refresh token stops working too. If a login ever needs a person, the widget keeps showing the last readings it had with <em>Log in to Toyota again</em> across the top.</p>
+<hr>
+<h2>A SHA-256 in plain JavaScript</h2>
+<p>Every request to Toyota’s API carries a set of headers copied from the app: an API key, the app version, a channel, a brand, a region, and one oddity, <code>x-client-ref</code>. That one is an HMAC-SHA256 of the account ID, keyed with the app’s version number.</p>
+<p>Scriptable has no crypto library. There’s no <code>crypto.subtle</code>, and no way to install a package. So the script has its own SHA-256, about 30 lines, with the round constants worked out from the cube roots of the first 64 primes rather than pasted in as a table. The HMAC on top is short:</p>
+<pre><code class="language-js">function hmacSha256(key, msg) {
+  let k = bytes(key)
+  if (k.length &gt; 64) k = sha256(k)
+  k = [...k, ...Array(64 - k.length).fill(0)]
+  const inner = sha256([...k.map((b) =&gt; b ^ 0x36), ...bytes(msg)])
+  return sha256([...k.map((b) =&gt; b ^ 0x5c), ...inner])
+    .map((b) =&gt; b.toString(16).padStart(2, "0")).join("")
+}
+</code></pre>
+<p>A wrong hash here would get every request rejected, with nothing in the response to say why. So before it went anywhere near Toyota, I checked the output against Node’s <code>crypto</code> module, and it matched in every case I tried.</p>
+<p>I also couldn’t test the login without my real account, and I wasn’t going to put that anywhere but my phone. The first run on the phone was the first real test of everything after Toyota’s initial reply. To catch what I could before that, the widget ran in a browser preview with stand-ins for Scriptable’s APIs and made-up car data. That caught one real bug: a function called <code>header</code> declared twice, once for reading HTTP headers and once for drawing the widget’s header, which would have stopped the script dead in Scriptable.</p>
+<hr>
+<h2>First run</h2>
+<p>It logged in first time, and Toyota’s photo of my car came through with everything else. Three things were wrong.</p>
+<p>The battery read 93% where the MyToyota app said 86%. My guess was that a plug-in hybrid keeps some of its battery back for the hybrid system, and pytoyoda confirmed it: Toyota reports the raw level and, separately, <code>phevUsableBatteryLevel</code>, the part you can actually drive on. The app shows the usable one, so now the widget does too.</p>
+<p>The medium and large widgets were showing my car’s name as its VIN. If you haven’t given your car a nickname in the app, Toyota fills the nickname field with the VIN. The widget now skips anything shaped like a VIN and falls back to the model, <em>C-HR</em>.</p>
+<p>The large widget was spread out and the small one was cramped. Scriptable doesn’t tell a script how big its widget is, and I’d laid everything out for the largest iPhones. The script now looks the size up in Apple’s published table of widget sizes by screen width, and on the large widget every row has a set height except the car photo, which takes whatever is left.</p>
+<hr>
+<h2>A plug-in hybrid has two tanks</h2>
+<p>A petrol car needs one bar and an electric car needs one bar. A plug-in hybrid needs two, and most of the design work went into making that read at a glance.</p>
+<p>The battery bar sits on top and a slightly slimmer fuel bar underneath, each with a small battery or fuel pump symbol so you can tell which is which. Electric is Apple’s system green and fuel is its system orange, on every car, so the colour always tells you the energy type. Warnings moved off the bars and onto the big number instead, which turns orange at 20% and red at 10%.</p>
+<p>The empty battery was the awkward case. When the usable battery hits 0% the car hasn’t stopped, it’s just driving as an ordinary hybrid. A huge <em>0%</em> on the home screen would be true and useless. So when the battery is empty and the car isn’t charging, the headline hands over to fuel: the number becomes the fuel level with a fuel pump beside it, the empty green bar stays in view, and medium reads <em>Hybrid mode · 336 mi range</em>. As soon as it’s plugged in, the headline goes back to the battery so you can watch it fill.</p>
+<p>The range line took three goes. The first had the electric range as <em>25 electric · 405 mi</em>, which looked home-made. The second moved each range to the end of its bar as a small grey number, the way Apple’s battery widget does it, but that shortened the bars, and I preferred them full width. The version that stuck is plain: <em>405 mi range, 25 mi EV</em>.</p>
+<hr>
+<h2>Seeing everything Toyota sends</h2>
+<p>Once the widget worked, I wanted to see what else was in there. A second script, <em>Toyota Endpoints</em>, reuses the widget’s saved login, calls every read-only endpoint pytoyoda knows about, and shows the raw responses in Quick Look. It deliberately skips the endpoints that ask the car to wake up and report in, so running it never pokes the car.</p>
+<p>The dump turned up a couple of things. The car reports <code>fuelLevel: 0</code> no matter how much fuel is in it, while its fuel range is a sensible few hundred miles. That looked like a bug in the widget until I checked the MyToyota app, which also shows 0%. It’s broken upstream, and there’s nothing for the widget to fix. It’s why the fuel bar in these screenshots is always empty. The response to the vehicle list is also enormous, with a flag for nearly every feature Toyota has ever sold, from seat ventilation to a moonroof.</p>
+<p>The useful finds were <code>/v1/location</code> and <code>/v1/trips</code>.</p>
+<hr>
+<h2>Where it’s parked, and how I’ve been driving</h2>
+<p>The location endpoint gives the car’s last parked position. Scriptable can reverse-geocode that with Apple’s own lookup, so the widget shows the street, and only looks it up again once the car has moved more than 30 metres. Running the script in the app now opens a menu, and one option is <em>Set home to where it’s parked</em>. That saves the spot in the Keychain, and anywhere within 150 metres of it reads <em>Parked at home</em> instead of a street name. On the small widget, home is just an amber house next to a blue lock, the way Apple Watch colours its icons.</p>
+<p>One call to the trips endpoint, asking for a single trip from the start of the month, returns both the latest drive and the month’s totals, including how much of the distance was driven on electric. That’s a separate widget, using the Parameter field: set it to <code>trips</code> and the same script draws the month’s distance, a bar split green and orange by how much was electric, the fuel economy, and the last drive. The medium version adds Toyota’s score for that drive. The large widget gets both, as four tiles under the car: where it’s parked, the locks, the last drive and the month so far.</p>
+<figure class="widget-stage not-prose">
+  <div class="wide"><img src="/images/blog/toyota-widget/large.webp" width="798" height="815" alt="Large widget: Toyota C-HR with the mileage and time, a big photo of the car, 86% with 387 mi range, 37 mi EV and both bars, then four tiles: Parked, Home; Locks, Locked · All shut; Last drive, 1.1 mi · all EV; September, 282 mi · 66% EV."><span>Large</span></div>
+</figure>
+<p>Toyota sends trip distances in metres and fuel in what I’m assuming is millilitres. That gives a believable mpg for a plug-in hybrid, but it is an assumption, and the one figure on the widget I’d check against the app before trusting.</p>
+<hr>
+<h2>Opening the app on tap</h2>
+<p>Tapping the widget opens the MyToyota app. This fell out of the login work: for Toyota’s login to redirect back into the app, the app has to register the <code>com.toyota.oneapp</code> URL scheme with iOS, which means any link starting with it opens the app. The widget just sets its URL to the bare scheme:</p>
+<pre><code class="language-js">const APP_URL = "com.toyota.oneapp://"
+w.url = APP_URL
+</code></pre>
+<p>It lands on the app’s home screen rather than a particular page, but it’s one tap from the widget to the full app. Toyota could rename the scheme, but that would break their own login, so I don’t expect it to change.</p>
+<hr>
+<h2>What it can and can’t do</h2>
+<p>The time on the widget is when the car last reported, not when the widget last ran. A parked car doesn’t report, so an old time usually means the car hasn’t moved, not that the widget is stuck. When Toyota can’t be reached, the widget shows the last readings it kept on the phone with <em>Can’t reach Toyota</em> in place of the car’s name, instead of going blank.</p>
+<p>It can’t lock the car, start the climate or do anything else that changes the car’s state. The API has endpoints for those, but a widget can only open a link.</p>
+<p>The script is about 1,000 lines, around 30 of them the SHA-256. When Toyota next moves an endpoint, the fix should be a path or a header, copied from whatever pytoyoda changed.</p>
+<hr>
+<h2>The code</h2>
+<p>It’s all in <a href="https://github.com/sainsw/scriptable-widgets">sainsw/scriptable-widgets</a> on GitHub. The widget is <a href="https://github.com/sainsw/scriptable-widgets/blob/main/toyota.js"><code>toyota.js</code></a>, next to the <em>Toyota Endpoints</em> script and two other widgets of mine, one for Manchester’s bin collections and one for the latest xkcd. To try it, install Scriptable, paste <code>toyota.js</code> into a new script (or run <code>install.sh</code> from a Mac on the same iCloud account), run it once in the app to log in with your MyToyota account, then add a Scriptable widget and pick the script.</p>

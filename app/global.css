@@ -562,3 +562,51 @@ table {
     text-decoration: underline;
     text-underline-offset: 0.2em;
 }
+
+/* Screenshots of iOS widgets, laid out on a dark panel the way they sit on a
+   home screen: two smalls side by side, wider sizes across both columns. The
+   images carry their own transparent rounded corners, so the panel behind
+   them shows through at the corners as a wallpaper would. The panel is dark
+   in both themes because the widgets are dark mode screenshots. */
+.widget-stage {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem 1rem;
+    max-width: 29rem;
+    margin: 2rem auto;
+    padding: 1.5rem 1.25rem 1.25rem;
+    border-radius: 1.75rem;
+    background:
+        radial-gradient(120% 80% at 15% 0%, oklch(0.36 0.04 250) 0%, transparent 60%),
+        radial-gradient(90% 70% at 100% 100%, oklch(0.3 0.05 20) 0%, transparent 65%),
+        oklch(0.16 0.005 260);
+}
+
+.widget-stage > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.widget-stage .wide {
+    grid-column: 1 / -1;
+}
+
+.widget-stage img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0.5rem 1.25rem oklch(0 0 0 / 45%));
+}
+
+.widget-stage span {
+    font-size: 0.75rem;
+    color: oklch(1 0 0 / 80%);
+}
+
+.widget-stage figcaption {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: oklch(1 0 0 / 65%);
+}
