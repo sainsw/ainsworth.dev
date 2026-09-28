@@ -566,8 +566,9 @@ table {
 /* Screenshots of iOS widgets, laid out on a dark panel the way they sit on a
    home screen: two smalls side by side, wider sizes across both columns. The
    images carry their own transparent rounded corners, so the panel behind
-   them shows through at the corners as a wallpaper would. The panel is dark
-   in both themes because the widgets are dark mode screenshots. */
+   them shows through at the corners as a wallpaper would. Each widget is a
+   <picture> with light and dark screenshots, so it follows the page's theme,
+   while the panel stays dark in both: the wallpaper they were taken on. */
 .widget-stage {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -591,6 +592,11 @@ table {
 
 .widget-stage .wide {
     grid-column: 1 / -1;
+}
+
+.widget-stage picture {
+    display: block;
+    width: 100%;
 }
 
 .widget-stage img {
