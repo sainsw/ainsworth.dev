@@ -565,8 +565,8 @@ table {
 
 /* Screenshots of iOS widgets, laid out the way they sit on a home screen:
    two smalls side by side, wider sizes across both columns. The images carry
-   their own transparent rounded corners and float on the page with a soft
-   shadow. Each widget is a <picture> with light and dark screenshots, so it
+   their own transparent rounded corners and sit flat on the page with no
+   shadow, as they do on iOS. Each widget is a <picture> with light and dark screenshots, so it
    follows the page's theme. */
 .widget-stage {
     display: grid;
@@ -595,7 +595,6 @@ table {
 .widget-stage img {
     width: 100%;
     height: auto;
-    filter: drop-shadow(0 0.25rem 0.75rem oklch(0 0 0 / 14%));
 }
 
 .widget-stage span {
@@ -608,12 +607,4 @@ table {
     text-align: center;
     font-size: 0.8125rem;
     color: var(--muted-foreground);
-}
-
-@media (prefers-color-scheme: dark) {
-    /* A shadow barely reads on a dark page, so the dark widgets get a
-       deeper one to lift them off it. */
-    .widget-stage img {
-        filter: drop-shadow(0 0.5rem 1.25rem oklch(0 0 0 / 60%));
-    }
 }
