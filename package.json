@@ -39,7 +39,7 @@
     "clsx": "^2.1.1",
     "geist": "^1.4.2",
     "linkedom": "^0.18.12",
-    "next": "^16.2.10",
+    "next": "^16.4.0",
     "postgres": "^3.4.3",
     "radix-ui": "^1.4.3",
     "react": "^19.2.0",
@@ -64,17 +64,17 @@
     "avatar-fetcher": "^0.1.0",
     "axe-core": "^4.13.0",
     "jsdom": "^27.0.0",
-    "mermaid": "^11.9.0",
-    "postcss": "^8.5.15",
-    "sharp": "^0.34.3",
+    "mermaid": "^11.17.2",
+    "postcss": "^8.5.30",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.1.13",
     "tw-animate-css": "^1.4.0",
     "typescript": "^5.8.3",
     "unpdf": "^1.6.2",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.11"
   },
   "overrides": {
-    "postcss": "^8.5.15",
+    "postcss": "^8.5.30",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-is": "^19.2.0"
