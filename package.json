@@ -77,6 +77,9 @@
     "postcss": "^8.5.30",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-is": "^19.2.0"
+    "react-is": "^19.2.0",
+    "@tailwindcss/typography": {
+      "postcss-selector-parser": "^7.1.6"
+    }
   }
 }
