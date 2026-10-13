@@ -82,6 +82,10 @@ body { margin: 0; font-family: 'GeistMonoVF', ui-monospace, monospace; }
 function mermaidConfig(isDark) {
   return {
     startOnLoad: false,
+    // mermaid 12 moved the defaults to the neo look and the ELK layout, which
+    // reflows every diagram. Pin the v11 pair so upgrades don't redraw posts.
+    look: 'classic',
+    layout: 'dagre',
     theme: isDark ? 'dark' : 'neutral',
     securityLevel: 'loose',
     fontFamily: "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace",
@@ -94,6 +98,8 @@ function mermaidConfig(isDark) {
       nodeSpacing: 30,
       rankSpacing: 50,
       diagramPadding: 12,
+      // v11's default; mermaid 12 dropped it to 120, which wraps most labels.
+      wrappingWidth: 200,
     },
     themeVariables: {
       fontFamily:
