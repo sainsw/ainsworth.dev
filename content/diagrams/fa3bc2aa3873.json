@@ -1,0 +1,89 @@
+{
+  "kind": "graph",
+  "type": "flowchart-v2",
+  "title": "",
+  "description": "",
+  "nodes": [
+    {
+      "id": "A",
+      "text": "Phone browser",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "B",
+      "text": "Cloudflare",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "C",
+      "text": "cloudflared tunnel\n    on the always-on server",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "D",
+      "text": "SSH reverse tunnel\n    to the dev machine, loopback only",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "E",
+      "text": "opencode serve",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "F",
+      "text": "llama-swap\n    gaming PC :9292",
+      "shape": "square",
+      "group": null
+    },
+    {
+      "id": "G",
+      "text": "Qwen3.8-27B\n    RX 9070 XT",
+      "shape": "square",
+      "group": null
+    }
+  ],
+  "edges": [
+    {
+      "from": "A",
+      "to": "B",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "B",
+      "to": "C",
+      "label": "Access policy: owner only",
+      "stroke": "normal"
+    },
+    {
+      "from": "C",
+      "to": "D",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "D",
+      "to": "E",
+      "label": "",
+      "stroke": "normal"
+    },
+    {
+      "from": "E",
+      "to": "F",
+      "label": "LAN, no key",
+      "stroke": "normal"
+    },
+    {
+      "from": "F",
+      "to": "G",
+      "label": "",
+      "stroke": "normal"
+    }
+  ],
+  "groups": []
+}
