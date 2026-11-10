@@ -143,11 +143,14 @@ const viewBoxOf = (svg) => /viewBox="([^"]+)"/.exec(svg)?.[1] ?? '';
  * layout is already the final one, with or without the stylesheet.
  */
 function normaliseRoot(svg) {
+  // Capped at the drawing's own width: a top-to-bottom flowchart is narrow, and
+  // width:100% alone scaled a 272px one to the full column, text and all.
+  const naturalWidth = Number(viewBoxOf(svg).split(/\s+/)[2]);
   return svg.replace(/<svg\b[^>]*>/, (tag) => {
     const keep = tag
-      .replace(/\s(?:width|height)="[^"]*"/g, '')
+      .replace(/\s(?:width|height|style)="[^"]*"/g, '')
       .replace(/\s*\/?>$/, '');
-    return `${keep} preserveAspectRatio="xMidYMin meet" style="width:100%;height:auto">`;
+    return `${keep} preserveAspectRatio="xMidYMin meet" style="width:100%;max-width:${naturalWidth}px;height:auto">`;
   });
 }
 
