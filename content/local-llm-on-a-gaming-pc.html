@@ -4,25 +4,29 @@
   <meta name="summary" content="A 27B model on a 16 GB RX 9070 XT, running llama.cpp under llama-swap in a Podman container on Bazzite. A small guard pauses inference the moment a game starts, and a Cloudflare tunnel with an SSH reverse tunnel makes it reachable from my phone.">
 </template>
 
-<p>I wanted to run a local coding model on my gaming PC, and keep the PC a gaming PC. The box has an RX 9070 XT, so any model has to share 16 GB of VRAM with whatever I feel like playing, and it runs Bazzite, so the LLM had to live in a container without adding packages to the OS image. The model had to earn its place on the GPU every day, not assume it.</p>
-<p>What I ended up with: a 27B model at 28 to 36 tokens per second with a 128K context, that pauses itself and hands back the VRAM the moment a game launches, and that I can reach from my phone through a Cloudflare tunnel. This is the setup, the numbers I measured, and where it broke.</p>
+<p>I wanted a local coding model on my gaming PC, and I wanted the PC to stay a gaming PC. It has an RX 9070 XT, so any model shares 16 GB of VRAM with whatever I feel like playing. It also runs Bazzite, so the model has to live in a container, with nothing added to the OS image.</p>
+<p>Here's where I ended up: a 27B model with a 128K context, generating 28 to 36 tokens per second. It pauses itself and hands the VRAM back when a game launches, and I can use it from my phone through a Cloudflare tunnel. This post covers the setup, the numbers I measured, and the places it broke.</p>
+<p>If you're on a 16 GB card and short on time, skip to "Fitting 128K into 16 GB". That section is the reason any of this works.</p>
 <h2>The machine</h2>
-<p>Everything below is shaped by the VRAM row, so here is the whole spec that matters:</p>
+<p>The VRAM row drives every decision below.</p>
 <table>
 <thead><tr><th>Item</th><th>What it is</th><th>What it means for the LLM</th></tr></thead>
 <tbody>
 <tr><td>OS</td><td>Bazzite (SteamOS on Fedora)</td><td>Container-only, nothing installed on the image</td></tr>
 <tr><td>GPU</td><td>AMD RX 9070 XT</td><td>16,304 MiB of VRAM, about 696 MiB in use at idle</td></tr>
 <tr><td>RAM</td><td>31 GB</td><td>Overflow is possible, but I measured it and did not want it</td></tr>
-<tr><td>Disk</td><td>527 GB free on <code>/var</code></td><td>Room for several models</td></tr>
+<tr><td>Disk</td><td>527 GB free on /var</td><td>Room for several models</td></tr>
 <tr><td>Containers</td><td>Podman 5.8.9</td><td>Runs rootless, managed by systemd</td></tr>
 </tbody>
 </table>
-<p>Two defaults on this box saved me work. Bazzite exposes <code>/dev/dri/renderD128</code> and <code>/dev/kfd</code> to all users, so a rootless container gets the GPU with no group changes. And the firewall already had the user port range, 1025 to 65535, open, so publishing a port needed no firewall change. If your setup is different, check both before you start: <code>ls -l /dev/dri /dev/kfd</code> and <code>firewall-cmd --list-ports</code>.</p>
-<p>One thing that was not a default: the machine suspends itself when idle, which is lovely for a game PC and terrible for a server. I blocked it for the setup with <code>systemctl mask --runtime</code> on the sleep targets, knowing that would last until reboot, and kept it awake for good once it proved useful. Your mileage may vary on whether an always-on gaming PC is worth the power.</p>
+<p>Two Bazzite defaults saved me work. It exposes <code>/dev/dri/renderD128</code> and <code>/dev/kfd</code> to all users, so a rootless container gets the GPU without any group changes. The firewall also already has the user port range (1025 to 65535) open, so publishing a port needed no firewall change. If your setup is different, check both before you start:</p>
+<pre><code class="language-text">ls -l /dev/dri /dev/kfd
+firewall-cmd --list-ports
+</code></pre>
+<p>One default worked against me. The machine suspends itself when idle, which is lovely for a gaming PC and terrible for a server. During setup I blocked it with <code>systemctl mask --runtime</code> on the sleep targets, which only lasts until reboot. Once the model had proved useful, I kept the machine awake for good. Whether an always-on gaming PC is worth the power is your call.</p>
 <h2>One endpoint, loaded on demand</h2>
-<p>Rather than run llama-server directly, I put <a href="https://github.com/mostlygeek/llama-swap">llama-swap</a> in front of it. It is a small proxy that exposes one OpenAI-compatible API and starts the model you ask for, and stops it when it goes quiet. That turned out to be most of the design: the GPU is free when nothing is running, and the API is the same whether one model or five is on disk.</p>
-<p>The <code>unified-vulkan</code> image bundles llama.cpp with the Vulkan backend, which is the right choice for AMD on Linux without chasing ROCm. I run it as a rootless Podman quadlet, so systemd owns the container and restarts it if it dies:</p>
+<p>I don't run llama-server directly. <a href="https://github.com/mostlygeek/llama-swap">llama-swap</a> sits in front of it: a small proxy that exposes one OpenAI-compatible API, starts whichever model a request asks for, and stops it when it goes quiet. That turned out to be most of the design. The GPU is free when nothing is running, and the API looks the same whether there is one model on disk or five.</p>
+<p>The <code>unified-vulkan</code> image bundles llama.cpp with the Vulkan backend, which suits AMD on Linux and saves chasing ROCm. I run it as a rootless Podman quadlet, so systemd owns the container and restarts it if it dies:</p>
 <pre><code class="language-ini">[Unit]
 Description=Local LLM server (llama-swap + llama.cpp Vulkan)
 
@@ -43,7 +47,7 @@ TimeoutStartSec=120
 [Install]
 WantedBy=default.target
 </code></pre>
-<p>The llama-swap config sits in <code>~/llm/config/config.yaml</code> and reloads without restarting the container, which is what made the tuning below possible. Models live in <code>~/llm/models</code>, read-only inside the container:</p>
+<p>The llama-swap config lives in <code>~/llm/config/config.yaml</code>. It reloads without restarting the container, which is what made the tuning in the next section practical. Models live in <code>~/llm/models</code>, mounted read-only:</p>
 <pre><code class="language-yaml">healthCheckTimeout: 300
 globalTTL: 1800   # unload 30 minutes after the last request
 sendLoadingState: true
@@ -65,14 +69,16 @@ models:
       --reasoning-budget 1024 --no-reasoning-preserve
       --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0
 </code></pre>
-<p>The model is <a href="https://huggingface.co/unsloth/Qwen3.8-27B-GGUF">Qwen3.8-27B at Q3_K_XL</a>, 12.24 GiB, with thinking and tool calling. It is the newest serious option that fits a 16 GB card, though I found no head-to-head benchmark for it, so treat “the smartest that fits” as a judgement. The endpoint is <code>http://&lt;machine&gt;:9292/v1</code>, and I left it without an API key: anything on the LAN can use it. That is fine on a trusted network, and the remote path below is where I add real authentication instead of exposing the port.</p>
+<p>The model is <a href="https://huggingface.co/unsloth/Qwen3.8-27B-GGUF">Qwen3.8-27B at Q3_K_XL</a>: 12.24 GiB, with thinking and tool calling. It's the newest serious option that fits a 16 GB card. I couldn't find a head-to-head benchmark for it, so treat "the smartest that fits" as a judgement call.</p>
+<p>The endpoint is <code>http://&lt;machine&gt;:9292/v1</code> and it has no API key, so anything on the LAN can use it. I'm fine with that on a network I trust. For access from outside I leave this port alone and put real authentication on a separate path, described further down.</p>
 <h2>Fitting 128K into 16 GB</h2>
-<p>This is where the setup actually got interesting, because the first configuration did not work.</p>
-<p>The obvious starting point is a 65K context. It is not a small amount of memory: with a full-precision KV cache, that context needed more VRAM than the 12.24 GiB model already occupies, so llama.cpp spilled the rest into system RAM. The model still answered, but the moment a prompt got long, speed collapsed to about 11 tokens per second. I tried using the 31 GB of RAM deliberately as overflow, and it was worse: 6 to 10 tokens per second, even on short prompts. A 27B model that runs in system RAM is a 27B model that cannot be used as an agent.</p>
-<p>There was also a smaller bug. The first config carried <code>--no-mmap</code>, and this build of llama-server does not recognise it. It exited the instant it started, which looked like a GPU problem and was not. If your server dies at boot with no obvious error, check that every flag in your macro is in <code>llama-server --help</code> before you blame the driver.</p>
-<p>The fix came from a report by someone running the exact same card. Their recipe was to quantise the KV cache itself, and that is the one that matters for anyone on 16 GB:</p>
+<p>The first configuration didn't work.</p>
+<p>I started with a 65K context. The model takes 12.24 GiB, and a full-precision KV cache for that much context didn't fit in what was left, so llama.cpp spilled the rest into system RAM. The model still answered, but once a prompt got long, speed collapsed to about 11 tokens per second. I then tried using the 31 GB of system RAM as overflow on purpose. That was worse: 6 to 10 tokens per second, even on short prompts. At those speeds the model is no use as a coding agent.</p>
+<p>I also lost time to a smaller bug. My first config carried <code>--no-mmap</code>, and this build of llama-server doesn't recognise it. The server exited the instant it started, which looked exactly like a GPU problem. If yours dies at startup with no obvious error, check every flag in your macro against <code>llama-server --help</code> before you blame the driver.</p>
+<p>The fix came from a report by someone running the same card. Their recipe was to quantise the KV cache:</p>
 <pre><code class="language-text">-ctk q4_0 -ctv q4_0</code></pre>
-<p>The KV cache is where context lives, and it grows with context length. Compressing it to 4-bit fit a 128K context inside the remaining VRAM. Flash attention (<code>-fa on</code>) came with it, and I capped the thinking budget at 1024 tokens so a long chain of thought cannot eat the context. The result, measured on this card:</p>
+<p>The KV cache is where the context lives, and it grows with context length. Compressed to 4-bit, a full 128K context fits in the VRAM left over after the model. Flash attention (<code>-fa on</code>) came with the same recipe, and I capped the thinking budget at 1024 tokens so a long chain of thought can't eat the context.</p>
+<p>Measured on this card:</p>
 <table>
 <thead><tr><th>Measured</th><th>Result</th></tr></thead>
 <tbody>
@@ -83,9 +89,11 @@ models:
 <tr><td>VRAM while paused</td><td>Drops from 15.7 GB to 0.5 GB</td></tr>
 </tbody>
 </table>
-<p>The numbers to remember are the last two rows. A context that fits leaves headroom for a game, and a pause that releases VRAM is what makes “gaming PC” in the title true. If you are on a bigger card, you can probably skip the KV quantisation and keep more context in full precision. If you are on 16 GB, test your spill before you test your prompts: watch <code>/sys/class/drm/card*/device/mem_info_vram_used</code> and the GTT counters while a long prompt runs, and if either climbs, the model is in RAM and the speed you are measuring is the speed you will keep.</p>
+<p>The last two rows are the ones to remember. The whole context sits in VRAM without spilling, and a pause hands almost the entire card back, which is what keeps this a gaming PC.</p>
+<p>On a bigger card you can probably skip the KV quantisation and keep more of the context at full precision. On 16 GB, test for spill before you test your prompts. Watch <code>/sys/class/drm/card*/device/mem_info_vram_used</code> and the GTT counters while a long prompt runs. If either climbs, the model is in RAM, and the slow speed you're measuring is the speed you'll keep.</p>
 <h2>Giving the GPU back to games</h2>
-<p>Waiting for the model to time out is not enough, because a game does not wait for a timeout. What I wanted was for the model to notice the game, not the other way around. On Bazzite, Steam launches every title, including non-game shortcuts, through a process that appears in <code>/proc</code> as <code>reaper SteamLaunch AppId=N</code>. So the guard is a small user service that polls for that process and asks llama-swap to pause:</p>
+<p>The 30-minute idle timeout doesn't help here, because a game won't wait for it. I wanted the model to notice the game and get out of the way.</p>
+<p>On Bazzite, Steam launches every title, including non-game shortcuts, through a process that shows up in <code>/proc</code> as <code>reaper SteamLaunch AppId=N</code>. So the guard is a small user service that polls for that process and asks llama-swap to pause:</p>
 <pre><code class="language-python">API = "http://127.0.0.1:9292/api/models"
 POLL_SECONDS = 3
 REASSERT_SECONDS = 30
@@ -123,10 +131,16 @@ while True:
         last_sent = now
     time.sleep(POLL_SECONDS)
 </code></pre>
-<p>Three details matter. The ignored AppIds stop the media player and the browser, which are also Steam shortcuts, from pausing the model. The re-assertion every 30 seconds covers a game that respawns its process. And the pause is blunt: while it is on, requests get a 503 saying inference is paused, so an agent pointed at the endpoint learns quickly that the PC is busy and can retry later. I tested the guard with fake <code>reaper</code> processes, so the first real game is the first thing it has not seen, and the pause should land within about three seconds of launch.</p>
+<p>A few choices in there need explaining:</p>
+<ul>
+<li>The ignored AppIds are Kodi and Chrome. Both are Steam shortcuts on this machine, and neither should pause the model.</li>
+<li>The guard re-sends the pause every 30 seconds while a game is running, which covers a game that respawns its process.</li>
+<li>The pause is blunt. While it's on, every request gets a 503 saying inference is paused, so an agent pointed at the endpoint learns quickly that the PC is busy and can retry later.</li>
+</ul>
+<p>So far I've only tested the guard with fake <code>reaper</code> processes, so the first real game will be the first thing it hasn't seen. With a three-second poll, the pause should land within about three seconds of launch.</p>
 <h2>Reaching it from outside the house</h2>
-<p>The endpoint above is only reachable on the LAN, which is on purpose. To use the model from my phone, I did not open a port. I put the coding agent, not the model, on the public path, and put my Cloudflare login in front of that.</p>
-<p>The agent is <a href="https://opencode.ai">opencode</a> running in a container on my dev machine, which itself talks to the LLM over the LAN. The public chain has four hops, and the diagram below shows where each piece of trust sits:</p>
+<p>The model's endpoint is LAN-only on purpose, and I didn't open a port to change that. What sits on the public path is the coding agent, with my Cloudflare login in front of it. The model itself is never exposed.</p>
+<p>The agent is <a href="https://opencode.ai">opencode</a>, running in a container on my dev machine, and it talks to the model over the LAN. From phone to GPU, the chain looks like this:</p>
 <pre><code class="language-mermaid">flowchart TD
     A["Phone browser"] --> B["Cloudflare"]
     B -->|Access policy: owner only| C["cloudflared tunnel
@@ -146,25 +160,26 @@ while True:
     style E fill:#e8f5e8
     style G fill:#e8f5e8
 </code></pre>
-<p>Four parts, in the order I built them:</p>
+<p>I built it in this order:</p>
 <ol>
-<li><code>opencode serve</code>, in a container: the agent runs in a Docker container on the dev machine with only the project folders mounted. It is a user service, so systemd restarts it. The container can reach the LAN, which is how it gets to the model, but it holds no credentials it should not have.</li>
-<li>A Cloudflare Access policy, created first: I made the Access app for <code>code.example.dev</code> before I made the tunnel route, so the address could never be live without a login. The policy is the default “allow the owner” one: it checks you are signed in to your Cloudflare account, which means the phone browser is the only client that ever needs setting up.</li>
-<li>A tunnel on the always-on box: I already ran a Cloudflare tunnel on the home server, so I added a route for <code>code.example.dev</code> to <code>http://localhost:4096</code> on that server. No inbound ports, no firewall holes, no DNS of my own to maintain.</li>
-<li>An SSH reverse tunnel: the dev machine is not the always-on box, so a user service there opens a persistent SSH connection to the server and forwards the server’s loopback port 4096 back to the dev machine’s loopback. The tunnel reaches a localhost port that only exists while the dev machine is awake, and nothing outside the house can address the dev machine directly.</li>
+<li><strong>opencode serve, in a container.</strong> The agent runs in a Docker container on the dev machine with only the project folders mounted. It's a user service, so systemd restarts it. The container can reach the LAN, which is how it gets to the model, but it holds no credentials it shouldn't have.</li>
+<li><strong>A Cloudflare Access policy, created first.</strong> I made the Access app for <code>code.example.dev</code> before I made the tunnel route, so the address could never be live without a login in front of it. The policy is the default "allow the owner" one. It checks that you're signed in to your Cloudflare account, which means the phone's browser is the only client that ever needs setting up.</li>
+<li><strong>A tunnel route on the always-on box.</strong> I already ran a Cloudflare tunnel on the home server, so I added a route from <code>code.example.dev</code> to <code>http://localhost:4096</code> on that server. That needs no inbound ports or firewall holes, and I have no DNS of my own to maintain.</li>
+<li><strong>An SSH reverse tunnel.</strong> The dev machine isn't the always-on box, so a user service on it holds a persistent SSH connection to the server and forwards the server's loopback port 4096 back to the dev machine's loopback. The Cloudflare tunnel ends up pointing at a localhost port that only exists while the dev machine is awake, and nothing outside the house can address the dev machine directly.</li>
 </ol>
-<p>The first time you open <code>code.example.dev</code>, it redirects to the Cloudflare login. After that, the browser is a full client for the agent: pick a repo, start a session, approve shell commands when the agent asks. New devices are the fiddly bit, because the agent needs a browser session, not just a login. The flow that works is to generate a one-time pairing link on the machine that owns the agent:</p>
+<p>The first time you open <code>code.example.dev</code>, it redirects to the Cloudflare login. After that, the browser is a full client for the agent: pick a repo, start a session, approve shell commands when the agent asks.</p>
+<p>New devices are the fiddly bit, because the agent needs its own browser session on top of the Cloudflare login. The flow that works is to generate a one-time pairing link on the machine that owns the agent:</p>
 <pre><code class="language-bash">opencode pair --url https://code.example.dev
 </code></pre>
-<p>The link works once and expires after five minutes, which is enough to get a phone in. If you miss the window you ask for another; there is no long-lived token to leak.</p>
-<p>I tested the whole chain from inside the house, because I cannot sign in to your Cloudflare account, so the first real run through the tunnel is yours. What I could verify from outside: 48 unauthenticated requests to the address, and 48 redirects to the login page, with no content leaking. And I verified the LAN side by pointing a chat client at the endpoint from three different machines, and watching the model load, answer, and unload on its own schedule.</p>
-<p>Two honest limits on the remote path. The agent is only as available as the dev machine: if it is asleep, the tunnel lands on nothing. And while a game is running, every request from anywhere, including the phone, gets the 503, because the model is genuinely off the GPU.</p>
+<p>The link works once and expires after five minutes, which is enough to get a phone in. If you miss the window, you ask for another. There's no long-lived token to leak.</p>
+<p>Here is what I've tested. From outside, I sent 48 unauthenticated requests to the address and got 48 redirects to the login page, with no content leaking. On the LAN, I pointed a chat client at the endpoint from three different machines and watched the model load, answer, and unload on its own schedule. The full signed-in chain I have only run from inside the house.</p>
+<p>The remote path has two limits. The agent is only as available as the dev machine, so if that's asleep, the tunnel lands on nothing. And while a game is running, every request gets the 503, including requests from the phone, because the model is off the GPU.</p>
 <h2>What to watch</h2>
 <ul>
-<li>Spill is the silent failure. If speed drops with context, the KV cache is in RAM. The <code>-ctk q4_0 -ctv q4_0</code> pair is what keeps it out. Check the VRAM and GTT counters before you tune anything else.</li>
-<li>Quantisation is a quality decision. Q3 for the weights and 4-bit for the KV cache is what fits, and it is a real trade. If the model starts repeating itself or losing the plot on long tasks, the first knob to turn is context size, not the quant.</li>
-<li>The guard is a poller. It sees a game within about three seconds, and it can only see games that Steam launches through that reaper process. A game started some other way will not pause the model.</li>
-<li>No API key on the LAN means the LAN is trusted. I would add one before pointing this at any network I do not control. The remote path does not inherit the LAN path’s lack of a key, because it does not reach the model directly.</li>
-<li>Wake from sleep is untested. Wake-on-LAN works from suspend on this box, about 15 seconds. From a full shutdown it may want the power button. If the machine is a server you rely on, decide that trade deliberately.</li>
+<li><strong>Spill fails silently.</strong> If speed drops as context grows, the KV cache is in system RAM. The <code>-ctk q4_0 -ctv q4_0</code> pair is what keeps it out. Check the VRAM and GTT counters before you tune anything else.</li>
+<li><strong>Quantisation costs quality.</strong> Q3 for the weights and 4-bit for the KV cache is what fits, and it's a real trade. If the model starts repeating itself or losing the plot on long tasks, reduce the context size first and leave the quant alone.</li>
+<li><strong>The guard is a poller.</strong> It sees a game within about three seconds, and only if Steam launched it through that <code>reaper</code> process. A game started some other way won't pause the model.</li>
+<li><strong>No API key means I'm trusting the LAN.</strong> I'd add one before pointing this at any network I don't control. The remote path doesn't inherit the problem, because it never reaches the model directly.</li>
+<li><strong>Waking the machine is only partly tested.</strong> Wake-on-LAN works from suspend on this box and takes about 15 seconds. From a full shutdown it may want the power button. If you rely on the machine as a server, make that trade deliberately.</li>
 </ul>
-<p>The whole thing is two containers, one config file, and about 60 lines of Python. The remote side is one Cloudflare route, one Access policy, and an SSH tunnel that has survived being left alone. If you have a 16 GB card sitting in a machine you also want to game on, start with the KV cache numbers above, because everything else in this post is logistics around them.</p>
+<p>The whole thing is two containers, one config file, and about 60 lines of Python. The remote side is one Cloudflare route, one Access policy, and an SSH tunnel that has survived being left alone. If you have a 16 GB card in a machine you also want to game on, start with the KV cache flags. Everything else in this post is logistics around them.</p>
