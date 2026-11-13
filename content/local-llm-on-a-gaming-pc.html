@@ -140,14 +140,14 @@ while True:
 <p>So far I've only tested the guard with fake <code>reaper</code> processes, so the first real game will be the first thing it hasn't seen. With a three-second poll, the pause should land within about three seconds of launch.</p>
 <h2>Reaching it from outside the house</h2>
 <p>The model's endpoint is LAN-only on purpose, and I didn't open a port to change that. What sits on the public path is the coding agent, with my Cloudflare login in front of it. The model itself is never exposed.</p>
-<p>The agent is <a href="https://opencode.ai">opencode</a>, running in a container on my dev machine, and it talks to the model over the LAN. From phone to GPU, the chain looks like this:</p>
+<p>The agent is <a href="https://docs.openhands.dev">OpenHands</a>, running in a container on my dev machine, and it talks to the model over the LAN. From phone to GPU, the chain looks like this:</p>
 <pre><code class="language-mermaid">flowchart TD
     A["Phone browser"] --> B["Cloudflare"]
     B -->|Access policy: owner only| C["cloudflared tunnel
     on the always-on server"]
     C --> D["SSH reverse tunnel
     to the dev machine, loopback only"]
-    D --> E["opencode serve"]
+    D --> E["OpenHands Agent Canvas"]
     E -->|LAN, no key| F["llama-swap
     gaming PC :9292"]
     F --> G["Qwen3.8-27B
@@ -162,17 +162,13 @@ while True:
 </code></pre>
 <p>I built it in this order:</p>
 <ol>
-<li><strong>opencode serve, in a container.</strong> The agent runs in a Docker container on the dev machine with only the project folders mounted. It's a user service, so systemd restarts it. The container can reach the LAN, which is how it gets to the model, but it holds no credentials it shouldn't have.</li>
+<li><strong>OpenHands, in a container.</strong> The agent runs in a Docker container on the dev machine, with only the project folders mounted. It's a user service, so systemd restarts it. The container can reach the LAN, which is how it gets to the model, but it holds no credentials it shouldn't have.</li>
 <li><strong>A Cloudflare Access policy, created first.</strong> I made the Access app for <code>code.example.dev</code> before I made the tunnel route, so the address could never be live without a login in front of it. The policy is the default "allow the owner" one. It checks that you're signed in to your Cloudflare account, which means the phone's browser is the only client that ever needs setting up.</li>
-<li><strong>A tunnel route on the always-on box.</strong> I already ran a Cloudflare tunnel on the home server, so I added a route from <code>code.example.dev</code> to <code>http://localhost:4096</code> on that server. That needs no inbound ports or firewall holes, and I have no DNS of my own to maintain.</li>
-<li><strong>An SSH reverse tunnel.</strong> The dev machine isn't the always-on box, so a user service on it holds a persistent SSH connection to the server and forwards the server's loopback port 4096 back to the dev machine's loopback. The Cloudflare tunnel ends up pointing at a localhost port that only exists while the dev machine is awake, and nothing outside the house can address the dev machine directly.</li>
+<li><strong>A tunnel route on the always-on box.</strong> I already ran a Cloudflare tunnel on the home server, so I added a route from <code>code.example.dev</code> to <code>http://localhost:8000</code> on that server. That needs no inbound ports or firewall holes, and I have no DNS of my own to maintain.</li>
+<li><strong>An SSH reverse tunnel.</strong> The dev machine isn't the always-on box, so a user service on it holds a persistent SSH connection to the server and forwards the server's loopback port 8000 back to the dev machine's loopback. The Cloudflare tunnel ends up pointing at a localhost port that only exists while the dev machine is awake, and nothing outside the house can address the dev machine directly.</li>
 </ol>
-<p>The first time you open <code>code.example.dev</code>, it redirects to the Cloudflare login. After that, the browser is a full client for the agent: pick a repo, start a session, approve shell commands when the agent asks.</p>
-<p>If you're wiring your own version of this, I'd swap opencode for <a href="https://docs.openhands.dev">OpenHands</a>. It's a better interface for a coding agent, and it's what I'd be running here now.</p>
-<p>New devices are the fiddly bit, because the agent needs its own browser session on top of the Cloudflare login. The flow that works is to generate a one-time pairing link on the machine that owns the agent:</p>
-<pre><code class="language-bash">opencode pair --url https://code.example.dev
-</code></pre>
-<p>The link works once and expires after five minutes, which is enough to get a phone in. If you miss the window, you ask for another. There's no long-lived token to leak.</p>
+<p>The first time you open <code>code.example.dev</code>, it redirects to the Cloudflare login, and then the browser lands on the OpenHands first-time setup instead of a session. The wizard walks through choosing the agent, confirming the backend, and pointing the LLM at the model. That last step is the only one to set deliberately: the custom model id, the base URL at the llama-swap endpoint, and a placeholder key, since the model has no key of its own.</p>
+<p>After that, the browser is a full client: pick a repo, start a session, approve shell commands when the agent asks. A new phone just opens the address and gets the same agent. There's no pairing link to generate and no long-lived token to leak, and the Cloudflare login is the only thing in front of it.</p>
 <p>Here is what I've tested. From outside, I sent 48 unauthenticated requests to the address and got 48 redirects to the login page, with no content leaking. On the LAN, I pointed a chat client at the endpoint from three different machines and watched the model load, answer, and unload on its own schedule. The full signed-in chain I have only run from inside the house.</p>
 <p>The remote path has two limits. The agent is only as available as the dev machine, so if that's asleep, the tunnel lands on nothing. And while a game is running, every request gets the 503, including requests from the phone, because the model is off the GPU.</p>
 <h2>What to watch</h2>
